@@ -221,6 +221,72 @@
             transition: 0.25s;
         }
 
+        .product-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #ffe2ed;
+            color: #ff3f70;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .product-card ul {
+            list-style: none;
+            margin: 18px 0 22px;
+        }
+
+        .product-card ul li {
+            color: #5c516d;
+            margin-bottom: 9px;
+            font-size: 15px;
+        }
+
+        .product-card ul li::before {
+            content: "✓";
+            color: #ff4f87;
+            font-weight: 900;
+            margin-right: 8px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 900;
+            color: #1f1635;
+            margin-bottom: 18px;
+        }
+
+        .product-price span {
+            font-size: 13px;
+            color: #8a7a99;
+            font-weight: 700;
+        }
+
+        .product-action {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: linear-gradient(90deg, #ff4f87, #7a4dff);
+            color: white;
+            font-weight: 800;
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card p {
+            min-height: 100px;
+        }
+
+        .product-card ul {
+            flex: 1;
+        }
+
         .product-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 18px 50px rgba(31, 22, 53, 0.12);
@@ -387,38 +453,98 @@
         <div class="product-grid">
             <div class="product-card">
                 <div class="product-icon">💌</div>
+                <span class="product-tag">Produk Utama</span>
+
                 <h3>Undangan Nikahan Online</h3>
+
                 <p>
-                    Produk utama untuk pasangan yang ingin undangan digital yang cantik,
-                    praktis, bisa dibagikan lewat link, dan cocok untuk acara modern.
+                    Undangan digital cantik dan praktis untuk pasangan yang ingin membagikan
+                    undangan lewat link tanpa ribet cetak.
                 </p>
+
+                <ul>
+                    <li>Desain modern dan responsif</li>
+                    <li>Bisa dibagikan lewat WhatsApp</li>
+                    <li>Cocok untuk acara nikahan</li>
+                </ul>
+
+                <div class="product-price">
+                    Mulai Rp49.000 <span>/ undangan</span>
+                </div>
+
+                <a href="#kontak" class="product-action">Lihat Detail</a>
             </div>
 
             <div class="product-card">
                 <div class="product-icon">📘</div>
+                <span class="product-tag">Edukasi</span>
+
                 <h3>Soal CPNS & Latihan Ujian</h3>
+
                 <p>
-                    Produk edukasi digital berisi paket soal, pembahasan, simulasi,
-                    atau file latihan untuk pengguna yang sedang persiapan seleksi.
+                    Paket latihan soal digital untuk bantu pengguna belajar lebih terarah
+                    sebelum menghadapi ujian atau seleksi.
                 </p>
+
+                <ul>
+                    <li>Paket soal siap latihan</li>
+                    <li>Cocok untuk belajar mandiri</li>
+                    <li>Format digital mudah diakses</li>
+                </ul>
+
+                <div class="product-price">
+                    Segera Hadir
+                </div>
+
+                <a href="#kontak" class="product-action">Ikuti Update</a>
             </div>
 
             <div class="product-card">
                 <div class="product-icon">⚡</div>
+                <span class="product-tag">File Digital</span>
+
                 <h3>Produk Digital</h3>
+
                 <p>
-                    Berisi template, ebook, desain, file siap pakai, worksheet,
-                    checklist, atau aset digital lain yang mudah diunduh.
+                    Kumpulan file siap pakai seperti template, ebook, checklist, worksheet,
+                    desain, dan aset digital lain.
                 </p>
+
+                <ul>
+                    <li>File langsung pakai</li>
+                    <li>Cocok untuk kebutuhan harian</li>
+                    <li>Praktis dan mudah diunduh</li>
+                </ul>
+
+                <div class="product-price">
+                    Mulai Rp15.000 <span>/ produk</span>
+                </div>
+
+                <a href="#kontak" class="product-action">Jelajahi Produk</a>
             </div>
 
             <div class="product-card" id="artikel">
                 <div class="product-icon">📝</div>
+                <span class="product-tag">Konten</span>
+
                 <h3>Artikel & SEO Blog</h3>
+
                 <p>
-                    Halaman artikel untuk menjaring pencarian Google, membangun trust,
-                    dan mengarahkan pengunjung ke produk Rangkita yang relevan.
+                    Artikel informatif untuk menjawab kebutuhan pengguna sekaligus membantu
+                    produk Rangkita ditemukan lewat Google.
                 </p>
+
+                <ul>
+                    <li>Konten informatif dan ringan</li>
+                    <li>Mendukung pencarian Google</li>
+                    <li>Mengarahkan ke produk relevan</li>
+                </ul>
+
+                <div class="product-price">
+                    Gratis Dibaca
+                </div>
+
+                <a href="#artikel" class="product-action">Baca Artikel</a>
             </div>
         </div>
     </section>
@@ -443,7 +569,7 @@
             </p>
 
             <p>
-                Rangkita dibangun untuk membantu orang menemukan solusi digital yang praktis, 
+                Rangkita dibangun untuk membantu orang menemukan solusi digital yang praktis,
                 ringan, dan mudah digunakan.
             </p>
         </div>
