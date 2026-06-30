@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rangkita - Rangkai Kebutuhan Digitalmu</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff7fb;
+            color: #1f1635;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 22px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffffd9;
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid #f2d8e8;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #160B46;
+            /* warna Rang */
+        }
+
+        .logo span {
+            display: inline;
+        }
+
+        .logo .k {
+            color: #FF3F70;
+        }
+
+        .logo .i {
+            color: #7138F6;
+        }
+
+        .logo .t {
+            color: #5366FF;
+        }
+
+        .logo .a {
+            color: #FF7A2D;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-menu a {
+            color: #4d405f;
+            font-weight: 600;
+        }
+
+        .nav-menu a:hover {
+            color: #ff4f87;
+        }
+
+        .hero {
+            min-height: 86vh;
+            padding: 80px 8%;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: #ffe2ed;
+            color: #ff3f7f;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 58px;
+            line-height: 1.05;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg, #ff4f87, #7a4dff, #ff7a2f);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #5c516d;
+            max-width: 620px;
+            margin-bottom: 32px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #ff4f87, #7a4dff);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 16px;
+            font-weight: 800;
+            box-shadow: 0 12px 30px rgba(122, 77, 255, 0.25);
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1f1635;
+            padding: 14px 22px;
+            border-radius: 16px;
+            font-weight: 800;
+            border: 1px solid #ead8f3;
+            display: inline-block;
+        }
+
+        .hero-card {
+            background: white;
+            border-radius: 32px;
+            padding: 34px;
+            box-shadow: 0 24px 70px rgba(31, 22, 53, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #ff4f87, #7a4dff);
+            border-radius: 50%;
+            top: -80px;
+            right: -80px;
+            opacity: 0.22;
+        }
+
+        .hero-card h3 {
+            font-size: 26px;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .mini-card {
+            padding: 18px;
+            border-radius: 22px;
+            background: #fff7fb;
+            margin-bottom: 14px;
+            border: 1px solid #f0d9ea;
+            position: relative;
+        }
+
+        .mini-card p {
+            color: #6d617c;
+            margin-top: 4px;
+        }
+
+        .section {
+            padding: 80px 8%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 42px;
+        }
+
+        .section-title h2 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: #6d617c;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+        }
+
+        .product-card {
+            background: white;
+            padding: 28px;
+            border-radius: 28px;
+            box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+            border: 1px solid #f0d9ea;
+            transition: 0.25s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 50px rgba(31, 22, 53, 0.12);
+        }
+
+        .product-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #ff4f87, #7a4dff);
+            color: white;
+            font-size: 26px;
+            margin-bottom: 18px;
+        }
+
+        .product-card h3 {
+            font-size: 21px;
+            margin-bottom: 12px;
+        }
+
+        .product-card p {
+            color: #6d617c;
+        }
+
+        .about-box {
+            background: white;
+            padding: 42px;
+            border-radius: 32px;
+            box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+            border: 1px solid #f0d9ea;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .about-box p {
+            color: #5c516d;
+            margin-bottom: 16px;
+            font-size: 17px;
+        }
+
+        .cta {
+            margin: 80px 8%;
+            padding: 54px;
+            border-radius: 36px;
+            background: linear-gradient(135deg, #1f1635, #5436c9);
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 38px;
+            margin-bottom: 14px;
+        }
+
+        .cta p {
+            color: #efe8ff;
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            padding: 32px 8%;
+            text-align: center;
+            color: #6d617c;
+        }
+
+        @media (max-width: 1100px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 50px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta {
+                padding: 36px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            RANG<span class="k">K</span><span class="i">I</span><span class="t">T</span><span
+                class="a">A</span>
+        </div>
+
+        <div class="nav-menu">
+            <a href="#produk">Produk</a>
+            <a href="#tentang">Tentang</a>
+            <a href="#artikel">Artikel</a>
+            <a href="#kontak">Kontak</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div>
+            <div class="badge">Produk Digital Buatan Kita 🚀</div>
+
+            <h1>Rangkai kebutuhan digitalmu dalam <span>satu tempat.</span></h1>
+
+            <p>
+                Rangkita hadir sebagai platform digital lokal yang merangkai kebutuhan pengguna:
+                mulai dari undangan nikahan online, soal CPNS dan latihan ujian, produk digital siap pakai,
+                sampai artikel informatif yang mudah ditemukan lewat Google.
+            </p>
+
+            <div class="button-group">
+                <a href="#produk" class="btn-primary">Mulai Jelajah</a>
+                <a href="#tentang" class="btn-secondary">Kenalan Dulu</a>
+            </div>
+        </div>
+
+        <div class="hero-card">
+            <h3>Ekosistem Rangkita</h3>
+
+            <div class="mini-card">
+                <strong>💌 Undangan Nikahan Online</strong>
+                <p>Undangan digital yang cantik, praktis, dan gampang dibagikan lewat link.</p>
+            </div>
+
+            <div class="mini-card">
+                <strong>📘 Soal CPNS & Latihan Ujian</strong>
+                <p>Paket soal, pembahasan, dan latihan untuk bantu persiapan seleksi.</p>
+            </div>
+
+            <div class="mini-card">
+                <strong>⚡ Produk Digital</strong>
+                <p>Template, ebook, worksheet, checklist, desain, dan file siap pakai.</p>
+            </div>
+
+            <div class="mini-card">
+                <strong>📝 Artikel & SEO Blog</strong>
+                <p>Konten artikel untuk bantu pengguna menemukan solusi lewat Google.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="produk">
+        <div class="section-title">
+            <h2>Produk & Ekosistem Rangkita</h2>
+            <p>Satu brand, banyak kebutuhan digital yang tetap saling nyambung.</p>
+        </div>
+
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-icon">💌</div>
+                <h3>Undangan Nikahan Online</h3>
+                <p>
+                    Produk utama untuk pasangan yang ingin undangan digital yang cantik,
+                    praktis, bisa dibagikan lewat link, dan cocok untuk acara modern.
+                </p>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon">📘</div>
+                <h3>Soal CPNS & Latihan Ujian</h3>
+                <p>
+                    Produk edukasi digital berisi paket soal, pembahasan, simulasi,
+                    atau file latihan untuk pengguna yang sedang persiapan seleksi.
+                </p>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon">⚡</div>
+                <h3>Produk Digital</h3>
+                <p>
+                    Berisi template, ebook, desain, file siap pakai, worksheet,
+                    checklist, atau aset digital lain yang mudah diunduh.
+                </p>
+            </div>
+
+            <div class="product-card" id="artikel">
+                <div class="product-icon">📝</div>
+                <h3>Artikel & SEO Blog</h3>
+                <p>
+                    Halaman artikel untuk menjaring pencarian Google, membangun trust,
+                    dan mengarahkan pengunjung ke produk Rangkita yang relevan.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tentang">
+        <div class="section-title">
+            <h2>Filosofi Rangkita</h2>
+            <p>Dari rangkai dan kita, dibuat untuk kebutuhan digital masyarakat Indonesia.</p>
+        </div>
+
+        <div class="about-box">
+            <p>
+                Rangkita berasal dari kata “rangkai” dan “kita”. “Rangkai” menggambarkan proses
+                menyusun berbagai kebutuhan digital agar menjadi sesuatu yang siap digunakan,
+                bermanfaat, dan bernilai.
+            </p>
+
+            <p>
+                Sedangkan “kita” mencerminkan kedekatan, kebersamaan, dan semangat untuk tumbuh
+                bersama pengguna. Rangkita ingin menjadi partner digital yang mudah dipahami,
+                dekat, dan relevan untuk masyarakat Indonesia.
+            </p>
+
+            <p>
+                Rangkita dibangun untuk membantu orang menemukan solusi digital yang praktis, 
+                ringan, dan mudah digunakan.
+            </p>
+        </div>
+    </section>
+
+    <section class="cta" id="kontak">
+        <h2>Siap mulai bareng Rangkita?</h2>
+        <p>
+            Semua kebutuhan digitalmu, dari undangan online sampai produk digital,
+            dirangkai jadi lebih mudah dalam satu tempat.
+        </p>
+
+        <a href="#produk" class="btn-primary">Jelajahi Produk</a>
+    </section>
+
+    <footer class="footer">
+        <p>© 2026 Rangkita Digital. Rangkai kebutuhan digitalmu dalam satu tempat.</p>
+    </footer>
+
+</body>
+
+</html>
