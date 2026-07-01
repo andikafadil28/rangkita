@@ -9,10 +9,24 @@
     </a>
 
     <div class="nav-menu">
-        <a href="/produk">Produk</a>
-        <a href="/undangan">Undangan</a>
-        <a href="/cpns">CPNS</a>
-        <a href="/artikel">Artikel</a>
-        <a href="/kontak">Kontak</a>
+        <a href="/produk" class="{{ request()->is('produk*') ? 'active' : '' }}">
+            Produk
+        </a>
+
+        <a href="/undangan" class="{{ request()->is('undangan*') ? 'active' : '' }}">
+            Undangan
+        </a>
+
+        <a href="/cpns" class="{{ request()->is('cpns*') ? 'active' : '' }}">
+            CPNS
+        </a>
+
+        <a href="/artikel" class="{{ request()->is('artikel*') ? 'active' : '' }}">
+            Artikel
+        </a>
+
+        <a href="/kontak" class="{{ request()->is('kontak*') ? 'active' : '' }}">
+            Kontak
+        </a>
     </div>
 </nav>

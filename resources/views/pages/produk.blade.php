@@ -4,37 +4,52 @@
 
 @section('content')
     <section class="page">
-        <h1 class="page-title">Produk Rangkita</h1>
+        <span class="logo">
+            <h1 class="">PRODUK RANG<span class="k">K</span><span class="i">I</span><span
+                    class="t">T</span><span class="a">A
+                    <img src="{{ asset('images/logo-rangkita.png') }}" alt="Logo Rangkita" class="brand-logo">
+                </span></h1>
+        </span>
 
         <p class="page-desc">
             Rangkita menyediakan berbagai produk digital yang dirancang untuk membantu
             kebutuhan harian, acara, belajar, dan konten digital dalam satu ekosistem.
         </p>
 
-        <div class="grid">
-            <div class="card">
-                <div class="card-icon">💌</div>
-                <h3>Undangan Online</h3>
-                <p>Undangan digital modern yang mudah dibagikan lewat link.</p>
-            </div>
+        <div class="product-grid">
+            @foreach ($products as $product)
+                <div class="product-card">
+                    <div class="product-icon">
+                        {{ $product['icon'] }}
+                    </div>
 
-            <div class="card">
-                <div class="card-icon">📘</div>
-                <h3>Soal CPNS</h3>
-                <p>Paket latihan soal dan materi untuk persiapan ujian.</p>
-            </div>
+                    <span class="product-tag">
+                        {{ $product['tag'] }}
+                    </span>
 
-            <div class="card">
-                <div class="card-icon">⚡</div>
-                <h3>Produk Digital</h3>
-                <p>Template, ebook, checklist, dan file siap pakai.</p>
-            </div>
+                    <h3>
+                        {{ $product['title'] }}
+                    </h3>
 
-            <div class="card">
-                <div class="card-icon">📝</div>
-                <h3>Artikel SEO</h3>
-                <p>Konten informatif untuk bantu pengguna menemukan solusi.</p>
-            </div>
+                    <p>
+                        {{ $product['description'] }}
+                    </p>
+
+                    <ul>
+                        @foreach ($product['features'] as $feature)
+                            <li>{{ $feature }}</li>
+                        @endforeach
+                    </ul>
+
+                    <div class="product-price">
+                        {{ $product['price'] }}
+                    </div>
+
+                    <a href="{{ $product['url'] }}" class="product-action">
+                        {{ $product['button'] }}
+                    </a>
+                </div>
+            @endforeach
         </div>
     </section>
 @endsection

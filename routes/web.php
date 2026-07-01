@@ -1,27 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
 
-Route::get('/', function () {
-    return view('landing');
-});
-
-Route::get('/produk', function () {
-    return view('pages.produk');
-});
-
-Route::get('/undangan', function () {
-    return view('pages.undangan');
-});
-
-Route::get('/cpns', function () {
-    return view('pages.cpns');
-});
-
-Route::get('/artikel', function () {
-    return view('pages.artikel');
-});
-
-Route::get('/kontak', function () {
-    return view('pages.kontak');
-});
+Route::get('/', [PageController::class, 'home']);
+Route::get('/produk', [PageController::class, 'produk']);
+Route::get('/undangan', [PageController::class, 'undangan']);
+Route::get('/cpns', [PageController::class, 'cpns']);
+Route::get('/artikel', [PageController::class, 'artikel']);
+Route::get('/artikel/{slug}', [PageController::class, 'artikelDetail']);
+Route::get('/kontak', [PageController::class, 'kontak']);
