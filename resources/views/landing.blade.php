@@ -42,11 +42,23 @@
             border-bottom: 1px solid #f2d8e8;
         }
 
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+        }
+
         .logo {
             font-size: 28px;
             font-weight: 800;
             color: #160B46;
-            /* warna Rang */
+            letter-spacing: 0.5px;
         }
 
         .logo span {
@@ -361,6 +373,15 @@
         }
 
         @media (max-width: 900px) {
+            .brand-logo {
+                width: 34px;
+                height: 34px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
             .hero {
                 grid-template-columns: 1fr;
                 padding-top: 50px;
@@ -387,19 +408,7 @@
 
 <body>
 
-    <nav class="navbar">
-        <div class="logo">
-            RANG<span class="k">K</span><span class="i">I</span><span class="t">T</span><span
-                class="a">A</span>
-        </div>
-
-        <div class="nav-menu">
-            <a href="#produk">Produk</a>
-            <a href="#tentang">Tentang</a>
-            <a href="#artikel">Artikel</a>
-            <a href="#kontak">Kontak</a>
-        </div>
-    </nav>
+    <x-navbar />
 
     <section class="hero">
         <div>
@@ -414,7 +423,7 @@
             </p>
 
             <div class="button-group">
-                <a href="#produk" class="btn-primary">Mulai Jelajah</a>
+                <a href="/produk" class="btn-primary">Mulai Jelajah</a>
                 <a href="#tentang" class="btn-secondary">Kenalan Dulu</a>
             </div>
         </div>
@@ -472,7 +481,7 @@
                     Mulai Rp49.000 <span>/ undangan</span>
                 </div>
 
-                <a href="#kontak" class="product-action">Lihat Detail</a>
+                <a href="/undangan" class="product-action">Lihat Detail</a>
             </div>
 
             <div class="product-card">
@@ -496,7 +505,7 @@
                     Segera Hadir
                 </div>
 
-                <a href="#kontak" class="product-action">Ikuti Update</a>
+                <a href="/cpns" class="product-action">Ikuti Update</a>
             </div>
 
             <div class="product-card">
@@ -520,7 +529,7 @@
                     Mulai Rp15.000 <span>/ produk</span>
                 </div>
 
-                <a href="#kontak" class="product-action">Jelajahi Produk</a>
+                <a href="/kontak" class="product-action">Jelajahi Produk</a>
             </div>
 
             <div class="product-card" id="artikel">
@@ -544,7 +553,7 @@
                     Gratis Dibaca
                 </div>
 
-                <a href="#artikel" class="product-action">Baca Artikel</a>
+                <a href="/artikel" class="product-action">Baca Artikel</a>
             </div>
         </div>
     </section>
@@ -582,7 +591,7 @@
             dirangkai jadi lebih mudah dalam satu tempat.
         </p>
 
-        <a href="#produk" class="btn-primary">Jelajahi Produk</a>
+        <a href="/produk" class="btn-primary">Jelajahi Produk</a>
     </section>
 
     <footer class="footer">
