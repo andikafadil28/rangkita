@@ -20,12 +20,73 @@
                         <small>Minggu, 12 Mei 2028</small>
                     </div>
 
-                    <div class="phone-template-info">
-                        <strong>Akad Nikah</strong>
-                        <p>08.00 WIB - Yogyakarta</p>
+                    <div class="phone-section intro-section">
+                        <p>
+                            Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i
+                            untuk hadir dalam hari bahagia kami.
+                        </p>
+                    </div>
 
-                        <strong>Resepsi</strong>
-                        <p>11.00 WIB - Yogyakarta</p>
+                    <div class="phone-section couple-section">
+                        <div class="couple-photo">D</div>
+
+                        <h3>Dika Putra</h3>
+                        <p>Putra dari Bapak & Ibu</p>
+
+                        <span>&</span>
+
+                        <div class="couple-photo">N</div>
+
+                        <h3>Nur Aini</h3>
+                        <p>Putri dari Bapak & Ibu</p>
+                    </div>
+
+                    <div class="phone-section event-section">
+                        <h3>Detail Acara</h3>
+
+                        <div class="event-mini-card">
+                            <strong>Akad Nikah</strong>
+                            <p>08.00 WIB</p>
+                            <small>Yogyakarta</small>
+                        </div>
+
+                        <div class="event-mini-card">
+                            <strong>Resepsi</strong>
+                            <p>11.00 WIB</p>
+                            <small>Yogyakarta</small>
+                        </div>
+                    </div>
+
+                    <div class="phone-section gallery-section">
+                        <h3>Galeri</h3>
+
+                        <div class="gallery-grid">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <div class="phone-section location-section">
+                        <h3>Lokasi Acara</h3>
+                        <p>Gedung Serbaguna, Yogyakarta</p>
+
+                        <button type="button">Buka Google Maps</button>
+                    </div>
+
+                    <div class="phone-section wishes-section">
+                        <h3>Ucapan Tamu</h3>
+
+                        <div class="wish-card">
+                            <strong>Andi</strong>
+                            <p>Semoga menjadi keluarga yang bahagia selalu.</p>
+                        </div>
+
+                        <div class="wish-card">
+                            <strong>Siti</strong>
+                            <p>Selamat menempuh hidup baru ya!</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,6 +115,16 @@
                             <li>{{ $feature }}</li>
                         @endforeach
                     </ul>
+                </div>
+
+                <div class="product-detail-section">
+                    <h3>Cocok Untuk</h3>
+
+                    <p>
+                        Template ini cocok untuk pasangan yang ingin undangan online
+                        dengan tampilan {{ strtolower($template['style']) }} dan tetap nyaman
+                        dibuka dari HP.
+                    </p>
                 </div>
 
                 <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode($template['message']) }}" class="btn-primary"

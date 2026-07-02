@@ -146,7 +146,7 @@
                         </ul>
 
                         <div class="template-actions">
-                            <a href="{{ url('/undangan/template/' . $template['slug']) }}" class="btn-secondary">
+                            <a href="{{ url('/undangan/preview/' . $template['slug']) }}" class="btn-secondary">
                                 Preview
                             </a>
 

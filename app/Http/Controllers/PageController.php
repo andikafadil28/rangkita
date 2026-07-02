@@ -303,4 +303,17 @@ class PageController extends Controller
             ],
         ];
     }
+
+    public function templatePreview($slug)
+    {
+        $templates = $this->getWeddingTemplates();
+
+        $template = collect($templates)->firstWhere('slug', $slug);
+
+        if (!$template) {
+            abort(404);
+        }
+
+        return view('pages.template-preview', compact('template'));
+    }
 }
