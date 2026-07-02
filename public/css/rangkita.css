@@ -606,3 +606,517 @@ a {
             font-size: 16px;
       }
 }
+
+/* CSS produk */
+.product-detail-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+}
+
+.product-detail {
+      width: min(860px, 100%);
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 32px;
+      padding: 42px;
+      box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+}
+
+.product-detail-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #ff4f87, #7a4dff);
+      color: white;
+      font-size: 30px;
+      margin-bottom: 18px;
+}
+
+.product-detail-price {
+      display: inline-block;
+      margin-bottom: 28px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #fff7fb;
+      color: #1f1635;
+      border: 1px solid #f0d9ea;
+      font-size: 18px;
+      font-weight: 900;
+}
+
+.product-detail-section {
+      margin-top: 28px;
+}
+
+.product-detail-section h3 {
+      font-size: 24px;
+      margin-bottom: 14px;
+}
+
+.product-detail-section ul {
+      list-style: none;
+      margin-bottom: 24px;
+}
+
+.product-detail-section ul li {
+      color: #5c516d;
+      margin-bottom: 10px;
+      font-size: 17px;
+}
+
+.product-detail-section ul li::before {
+      content: "✓";
+      color: #ff4f87;
+      font-weight: 900;
+      margin-right: 8px;
+}
+
+.product-detail-section p {
+      color: #4d405f;
+      font-size: 18px;
+      line-height: 1.9;
+      margin-bottom: 18px;
+}
+
+@media (max-width: 650px) {
+      .product-detail {
+            padding: 28px;
+            border-radius: 24px;
+      }
+
+      .product-detail-section p {
+            font-size: 16px;
+      }
+}
+
+/* CSS UNDANGAN */
+
+/* =========================
+   UNDANGAN PAGE
+========================= */
+
+.wedding-hero {
+      padding: 80px 8%;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+      min-height: 82vh;
+}
+
+.wedding-hero-content h1 {
+      font-size: 56px;
+      line-height: 1.08;
+      margin: 18px 0 22px;
+      max-width: 760px;
+}
+
+.wedding-hero-content p {
+      font-size: 18px;
+      color: #5c516d;
+      line-height: 1.8;
+      max-width: 680px;
+      margin-bottom: 32px;
+}
+
+.wedding-preview-card {
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 36px;
+      padding: 28px;
+      box-shadow: 0 24px 70px rgba(31, 22, 53, 0.12);
+      overflow: hidden;
+}
+
+.preview-top {
+      min-height: 320px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #ff4f87, #7a4dff);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 28px;
+}
+
+.preview-top span {
+      font-weight: 800;
+      opacity: 0.9;
+      margin-bottom: 14px;
+}
+
+.preview-top strong {
+      font-size: 42px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+}
+
+.preview-top small {
+      font-size: 16px;
+      opacity: 0.9;
+}
+
+.preview-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+}
+
+.preview-info div {
+      background: #fff7fb;
+      border: 1px solid #f0d9ea;
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
+}
+
+.preview-info strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+}
+
+.preview-info p {
+      color: #6d617c;
+      font-size: 14px;
+}
+
+.pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+}
+
+.pricing-card {
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 32px;
+      padding: 32px;
+      box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+}
+
+.pricing-card.featured {
+      border: 2px solid #ff4f87;
+      transform: translateY(-10px);
+}
+
+.pricing-card h3 {
+      font-size: 24px;
+      margin: 16px 0 12px;
+}
+
+.pricing-price {
+      font-size: 30px;
+      font-weight: 900;
+      color: #1f1635;
+      margin-bottom: 24px;
+}
+
+.pricing-card ul {
+      list-style: none;
+      margin-bottom: 28px;
+}
+
+.pricing-card ul li {
+      color: #5c516d;
+      margin-bottom: 12px;
+}
+
+.pricing-card ul li::before {
+      content: "✓";
+      color: #ff4f87;
+      font-weight: 900;
+      margin-right: 8px;
+}
+
+.steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 4fr);
+      gap: 22px;
+}
+
+.step-card {
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+}
+
+.step-card span {
+      display: inline-grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ff4f87, #7a4dff);
+      color: white;
+      font-weight: 900;
+      margin-bottom: 18px;
+}
+
+.step-card h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+}
+
+.step-card p {
+      color: #6d617c;
+}
+
+@media (max-width: 1000px) {
+      .wedding-hero {
+            grid-template-columns: 1fr;
+      }
+
+      .pricing-grid {
+            grid-template-columns: 1fr;
+      }
+
+      .pricing-card.featured {
+            transform: none;
+      }
+
+      .steps-grid {
+            grid-template-columns: repeat(2, 1fr);
+      }
+}
+
+@media (max-width: 650px) {
+      .wedding-hero {
+            padding-top: 50px;
+      }
+
+      .wedding-hero-content h1 {
+            font-size: 38px;
+      }
+
+      .preview-top strong {
+            font-size: 32px;
+      }
+
+      .preview-info {
+            grid-template-columns: 1fr;
+      }
+
+      .steps-grid {
+            grid-template-columns: 1fr;
+      }
+}
+
+/* =========================
+   TEMPLATE UNDANGAN
+========================= */
+
+.template-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 22px;
+}
+
+.template-card {
+      width: 100%;
+      max-width: 300px;
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+      transition: 0.25s;
+}
+
+.template-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 50px rgba(31, 22, 53, 0.12);
+}
+
+.template-preview {
+      min-height: 220px;
+      padding: 28px;
+      background: linear-gradient(135deg, #ff4f87, #7a4dff);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+}
+
+.template-preview span {
+      font-size: 42px;
+      margin-bottom: 14px;
+}
+
+.template-preview h3 {
+      font-size: 30px;
+      margin-bottom: 6px;
+}
+
+.template-preview p {
+      color: #f8edff;
+      font-weight: 700;
+}
+
+.template-content {
+      padding: 26px;
+}
+
+.template-content h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+}
+
+.template-content p {
+      color: #6d617c;
+      margin-bottom: 18px;
+}
+
+.template-content ul {
+      list-style: none;
+      margin-bottom: 22px;
+}
+
+.template-content ul li {
+      color: #5c516d;
+      margin-bottom: 9px;
+      font-size: 15px;
+}
+
+.template-content ul li::before {
+      content: "✓";
+      color: #ff4f87;
+      font-weight: 900;
+      margin-right: 8px;
+}
+
+.template-actions {
+      display: grid;
+      gap: 10px;
+}
+
+.template-actions .btn-primary,
+.template-actions .btn-secondary {
+      text-align: center;
+      padding: 12px 16px;
+}
+
+@media (max-width: 650px) {
+      .template-card {
+            max-width: 100%;
+      }
+}
+
+#template,
+#paket,
+#cara-pesan {
+      scroll-margin-top: 100px;
+}
+
+/* =========================
+   TEMPLATE DETAIL PAGE
+========================= */
+
+.template-detail-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+}
+
+.template-detail-layout {
+      width: min(1100px, 100%);
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 34px;
+      align-items: center;
+}
+
+.template-phone-preview {
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 36px;
+      padding: 28px;
+      box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+}
+
+.phone-screen {
+      border-radius: 32px;
+      overflow: hidden;
+      background: #fff7fb;
+      border: 10px solid #1f1635;
+}
+
+.phone-template-hero {
+      min-height: 360px;
+      background: linear-gradient(135deg, #ff4f87, #7a4dff);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 28px;
+}
+
+.phone-template-hero span {
+      font-size: 46px;
+      margin-bottom: 14px;
+}
+
+.phone-template-hero p {
+      font-weight: 800;
+      opacity: 0.9;
+      margin-bottom: 8px;
+}
+
+.phone-template-hero h2 {
+      font-size: 42px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+}
+
+.phone-template-hero small {
+      opacity: 0.9;
+}
+
+.phone-template-info {
+      padding: 24px;
+}
+
+.phone-template-info strong {
+      display: block;
+      margin-top: 14px;
+      color: #1f1635;
+}
+
+.phone-template-info p {
+      color: #6d617c;
+}
+
+.template-detail-content {
+      background: white;
+      border: 1px solid #f0d9ea;
+      border-radius: 32px;
+      padding: 42px;
+      box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
+}
+
+@media (max-width: 900px) {
+      .template-detail-layout {
+            grid-template-columns: 1fr;
+      }
+}
+
+@media (max-width: 650px) {
+      .template-detail-content {
+            padding: 28px;
+            border-radius: 24px;
+      }
+
+      .phone-template-hero h2 {
+            font-size: 34px;
+      }
+}

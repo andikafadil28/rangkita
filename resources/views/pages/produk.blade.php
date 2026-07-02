@@ -45,7 +45,7 @@
                         {{ $product['price'] }}
                     </div>
 
-                    <a href="{{ $product['url'] }}" class="product-action">
+                    <a href="{{ url('/produk/' . $product['slug']) }}" class="product-action">
                         {{ $product['button'] }}
                     </a>
                 </div>

@@ -13,10 +13,17 @@ class PageController extends Controller
 
     public function produk()
     {
-        $products = [
+        $products = $this->getProducts();
+
+        return view('pages.produk', compact('products'));
+    }
+    private function getProducts()
+    {
+        return [
             [
                 'icon' => '💌',
                 'tag' => 'Produk Utama',
+                'slug' => 'undangan-nikahan-online',
                 'title' => 'Undangan Nikahan Online',
                 'description' => 'Undangan digital cantik dan praktis untuk pasangan yang ingin membagikan undangan lewat link tanpa ribet cetak.',
                 'features' => [
@@ -26,11 +33,18 @@ class PageController extends Controller
                 ],
                 'price' => 'Mulai Rp49.000',
                 'button' => 'Lihat Detail',
-                'url' => '/undangan',
+                'button_detail' => 'Kontak WA',
+                'contact_url' => 'https://wa.me/6285945155673?text=Halo%20Rangkita,%20saya%20mau%20tanya%20produk%20Undangan%20Nikahan',
+                'detail' => [
+                    'Undangan nikahan online dari Rangkita dibuat untuk pasangan yang ingin undangan praktis, modern, dan mudah dibagikan.',
+                    'Produk ini cocok untuk acara pernikahan, lamaran, akad, resepsi, atau acara keluarga yang ingin punya undangan digital tanpa harus mencetak banyak kertas.',
+                    'Nantinya halaman ini bisa dikembangkan lagi dengan fitur galeri foto, lokasi Google Maps, countdown acara, RSVP, dan tombol bagikan ke WhatsApp.',
+                ],
             ],
             [
                 'icon' => '📘',
                 'tag' => 'Edukasi',
+                'slug' => 'soal-cpns-latihan-ujian',
                 'title' => 'Soal CPNS & Latihan Ujian',
                 'description' => 'Paket latihan soal digital untuk bantu pengguna belajar lebih terarah sebelum menghadapi ujian atau seleksi.',
                 'features' => [
@@ -40,11 +54,18 @@ class PageController extends Controller
                 ],
                 'price' => 'Segera Hadir',
                 'button' => 'Ikuti Update',
-                'url' => '/cpns',
+                'button_detail' => 'Ikuti Update',
+                'contact_url' => '/kontak',
+                'detail' => [
+                    'Produk soal CPNS dan latihan ujian dibuat untuk membantu pengguna belajar dengan lebih terarah.',
+                    'Materi nantinya bisa dibagi menjadi beberapa kategori seperti TWK, TIU, TKP, latihan pembahasan, dan simulasi soal.',
+                    'Untuk tahap awal, halaman ini masih berupa konsep produk. Nanti bisa dikembangkan menjadi katalog paket soal atau sistem latihan berbasis web.',
+                ],
             ],
             [
                 'icon' => '⚡',
                 'tag' => 'File Digital',
+                'slug' => 'produk-digital',
                 'title' => 'Produk Digital',
                 'description' => 'Kumpulan file siap pakai seperti template, ebook, checklist, worksheet, desain, dan aset digital lain.',
                 'features' => [
@@ -54,11 +75,18 @@ class PageController extends Controller
                 ],
                 'price' => 'Mulai Rp15.000',
                 'button' => 'Jelajahi Produk',
-                'url' => '/produk',
+                'button_detail' => 'Kontak WA',
+                'contact_url' => 'https://wa.me/6285945155673?text=Halo%20Rangkita,%20saya%20mau%20tanya%20produk',
+                'detail' => [
+                    'Produk digital Rangkita berisi file siap pakai yang bisa membantu kebutuhan harian pengguna.',
+                    'Contohnya bisa berupa template undangan, checklist acara, worksheet, dokumen, ebook, desain, atau file digital lainnya.',
+                    'Ke depannya produk digital ini bisa dijual lewat website sendiri, marketplace, atau link pembayaran sederhana.',
+                ],
             ],
             [
                 'icon' => '📝',
                 'tag' => 'Konten',
+                'slug' => 'artikel-seo-blog',
                 'title' => 'Artikel & SEO Blog',
                 'description' => 'Artikel informatif untuk menjawab kebutuhan pengguna sekaligus membantu produk Rangkita ditemukan lewat Google.',
                 'features' => [
@@ -68,17 +96,30 @@ class PageController extends Controller
                 ],
                 'price' => 'Gratis Dibaca',
                 'button' => 'Baca Artikel',
-                'url' => '/artikel',
+                'button_detail' => 'Lihat Artikel',
+                'contact_url' => '/artikel',
+                'detail' => [
+                    'Artikel dan SEO Blog adalah bagian penting dari Rangkita supaya website bisa ditemukan lewat Google.',
+                    'Kontennya bisa membahas tips undangan online, belajar CPNS, produk digital, template, dan solusi kebutuhan digital lainnya.',
+                    'Dari artikel, pengguna bisa diarahkan ke produk yang relevan. Jadi artikel bukan cuma bacaan, tapi juga pintu masuk ke ekosistem Rangkita.',
+                ],
             ],
         ];
-
-        return view('pages.produk', compact('products'));
     }
-
-    public function undangan()
+    public function produkDetail($slug)
     {
-        return view('pages.undangan');
+        $products = $this->getProducts();
+
+        $product = collect($products)->firstWhere('slug', $slug);
+
+        if (!$product) {
+            abort(404);
+        }
+
+        return view('pages.produk-detail', compact('product'));
     }
+
+
 
     public function cpns()
     {
@@ -151,6 +192,7 @@ class PageController extends Controller
                     'Dengan arah yang jelas, Rangkita bisa berkembang pelan-pelan menjadi brand digital yang punya banyak cabang produk.'
                 ],
             ],
+
         ];
     }
 
@@ -170,5 +212,76 @@ class PageController extends Controller
     public function kontak()
     {
         return view('pages.kontak');
+    }
+
+    public function undangan()
+    {
+        $templates = $this->getWeddingTemplates();
+
+        return view('pages.undangan', compact('templates'));
+    }
+
+    public function templateDetail($slug)
+    {
+        $templates = $this->getWeddingTemplates();
+
+        $template = collect($templates)->firstWhere('slug', $slug);
+
+        if (!$template) {
+            abort(404);
+        }
+
+        return view('pages.template-detail', compact('template'));
+    }
+
+    private function getWeddingTemplates()
+    {
+        return [
+            [
+                'icon' => '✨',
+                'slug' => 'elegant',
+                'name' => 'Elegant',
+                'style' => 'Mewah & Romantis',
+                'description' => 'Template dengan nuansa elegan, cocok untuk acara pernikahan formal dan berkesan mewah.',
+                'features' => ['Warna lembut', 'Layout clean', 'Cocok untuk resepsi'],
+                'message' => 'Halo Rangkita, saya tertarik dengan Template Elegant untuk undangan online.',
+            ],
+            [
+                'icon' => '🌿',
+                'slug' => 'minimalis',
+                'name' => 'Minimalis',
+                'style' => 'Simple & Bersih',
+                'description' => 'Template sederhana dengan tampilan rapi, ringan, dan nyaman dibuka dari HP.',
+                'features' => ['Tampilan simpel', 'Cepat dibuka', 'Informasi mudah dibaca'],
+                'message' => 'Halo Rangkita, saya tertarik dengan Template Minimalis untuk undangan online.',
+            ],
+            [
+                'icon' => '🌸',
+                'slug' => 'floral',
+                'name' => 'Floral',
+                'style' => 'Manis & Hangat',
+                'description' => 'Template bernuansa bunga yang cocok untuk pasangan yang ingin tampilan lembut dan romantis.',
+                'features' => ['Nuansa bunga', 'Warna soft', 'Kesan romantis'],
+                'message' => 'Halo Rangkita, saya tertarik dengan Template Floral untuk undangan online.',
+            ],
+            [
+                'icon' => '🚀',
+                'slug' => 'modern',
+                'name' => 'Modern',
+                'style' => 'Fresh & Kekinian',
+                'description' => 'Template modern dengan tampilan lebih berani, cocok untuk konsep acara yang lebih santai.',
+                'features' => ['Desain kekinian', 'Visual menarik', 'Cocok untuk anak muda'],
+                'message' => 'Halo Rangkita, saya tertarik dengan Template Modern untuk undangan online.',
+            ],
+            [
+                'icon' => '🪶',
+                'slug' => 'classic',
+                'name' => 'Classic',
+                'style' => 'Elegan & Timeless',
+                'description' => 'Template undangan dengan nuansa klasik yang elegan, rapi, dan berkesan formal. Cocok untuk acara yang ingin terlihat anggun dan berkelas.',
+                'features' => ['Desain elegan', 'Nuansa Klasik', 'Tampilan rapi dan formal'],
+                'message' => 'Halo Rangkita, saya tertarik dengan Template Classic untuk undangan online.',
+            ],
+        ];
     }
 }
