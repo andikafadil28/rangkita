@@ -126,7 +126,7 @@
         <div class="template-grid">
             @foreach ($templates as $template)
                 <div class="template-card">
-                    <div class="template-preview">
+                    <div class="template-preview {{ $template['theme_class'] ?? 'theme-default' }}">
                         <span>{{ $template['icon'] }}</span>
                         <h3>{{ $template['name'] }}</h3>
                         <p>{{ $template['style'] }}</p>

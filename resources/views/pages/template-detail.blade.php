@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $waNumber = '6281234567890';
+        $waNumber = '6285945155673';
     @endphp
 
     <section class="page template-detail-page">
@@ -13,7 +13,7 @@
         <div class="template-detail-layout">
             <div class="template-phone-preview">
                 <div class="phone-screen">
-                    <div class="phone-template-hero">
+                    <div class="phone-template-hero {{ $template['theme_class'] ?? 'theme-default' }}">
                         <span>{{ $template['icon'] }}</span>
                         <p>The Wedding Of</p>
                         <h2>Dika & Nur</h2>
