@@ -314,6 +314,63 @@ class PageController extends Controller
             abort(404);
         }
 
-        return view('pages.template-preview', compact('template'));
+        $wedding = $this->getDummyWeddingData();
+
+        return view('pages.template-preview', compact('template', 'wedding'));
+    }
+
+    private function getDummyWeddingData()
+    {
+        return [
+            'groom' => [
+                'short_name' => 'Dika',
+                'full_name' => 'Dika Putra',
+                'parent' => 'Putra dari Bapak Ahmad & Ibu Siti',
+                'initial' => 'D',
+            ],
+
+            'bride' => [
+                'short_name' => 'Nur',
+                'full_name' => 'Siti Nur',
+                'parent' => 'Putri dari Bapak Hadi & Ibu Aminah',
+                'initial' => 'N',
+            ],
+
+            'date' => 'Minggu, 12 Mei 2028',
+
+            'akad' => [
+                'title' => 'Akad Nikah',
+                'time' => '08.00 WIB',
+                'date' => 'Minggu, 12 Mei 2028',
+                'place' => 'Gedung Serbaguna Yogyakarta',
+                'address' => 'Jl. Contoh Alamat No. 123, Yogyakarta',
+            ],
+
+            'resepsi' => [
+                'title' => 'Resepsi',
+                'time' => '11.00 WIB',
+                'date' => 'Minggu, 12 Mei 2028',
+                'place' => 'Gedung Serbaguna Yogyakarta',
+                'address' => 'Jl. Contoh Alamat No. 123, Yogyakarta',
+            ],
+
+            'gallery' => [
+                'Foto 1',
+                'Foto 2',
+                'Foto 3',
+                'Foto 4',
+            ],
+
+            'wishes' => [
+                [
+                    'name' => 'Andi',
+                    'message' => 'Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.',
+                ],
+                [
+                    'name' => 'Siti',
+                    'message' => 'Selamat menempuh hidup baru, semoga bahagia selalu.',
+                ],
+            ],
+        ];
     }
 }
