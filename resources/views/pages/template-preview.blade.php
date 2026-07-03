@@ -87,24 +87,24 @@
 
         <h2>Countdown Acara</h2>
 
-        <div class="countdown-grid">
+        <div class="countdown-grid" data-target-date="{{ $wedding['countdown_target'] }}">
             <div>
-                <strong>120</strong>
+                <strong id="countdown-days">0</strong>
                 <span>Hari</span>
             </div>
 
             <div>
-                <strong>12</strong>
+                <strong id="countdown-hours">0</strong>
                 <span>Jam</span>
             </div>
 
             <div>
-                <strong>45</strong>
+                <strong id="countdown-minutes">0</strong>
                 <span>Menit</span>
             </div>
 
             <div>
-                <strong>30</strong>
+                <strong id="countdown-seconds">0</strong>
                 <span>Detik</span>
             </div>
         </div>
@@ -169,5 +169,45 @@
     </section>
 
 </body>
+
+<script>
+    const countdownGrid = document.querySelector('.countdown-grid');
+
+    if (countdownGrid) {
+        const targetDate = new Date(countdownGrid.dataset.targetDate).getTime();
+
+        const daysElement = document.getElementById('countdown-days');
+        const hoursElement = document.getElementById('countdown-hours');
+        const minutesElement = document.getElementById('countdown-minutes');
+        const secondsElement = document.getElementById('countdown-seconds');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                daysElement.textContent = '0';
+                hoursElement.textContent = '0';
+                minutesElement.textContent = '0';
+                secondsElement.textContent = '0';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((distance / (1000 * 60)) % 60);
+            const seconds = Math.floor((distance / 1000) % 60);
+
+            daysElement.textContent = days;
+            hoursElement.textContent = hours;
+            minutesElement.textContent = minutes;
+            secondsElement.textContent = seconds;
+        }
+
+        updateCountdown();
+
+        setInterval(updateCountdown, 1000);
+    }
+</script>
 
 </html>

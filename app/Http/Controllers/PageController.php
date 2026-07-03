@@ -338,6 +338,8 @@ class PageController extends Controller
 
             'date' => 'Minggu, 12 Mei 2028',
 
+            'countdown_target' => '2028-05-12T08:00:00+07:00',
+
             'akad' => [
                 'title' => 'Akad Nikah',
                 'time' => '08.00 WIB',
