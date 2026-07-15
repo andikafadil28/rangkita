@@ -1855,3 +1855,132 @@ a {
             height: 140px;
       }
 }
+
+/* =========================
+   WISH FORM
+========================= */
+
+.wishes-list {
+      margin-top: 24px;
+}
+
+.wish-form-group {
+      text-align: left;
+}
+
+.wish-form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #1f1635;
+      font-weight: 800;
+}
+
+.wish-feedback {
+      min-height: 24px;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: left;
+}
+
+.wish-feedback.success {
+      color: #16845b;
+}
+
+.wish-feedback.error {
+      color: #d9365f;
+}
+
+.wish-preview-card.new-wish {
+      animation: wishAppear 0.4s ease;
+}
+
+@keyframes wishAppear {
+      from {
+            opacity: 0;
+            transform: translateY(12px);
+      }
+
+      to {
+            opacity: 1;
+            transform: translateY(0);
+      }
+}
+
+.message-counter {
+      display: block;
+      margin-top: 8px;
+      color: #8a7a99;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+}
+
+/* =========================
+   CINEMATIC INVITATION OPENING
+========================= */
+
+body.invitation-locked {
+      overflow: hidden;
+}
+
+.invitation-cover {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      min-height: 100vh;
+      overflow-y: auto;
+
+      opacity: 1;
+      visibility: visible;
+
+      transition:
+            opacity 0.7s ease,
+            visibility 0.7s ease;
+}
+
+.invitation-cover-inner {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+
+      transition:
+            transform 0.7s ease,
+            opacity 0.5s ease;
+}
+
+.invitation-cover.is-opened {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+}
+
+.invitation-cover.is-opened .invitation-cover-inner {
+      transform: translateY(-30px) scale(1.04);
+      opacity: 0;
+}
+
+.invitation-content {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(30px);
+
+      transition:
+            opacity 0.8s ease,
+            transform 0.8s ease,
+            visibility 0.8s ease;
+}
+
+.invitation-content.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+}
+
+.open-invitation-button {
+      border: none;
+      cursor: pointer;
+}
+
+.preview-back-button {
+      z-index: 1100;
+}
