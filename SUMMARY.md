@@ -8,7 +8,7 @@ Fokus aktif: pengembangan template undangan. 6 template berbagi satu Blade yang 
 
 - [ ] High: Pisahkan Blade/CSS per template biar tiap tema bisa custom
 - [ ] High: Fix link detail page di listing (ke `/undangan/template/{slug}`)
-- [ ] Medium: Rapikan CSS - kurangi duplikasi (blok 1540-2065 tumpang tindih)
+- [ ] Medium: Rapikan CSS - kurangi duplikasi (cek ulang setelah pull, blok V1.6 override sudah tidak dipakai)
 - [ ] Medium: Ganti gallery placeholder dengan gambar beneran
 - [ ] Low: Buat form ucapan (wish) fungsional
 - [ ] Low: Perbaiki Google Maps URL yang masih `#`
@@ -19,7 +19,7 @@ Fokus aktif: pengembangan template undangan. 6 template berbagi satu Blade yang 
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 10 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2192 baris. Belum ada database migration, semua data masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 10 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Belum ada database migration, semua data masih hardcoded di controller.
 
 ## Sistem Template Undangan
 
@@ -31,9 +31,9 @@ Temuan masalah:
 - Google Maps URL masih `#` (data `maps_url` tidak didefinisikan)
 - Gallery hanya placeholder text
 - Form ucapan (wish) tidak fungsional (tanpa backend)
-- CSS duplikasi/overlap: blok 1540-1857 vs 1859-2065 (V1.6 override)
-- Tidak ada `.wedding-preview-body.theme-default`
-- JS hanya countdown timer inline di `template-preview.blade.php`
+- ~~CSS duplikasi/overlap: blok 1540-1857 vs 1859-2065 (V1.6 override)~~ → sudah bersih setelah pull, blok V1.6 tidak dipakai
+- ~~JS hanya countdown timer inline~~ → sekarang ada wish form JS (kirim ucapan frontend-only) + cinematic opening + countdown
+- Tombol WhatsApp CTA (V1.6 lokal) tidak dipakai - butuh `$whatsappNumber` di controller
 
 ## Struktur Folder
 
@@ -74,7 +74,7 @@ C:\laragon\www\rangkita\
 │   └── seeders/DatabaseSeeder.php
 ├── config/                     10 file config (semua default Laravel)
 ├── public/
-│   ├── css/rangkita.css        CSS CUSTOM UTAMA (2192 baris)
+│   ├── css/rangkita.css        CSS CUSTOM UTAMA (2083 baris)
 │   └── images/logo-rangkita.png
 ├── storage/                    Cache, sessions, logs, uploads
 ├── tests/                      4 file (Pest PHP, semua default)
@@ -93,7 +93,7 @@ C:\laragon\www\rangkita\
 | View files | 14 | 3 root + 1 layout + 1 komponen + 9 pages |
 | Blade components | 1 | navbar |
 | Layout files | 1 | app.blade.php |
-| CSS custom | 2192 baris | public/css/rangkita.css |
+| CSS custom | 2083 baris | public/css/rangkita.css (blok V1.6 sudah tidak dipakai) |
 | Migrations | 3 | Semua default Laravel |
 | Config files | 10 | Semua default |
 | Test files | 4 | Semua default |
@@ -111,7 +111,7 @@ C:\laragon\www\rangkita\
 
 - **Single Controller Pattern**: Semua 10 rute di-handle satu PageController
 - **No Database**: Semua data adalah array hardcoded di PHP
-- **Custom CSS Dominan**: 2192 baris rangkita.css, bukan via Vite pipeline
+- **Custom CSS Dominan**: 2083 baris rangkita.css, bukan via Vite pipeline
 - **No Auth**: Tidak ada autentikasi/admin panel
 - **No API**: Hanya web routes
 
@@ -121,3 +121,21 @@ C:\laragon\www\rangkita\
 - Tailwind CSS 4 + Vite 8 (untuk welcome page saja)
 - Pest PHP ^4.7 untuk testing
 - Font Instrument Sans (Bunny CDN)
+
+# CHANGELOG
+
+## Ses 31 Jul 2026 - Setup Deployment Workflow
+
+- **AGENTS.md**: Tambah section `DEPLOYMENT` (info server, trigger, workflow, 3 scenario deploy)
+- **Pull terbaru dari GitHub**: 3 commit (`update mobile`, `update animasi`, `update readme`)
+  - `README.md` direvisi, `navbar.blade.php` diupdate, `template-preview.blade.php` +359/-… baris (countdown grid, gallery, lokasi, form wish fungsional via JS), `rangkita.css` +226 baris (WISH FORM + CINEMATIC INVITATION OPENING)
+- **Resolve konflik**: `rangkita.css` & `template-preview.blade.php` conflict saat stash pop → di-resolve pakai versi remote (lebih baru & benar). Perubahan V1.6 lokal (tombol WA CTA) disimpan di `stash@{0}` sebagai backup karena pakai variabel `$whatsappNumber` yang tidak ada di controller
+- **Commit + Push**: `e56e06f` `update AGENTS.md deployment workflow + SUMMARY` → HEAD sekarang `e56e06f` (branch `main`)
+- **Stash tersimpan**: `stash@{0}` = perubahan V1.6 lama (backup, belum dihapus)
+
+## Status Sekarang
+
+- HEAD: `e56e06f` (main)
+- Worktree bersih (tidak ada file modified/untracked)
+- CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
+- Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server
