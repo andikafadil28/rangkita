@@ -126,16 +126,20 @@ C:\laragon\www\rangkita\
 
 ## Ses 31 Jul 2026 - Setup Deployment Workflow
 
-- **AGENTS.md**: Tambah section `DEPLOYMENT` (info server, trigger, workflow, 3 scenario deploy)
+- **Diskusi kemampuan opencode**: dibahas kemungkinan konek SSH ke server VirtualBox. Hasil: tool bash tidak bisa input password SSH interaktif, `plink`/`sshpass` belum terinstall, WSL cuma Docker Desktop. Keputusan user: Metode A (guided deploy), SSH key ditunda
+- **Analisis percakapan ChatGPT (share link)**: dipahami arsitektur server (VirtualBox Ubuntu 24.04, hostname `web-dikadevit`, username `dika`, SSH `-p 2222 dika@127.0.0.1`, domain `dikadevit.my.id` via Cloudflare Tunnel Healthy, Tailscale untuk SSH dari luar, repo `/var/www/rangkita`)
+- **AGENTS.md**: Tambah section `DEPLOYMENT` (info server, trigger "deploy", workflow commit+push, 3 scenario deploy A/B/C + catatan)
 - **Pull terbaru dari GitHub**: 3 commit (`update mobile`, `update animasi`, `update readme`)
   - `README.md` direvisi, `navbar.blade.php` diupdate, `template-preview.blade.php` +359/-… baris (countdown grid, gallery, lokasi, form wish fungsional via JS), `rangkita.css` +226 baris (WISH FORM + CINEMATIC INVITATION OPENING)
 - **Resolve konflik**: `rangkita.css` & `template-preview.blade.php` conflict saat stash pop → di-resolve pakai versi remote (lebih baru & benar). Perubahan V1.6 lokal (tombol WA CTA) disimpan di `stash@{0}` sebagai backup karena pakai variabel `$whatsappNumber` yang tidak ada di controller
-- **Commit + Push**: `e56e06f` `update AGENTS.md deployment workflow + SUMMARY` → HEAD sekarang `e56e06f` (branch `main`)
+- **Commit + Push**:
+  - `e56e06f` `update AGENTS.md deployment workflow + SUMMARY` (AGENTS.md + SUMMARY.md baru)
+  - `5f9807b` `update SUMMARY changelog deploy workflow + pull` (SUMMARY.md)
 - **Stash tersimpan**: `stash@{0}` = perubahan V1.6 lama (backup, belum dihapus)
 
 ## Status Sekarang
 
-- HEAD: `e56e06f` (main)
+- HEAD: `5f9807b` (branch `main`, up to date dengan `origin/main`)
 - Worktree bersih (tidak ada file modified/untracked)
 - CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
-- Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server
+- Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
