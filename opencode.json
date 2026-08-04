@@ -3,10 +3,10 @@
   "instructions": ["AGENTS.md"],
   "agent": {
     "plan": {
-      "model": "opencode/mimo-v2-free"
+      "model": "opencode/mimo-v2.5-free"
     },
     "build": {
-      "model": "opencode/deepseek-v3-0324"
+      "model": "opencode/deepseek-v4-flash-free"
     }
   }
 }

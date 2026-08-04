@@ -23,9 +23,9 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 
 ## Behavior AI (opencode)
 
-- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2-free`, build = `opencode/deepseek-v3-0324`).
+- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
 - `AGENTS.md` punya section `# BEHAVIOR RULES` (8 sub-section): Bahasa & Gaya Bicara (gen-z, Bahasa Indonesia), Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi.
-- Ganti mode plan ↔ build cukup tekan **Tab** (default keybind `agent_cycle`, bisa dikustom via `tui.json`).
+- Ganti mode plan ↔ build cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
 
 ## Sistem Template Undangan
 
@@ -86,7 +86,7 @@ C:\laragon\www\rangkita\
 ├── tests/                      4 file (Pest PHP, semua default)
 ├── bootstrap/
 ├── node_modules/ + vendor/     Dependencies
-└── file config root: .env, composer.json, package.json, vite.config.js, opencode.json
+└── file config root: .env, composer.json, package.json, vite.config.js, opencode.json, tui.json
 ```
 
 ## Statistik Proyek
@@ -150,6 +150,14 @@ C:\laragon\www\rangkita\
 - **`AGENTS.md`**: Tambah section `# BEHAVIOR RULES` berisi 8 sub-section (Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi).
 - **Catatan**: config baru aktif setelah restart opencode.
 
+## Ses 4 Agu 2026 (lanjutan) - Fix Model ID opencode Agent
+
+- **Masalah**: model agent gak berubah saat ganti plan/build, selalu fallback ke default (`opencode/deepseek-v4-flash-free`).
+- **Akar masalah**: model ID di `opencode.json` obsolete/gak ada di provider `opencode/`. Dicek via `opencode models` - yang valid cuma `opencode/deepseek-v4-flash-free` dan `opencode/mimo-v2.5-free`. Config lama pakai `opencode/deepseek-v3-0324` (itu versi openrouter, bukan opencode) & `opencode/mimo-v2-free` (udah jadi v2.5).
+- **`opencode.json` diupdate**: `agent.plan.model` dan `agent.build.model` diganti ke ID yang valid.
+- **`AGENTS.md` & `SUMMARY.md`**: perbarui referensi model per agent di section Behavior AI.
+- **Catatan**: config gak hot-reload → harus restart opencode; Tab (`agent_cycle`) baru bisa ngeganti model abis restart.
+
 ## Ses 4 Agu 2026 (lanjutan) - Setup Agent Model opencode + Push
 
 - **Diskusi model per agent**: user mau opencode pilih AI otomatis per tugas - plan pakai Mimo, build pakai DeepSeek. Dicek via skill `customize-opencode` + schema `opencode.ai/config.json` + docs keybinds.
@@ -165,3 +173,16 @@ C:\laragon\www\rangkita\
 - Worktree bersih - semua perubahan sesi sudah di-commit & push
 - CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
+- `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
+
+## Ses 4 Agu 2026 (lanjutan) - Fix Tab Keybind + Bikin tui.json
+
+- **Masalah**: pencet Tab muncul kotak autocomplete, bukan ganti agent build↔plan. Shift+Tab juga gak jalan.
+- **Akar masalah**: default keybind `tab` bentrok antara `agent_cycle` (ganti agent) dan `prompt.autocomplete.complete` (autocomplete di kolom ketik). Terminal juga bisa nangkep shift+tab duluan.
+- **Solusi**: bikin `tui.json` di root proyek:
+  - `agent_cycle` = `tab`
+  - `agent_cycle_reverse` = `shift+tab`
+  - `prompt.autocomplete.complete` = `none` (matikan autocomplete dari Tab)
+- **File baru**: `tui.json` di root proyek
+- **Update AGENTS.md & SUMMARY.md**: tambah referensi tui.json + penjelasan keybind Tab/Shift+Tab
+- **Catatan**: config TUI gak hot-reload → harus restart opencode

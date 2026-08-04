@@ -77,8 +77,8 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 
 ## Behavior AI (opencode)
 
-- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2-free`, build = `opencode/deepseek-v3-0324`).
-- Ganti mode plan ↔ build cukup tekan **Tab** (default keybind `agent_cycle`, bisa dikustom via `tui.json`).
+- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
+- Ganti mode plan ↔ build cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
 - Perintah `/finish` mengupdate `SUMMARY.md` DAN `AGENTS.md` berdasarkan seluruh pekerjaan sesi, lalu validasi via `finish.ps1`.
 
 ## Sistem Template Undangan
@@ -140,7 +140,7 @@ C:\laragon\www\rangkita\
 ??? tests/                      4 file (Pest PHP, semua default)
 ??? bootstrap/
 ??? node_modules/ + vendor/     Dependencies
-??? file config root: .env, composer.json, package.json, vite.config.js
+??? file config root: .env, composer.json, package.json, vite.config.js, opencode.json, tui.json
 ```
 
 ## Statistik Proyek
