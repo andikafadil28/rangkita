@@ -72,7 +72,8 @@
                         <h3>Lokasi Acara</h3>
                         <p>Gedung Serbaguna, Yogyakarta</p>
 
-                        <button type="button">Buka Google Maps</button>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('Gedung Serbaguna Yogyakarta') }}"
+                            target="_blank" rel="noopener noreferrer">Buka Google Maps</a>
                     </div>
 
                     <div class="phone-section wishes-section">

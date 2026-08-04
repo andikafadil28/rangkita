@@ -356,6 +356,8 @@ class PageController extends Controller
                 'address' => 'Jl. Contoh Alamat No. 123, Yogyakarta',
             ],
 
+            'maps_url' => 'https://www.google.com/maps/search/?api=1&query=' . urlencode('Gedung Serbaguna Yogyakarta, Jl. Contoh Alamat No. 123, Yogyakarta'),
+
             'gallery' => [
                 'Foto 1',
                 'Foto 2',

@@ -9,123 +9,6 @@
     <link rel="stylesheet" href="{{ asset('css/rangkita.css') }}">
 </head>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const body = document.body;
-        const invitationCover = document.getElementById('invitationCover');
-        const invitationContent = document.getElementById('invitationContent');
-        const openInvitationButton =
-            document.getElementById('openInvitationButton');
-        const openingSection = document.getElementById('opening');
-
-        if (
-            !invitationCover ||
-            !invitationContent ||
-            !openInvitationButton
-        ) {
-            return;
-        }
-
-        openInvitationButton.addEventListener('click', function() {
-            openInvitationButton.disabled = true;
-            openInvitationButton.textContent = 'Membuka Undangan...';
-
-            invitationCover.classList.add('is-opened');
-            invitationContent.classList.add('is-visible');
-
-            invitationContent.setAttribute('aria-hidden', 'false');
-            openInvitationButton.setAttribute('aria-expanded', 'true');
-
-            body.classList.remove('invitation-locked');
-
-            window.setTimeout(function() {
-                invitationCover.hidden = true;
-
-                if (openingSection) {
-                    openingSection.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }, 700);
-        });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const wishForm = document.getElementById('wishForm');
-        const wishesList = document.getElementById('wishesList');
-        const guestNameInput = document.getElementById('guestName');
-        const guestMessageInput = document.getElementById('guestMessage');
-        const wishFeedback = document.getElementById('wishFeedback');
-        const messageCounter = document.getElementById('messageCounter');
-
-        if (!wishForm) {
-            return;
-        }
-
-        guestMessageInput.addEventListener('input', function() {
-            const characterCount = guestMessageInput.value.length;
-
-            messageCounter.textContent =
-                `${characterCount} / 300 karakter`;
-        });
-
-        wishForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const guestName = guestNameInput.value.trim();
-            const guestMessage = guestMessageInput.value.trim();
-
-            wishFeedback.className = 'wish-feedback';
-            wishFeedback.textContent = '';
-
-            if (guestName.length < 2) {
-                showFeedback('Nama minimal 2 karakter ya bro.', 'error');
-                guestNameInput.focus();
-                return;
-            }
-
-            if (guestMessage.length < 10) {
-                showFeedback(
-                    'Ucapannya minimal 10 karakter biar lebih bermakna.',
-                    'error'
-                );
-
-                guestMessageInput.focus();
-                return;
-            }
-
-            const wishCard = document.createElement('div');
-            const wishName = document.createElement('strong');
-            const wishMessage = document.createElement('p');
-
-            wishCard.classList.add('wish-preview-card', 'new-wish');
-
-            wishName.textContent = guestName;
-            wishMessage.textContent = guestMessage;
-
-            wishCard.appendChild(wishName);
-            wishCard.appendChild(wishMessage);
-
-            wishesList.prepend(wishCard);
-
-            wishForm.reset();
-            messageCounter.textContent = '0 / 300 karakter';
-
-            showFeedback('Ucapan berhasil ditambahkan ✨', 'success');
-
-            guestNameInput.focus();
-        });
-
-        function showFeedback(message, type) {
-            wishFeedback.textContent = message;
-            wishFeedback.classList.add(type);
-        }
-    });
-</script>
-
 <body class="wedding-preview-body {{ $template['theme_class'] ?? 'theme-default' }} invitation-locked">
 
     <a href="/undangan#template" class="preview-back-button">
@@ -253,7 +136,7 @@
                 {{ $wedding['akad']['address'] }}
             </p>
 
-            <a href="#" class="open-invitation-button">
+            <a href="{{ $wedding['maps_url'] }}" target="_blank" rel="noopener noreferrer" class="open-invitation-button">
                 Buka Google Maps
             </a>
         </section>
@@ -355,6 +238,123 @@
 
         setInterval(updateCountdown, 1000);
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const body = document.body;
+        const invitationCover = document.getElementById('invitationCover');
+        const invitationContent = document.getElementById('invitationContent');
+        const openInvitationButton =
+            document.getElementById('openInvitationButton');
+        const openingSection = document.getElementById('opening');
+
+        if (
+            !invitationCover ||
+            !invitationContent ||
+            !openInvitationButton
+        ) {
+            return;
+        }
+
+        openInvitationButton.addEventListener('click', function() {
+            openInvitationButton.disabled = true;
+            openInvitationButton.textContent = 'Membuka Undangan...';
+
+            invitationCover.classList.add('is-opened');
+            invitationContent.classList.add('is-visible');
+
+            invitationContent.setAttribute('aria-hidden', 'false');
+            openInvitationButton.setAttribute('aria-expanded', 'true');
+
+            body.classList.remove('invitation-locked');
+
+            window.setTimeout(function() {
+                invitationCover.hidden = true;
+
+                if (openingSection) {
+                    openingSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }, 700);
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wishForm = document.getElementById('wishForm');
+        const wishesList = document.getElementById('wishesList');
+        const guestNameInput = document.getElementById('guestName');
+        const guestMessageInput = document.getElementById('guestMessage');
+        const wishFeedback = document.getElementById('wishFeedback');
+        const messageCounter = document.getElementById('messageCounter');
+
+        if (!wishForm) {
+            return;
+        }
+
+        guestMessageInput.addEventListener('input', function() {
+            const characterCount = guestMessageInput.value.length;
+
+            messageCounter.textContent =
+                `${characterCount} / 300 karakter`;
+        });
+
+        wishForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const guestName = guestNameInput.value.trim();
+            const guestMessage = guestMessageInput.value.trim();
+
+            wishFeedback.className = 'wish-feedback';
+            wishFeedback.textContent = '';
+
+            if (guestName.length < 2) {
+                showFeedback('Nama minimal 2 karakter ya bro.', 'error');
+                guestNameInput.focus();
+                return;
+            }
+
+            if (guestMessage.length < 10) {
+                showFeedback(
+                    'Ucapannya minimal 10 karakter biar lebih bermakna.',
+                    'error'
+                );
+
+                guestMessageInput.focus();
+                return;
+            }
+
+            const wishCard = document.createElement('div');
+            const wishName = document.createElement('strong');
+            const wishMessage = document.createElement('p');
+
+            wishCard.classList.add('wish-preview-card', 'new-wish');
+
+            wishName.textContent = guestName;
+            wishMessage.textContent = guestMessage;
+
+            wishCard.appendChild(wishName);
+            wishCard.appendChild(wishMessage);
+
+            wishesList.prepend(wishCard);
+
+            wishForm.reset();
+            messageCounter.textContent = '0 / 300 karakter';
+
+            showFeedback('Ucapan berhasil ditambahkan ✨', 'success');
+
+            guestNameInput.focus();
+        });
+
+        function showFeedback(message, type) {
+            wishFeedback.textContent = message;
+            wishFeedback.classList.add(type);
+        }
+    });
 </script>
 
 </html>

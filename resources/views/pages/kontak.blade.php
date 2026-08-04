@@ -68,7 +68,7 @@
                 <p>Untuk kerja sama, pertanyaan resmi, atau kebutuhan yang lebih detail.</p>
 
                 <a href="mailto:andikafadil28@gmail.com">
-                    halo@rangkita.id →
+                    andikafadil28@gmail.com →
                 </a>
             </div>
 
@@ -87,7 +87,7 @@
                 <h3>Marketplace</h3>
                 <p>Nantinya produk digital Rangkita juga bisa tersedia di marketplace.</p>
 
-                <a href="#" target="_blank" rel="noopener noreferrer">
+                <a href="{{ url('/produk') }}">
                     Lihat Produk →
                 </a>
             </div>
@@ -106,7 +106,7 @@
                     Nanti bisa kita sambungkan ke backend Laravel.
                 </p>
 
-                <form id="contactForm" onsubmit="sendToWhatsapp(event)">
+                <form id="contactForm">
                     <div class="form-group">
                         <label>Nama</label>
                         <input type="text" id="name" placeholder="Masukkan nama kamu" required>
