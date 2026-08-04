@@ -21,6 +21,11 @@ Fokus aktif: pengembangan template undangan. 6 template berbagi satu Blade yang 
 
 Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 10 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Belum ada database migration, semua data masih hardcoded di controller.
 
+## Behavior AI (opencode)
+
+- `opencode.json` (baru) di root proyek: config yang nge-load `AGENTS.md` sebagai instructions untuk opencode AI.
+- `AGENTS.md` punya section `# BEHAVIOR RULES` (8 sub-section): Bahasa & Gaya Bicara (gen-z, Bahasa Indonesia), Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi.
+
 ## Sistem Template Undangan
 
 6 template (Elegant, Minimalis, Floral, Modern, Classic, Royal) semua berbagi satu Blade. Alur: listing (`/undangan`) -> preview (`/undangan/preview/{slug}`) & detail (`/undangan/template/{slug}`). Detail & preview membaca data dari `getWeddingTemplates()` di PageController, preview juga pakai `getDummyWeddingData()`.
@@ -80,7 +85,7 @@ C:\laragon\www\rangkita\
 ├── tests/                      4 file (Pest PHP, semua default)
 ├── bootstrap/
 ├── node_modules/ + vendor/     Dependencies
-└── file config root: .env, composer.json, package.json, vite.config.js
+└── file config root: .env, composer.json, package.json, vite.config.js, opencode.json
 ```
 
 ## Statistik Proyek
@@ -137,9 +142,16 @@ C:\laragon\www\rangkita\
   - `5f9807b` `update SUMMARY changelog deploy workflow + pull` (SUMMARY.md)
 - **Stash tersimpan**: `stash@{0}` = perubahan V1.6 lama (backup, belum dihapus)
 
+## Ses 4 Agu 2026 - Setup Behavior AI opencode
+
+- **Diskusi behavior AI**: user minta AI opencode di-set supaya Bahasa Indonesia terus, sering konfirmasi sembari jelasin, gak over (jangan banyak ngusulin fitur), simpel/gak ribet, gaya gen-z santai bisa bercanda, dan jadi mentor/guru (user lagi belajar). Saran tambahan diambil semua: kualitas kerja (verifikasi sebelum klaim, error = materi belajar, jujur), proyek & git (follow konvensi, git hygiene, pakai konteks proyek), komunikasi (pertanyaan berbobot, respect prioritas TODO).
+- **`opencode.json` (baru)**: config root proyek dengan `"instructions": ["AGENTS.md"]` supaya behavior rules ke-load AI.
+- **`AGENTS.md`**: Tambah section `# BEHAVIOR RULES` berisi 8 sub-section (Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi).
+- **Catatan**: config baru aktif setelah restart opencode.
+
 ## Status Sekarang
 
-- HEAD: `5f9807b` (branch `main`, up to date dengan `origin/main`)
-- Worktree bersih (tidak ada file modified/untracked)
+- HEAD: `409eb25` (branch `main`, up to date dengan `origin/main`)
+- File modified/untracked: `opencode.json` (baru) & `AGENTS.md` (behavior rules) - belum di-commit
 - CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
