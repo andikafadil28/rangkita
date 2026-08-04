@@ -75,6 +75,12 @@ Fokus aktif: pengembangan template undangan. 6 template berbagi satu Blade yang 
 
 Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 10 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2192 baris. Belum ada database migration, semua data masih hardcoded di controller.
 
+## Behavior AI (opencode)
+
+- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2-free`, build = `opencode/deepseek-v3-0324`).
+- Ganti mode plan ↔ build cukup tekan **Tab** (default keybind `agent_cycle`, bisa dikustom via `tui.json`).
+- Perintah `/finish` mengupdate `SUMMARY.md` DAN `AGENTS.md` berdasarkan seluruh pekerjaan sesi, lalu validasi via `finish.ps1`.
+
 ## Sistem Template Undangan
 
 6 template (Elegant, Minimalis, Floral, Modern, Classic, Royal) semua berbagi satu Blade. Alur: listing (`/undangan`) -> preview (`/undangan/preview/{slug}`) & detail (`/undangan/template/{slug}`). Detail & preview membaca data dari `getWeddingTemplates()` di PageController, preview juga pakai `getDummyWeddingData()`.

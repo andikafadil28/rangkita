@@ -23,8 +23,9 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 
 ## Behavior AI (opencode)
 
-- `opencode.json` (baru) di root proyek: config yang nge-load `AGENTS.md` sebagai instructions untuk opencode AI.
+- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2-free`, build = `opencode/deepseek-v3-0324`).
 - `AGENTS.md` punya section `# BEHAVIOR RULES` (8 sub-section): Bahasa & Gaya Bicara (gen-z, Bahasa Indonesia), Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi.
+- Ganti mode plan ↔ build cukup tekan **Tab** (default keybind `agent_cycle`, bisa dikustom via `tui.json`).
 
 ## Sistem Template Undangan
 
@@ -149,9 +150,18 @@ C:\laragon\www\rangkita\
 - **`AGENTS.md`**: Tambah section `# BEHAVIOR RULES` berisi 8 sub-section (Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi).
 - **Catatan**: config baru aktif setelah restart opencode.
 
+## Ses 4 Agu 2026 (lanjutan) - Setup Agent Model opencode + Push
+
+- **Diskusi model per agent**: user mau opencode pilih AI otomatis per tugas - plan pakai Mimo, build pakai DeepSeek. Dicek via skill `customize-opencode` + schema `opencode.ai/config.json` + docs keybinds.
+- **Temuan keybind Tab**: ganti mode plan ↔ build udah default via tombol **Tab** (`agent_cycle`), reverse `Shift+Tab`. Bisa dikustom lewat `tui.json` tapi tidak perlu.
+- **`opencode.json` diupdate**: tambah `agent.plan.model = opencode/mimo-v2-free` dan `agent.build.model = opencode/deepseek-v3-0324`.
+- **Commit + Push**:
+  - `5a7d32b` `setup behavior AI opencode + config agent plan/build` (opencode.json baru + AGENTS.md behavior rules + SUMMARY.md)
+- **Catatan**: tinggal restart opencode biar config aktif; pull di komputer rumah via `git pull --ff-only origin main` (tidak bisa di-remote dari sini).
+
 ## Status Sekarang
 
-- HEAD: `409eb25` (branch `main`, up to date dengan `origin/main`)
-- File modified/untracked: `opencode.json` (baru) & `AGENTS.md` (behavior rules) - belum di-commit
+- HEAD: `5a7d32b` (branch `main`, up to date dengan `origin/main`)
+- Worktree bersih - semua perubahan sesi sudah di-commit & push
 - CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
