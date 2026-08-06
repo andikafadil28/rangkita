@@ -1,21 +1,208 @@
 # CURRENT
 
-Fokus aktif: pengembangan template undangan. 6 template berbagi satu Blade yang sama, dibedakan hanya via `theme_class` CSS. Analisis sistem template selesai, TODO baru sudah disusun.
+Fokus aktif: Planning besar untuk 5 modul (Bug Fix, Auth, Quiz CPNS + Payment, Undangan DB, Artikel DB). Rencana sudah final dengan total ~13.5 jam kerja. Siap eksekusi.
 
 # TODO
 
-## Template Undangan (Fokus Utama)
+## 1. Bug Fixing (18 issues) - Estimasi: ~1.5 jam
 
-- [ ] High: Pisahkan Blade/CSS per template biar tiap tema bisa custom
-- [ ] High: Fix link detail page di listing (ke `/undangan/template/{slug}`)
-- [ ] Medium: Rapikan CSS - kurangi duplikasi (cek ulang setelah pull, blok V1.6 override sudah tidak dipakai)
-- [ ] Medium: Ganti gallery placeholder dengan gambar beneran
-- [ ] Low: Buat form ucapan (wish) fungsional
-- [ ] Low: Perbaiki Google Maps URL yang masih `#`
+### Critical Bugs
+- [ ] **Bug #1**: Data wedding hardcode di template-detail → controller gak pass `$wedding`
+  - File: `PageController.php:234` + `template-detail.blade.php`
+  - Fix: Tambah `$wedding = $this->getDummyWeddingData();` di method `templateDetail()`, pass ke view
+- [ ] **Bug #2**: Link detail page gak ada di listing undangan
+  - File: `undangan.blade.php:148-157`
+  - Fix: Tambah tombol "Lihat Detail" ke `/undangan/template/{slug}`
 
-## Backend
+### High Bugs
+- [ ] **Bug #3**: `<script>` di luar `</body>` (invalid HTML)
+  - File: `template-preview.blade.php:201-360`
+  - Fix: Pindah `</body>` ke sesudah script terakhir
+- [ ] **Bug #4**: Countdown script gak ada `DOMContentLoaded` wrapper
+  - File: `template-preview.blade.php:203-241`
+  - Fix: Wrap dalam `document.addEventListener('DOMContentLoaded', function() { ... });`
 
-- [ ] Low: Database migration untuk data produk & template
+### Medium Bugs
+- [ ] **Bug #5**: Missing `rel="noopener noreferrer"` di link external
+  - File: `produk-detail.blade.php:48`
+- [ ] **Bug #6**: CSS target `button` tapi HTML pake `<a>`
+  - File: `rangkita.css:1603` → ubah selector ke `.location-section button, .location-section a`
+- [ ] **Bug #7**: Hardcoded "Dika & Nur" di listing undangan
+  - File: `undangan.blade.php:40-41`
+- [ ] **Bug #8**: Form inputs gak ada `name` attribute
+  - File: `kontak.blade.php:112,117,132`
+- [ ] **Bug #9**: `APP_DEBUG=true` di .env → ubah ke `false`
+
+### Low/Code Quality Bugs
+- [ ] **Bug #10**: Unused import `Request` di PageController (line 5)
+- [ ] **Bug #11**: WhatsApp number duplikat di 3 file → pindah ke config
+- [ ] **Bug #12**: Email & Instagram hardcoded di kontak
+- [ ] **Bug #13**: Unused files (welcome.blade.php, landing1.blade.php, app.js)
+- [ ] **Bug #14**: Font "Instrument Sans" di-Vite tapi gak dipake
+- [ ] **Bug #15**: Locale `en` tapi site Bahasa Indonesia → ubah ke `id`
+- [ ] **Bug #16**: Vite build gak pernah dijalankan
+- [ ] **Bug #17**: Gak ada meta SEO di layout
+- [ ] **Bug #18**: `.phone-screen` CSS defined twice
+
+---
+
+## 2. Auth System - Estimasi: ~2 jam
+
+### Database
+- [ ] Migration: `add_role_to_users_table` (tambah `role` ENUM: user/admin)
+- [ ] Seeder: `AdminSeeder.php` (akun admin default)
+
+### Controller & Middleware
+- [ ] `AuthController.php` (register, login, logout, Google OAuth)
+- [ ] `AdminMiddleware.php` (cek role admin)
+
+### Views
+- [ ] `auth/register.blade.php`
+- [ ] `auth/login.blade.php`
+
+### Config
+- [ ] Update `config/services.php` (Google OAuth credentials)
+- [ ] Update `.env` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
+
+### Install Package
+```bash
+composer require laravel/breeze --dev
+composer require laravel/socialite
+php artisan breeze:install blade
+npm install && npm run build
+```
+
+---
+
+## 3. Quiz CPNS + Midtrans Payment - Estimasi: ~3.5 jam
+
+### Database
+- [ ] Migration: `question_packages` (id, category, name, slug, total_questions, difficulty, price, is_active)
+- [ ] Migration: `questions` (id, package_id, question_text, option_a/b/c/d, correct_answer, explanation, difficulty)
+- [ ] Migration: `quiz_sessions` (id, user_id, package_id, mode, score, answers JSON, time_spent, time_limit)
+- [ ] Migration: `transactions` (id, user_id, package_id, order_id, gross_amount, payment_type, status, snap_token)
+- [ ] Migration: `user_access` (id, user_id, package_id, transaction_id, access_granted)
+- [ ] Seeder: `QuestionPackageSeeder.php` (9 paket: 3 per kategori TWK/TIU/TKP)
+- [ ] Seeder: `QuestionSeeder.php` (~135 soal total)
+
+### Controller
+- [ ] `CpnsController.php` (index, category, quiz, submit, result)
+- [ ] `PaymentController.php` (create, callback, success)
+
+### Config
+- [ ] `config/midtrans.php` (server_key, client_key, is_production)
+- [ ] Update `.env` (MIDTRANS_SERVER_KEY, MIDTRANS_CLIENT_KEY)
+
+### Views
+- [ ] `cpns.blade.php` (UPDATE: 3 kategori + jumlah paket)
+- [ ] `cpns-category.blade.php` (BARU: list paket + pilihan mode)
+- [ ] `cpns-quiz.blade.php` (BARU: halaman quiz + timer)
+- [ ] `cpns-result.blade.php` (BARU: hasil + rekap)
+- [ ] `cpns-payment-success.blade.php` (BARU: sukses bayar)
+
+### Install Package
+```bash
+composer require midtrans/midtrans-php
+```
+
+### Alur Pembayaran
+1. User pilih paket berbayar → klik "Beli & Mulai"
+2. Backend buat transaksi → dapat snap_token dari Midtrans
+3. Frontend buka popup Midtrans Snap
+4. User bayar (transfer/e-wallet/kartu)
+5. Midtrans callback → backend update status → grant akses
+6. User redirect → mulai quiz
+
+---
+
+## 4. Database Undangan - Estimasi: ~3 jam
+
+### Database
+- [ ] Migration: `templates` (id, slug, name, style, theme_class, description, features JSON, icon)
+- [ ] Migration: `weddings` (id, slug, template_id, groom/bride data, wedding_date, events, maps_url, status)
+- [ ] Migration: `wedding_gallery` (id, wedding_id, photo_path, caption, sort_order)
+- [ ] Migration: `wedding_wishes` (id, wedding_id, guest_name, message, is_approved)
+- [ ] Seeder: `TemplateSeeder.php` (6 template: Elegant, Minimalis, Floral, Modern, Classic, Royal)
+- [ ] Seeder: `WeddingSeeder.php` (data demo)
+
+### Controller
+- [ ] `AdminWeddingController.php` (CRUD undangan)
+- [ ] `WeddingController.php` (public: show, addWish)
+
+### Views
+- [ ] `admin/weddings/index.blade.php` (list undangan)
+- [ ] `admin/weddings/create.blade.php` (form input data)
+- [ ] `admin/weddings/edit.blade.php` (form edit)
+- [ ] `undangan-public.blade.php` (public view berdasarkan slug)
+
+### Alur
+1. Admin input data undangan lewat form
+2. Data disimpan ke DB, slug otomatis dibuat
+3. Admin copy link: `/undangan/{slug}`
+4. User buka link → lihat undangan
+
+---
+
+## 5. Database Artikel - Estimasi: ~3.5 jam
+
+### Database
+- [ ] Migration: `categories` (id, name, slug, icon, sort_order)
+- [ ] Migration: `tags` (id, name, slug)
+- [ ] Migration: `articles` (id, category_id, author_id, title, slug, excerpt, content LONGTEXT, featured_image, status draft/published, SEO fields)
+- [ ] Migration: `article_tag` (pivot: article_id, tag_id)
+- [ ] Seeder: `CategorySeeder.php` (4 kategori: Undangan, CPNS, Produk Digital, Rangkita)
+- [ ] Seeder: `TagSeeder.php` (5 tags: tips, tutorial, panduan, berita, inspirasi)
+- [ ] Seeder: `ArticleSeeder.php` (migrate 4 artikel existing)
+
+### Models
+- [ ] `Article.php` (belongsTo Category, belongsToMany Tags, belongsTo User)
+- [ ] `Category.php` (hasMany Articles)
+- [ ] `Tag.php` (belongsToMany Articles)
+
+### Controller
+- [ ] `AdminArticleController.php` (CRUD artikel + image upload)
+- [ ] `ArticleController.php` (public: index, show, byCategory, byTag)
+
+### Views
+- [ ] `admin/articles/index.blade.php` (list artikel + filter)
+- [ ] `admin/articles/create.blade.php` (form tambah + SEO settings)
+- [ ] `admin/articles/edit.blade.php` (form edit)
+- [ ] `artikel.blade.php` (UPDATE: featured image, tags, filter by category)
+- [ ] `artikel-detail.blade.php` (UPDATE: SEO meta, author, views count)
+- [ ] `layouts/app.blade.php` (UPDATE: yield meta tags)
+
+### Fitur
+- CRUD admin panel dengan image upload
+- Status draft/publish
+- Kategori + Tags (many-to-many)
+- SEO meta tags (title, description, keywords)
+- View counter
+- Filter by category/tag
+
+---
+
+## Ringkasan Estimasi Waktu
+
+| No | Modul | Estimasi |
+|----|-------|----------|
+| 1 | Bug Fixing (18 issues) | ~1.5 jam |
+| 2 | Auth System | ~2 jam |
+| 3 | Quiz CPNS + Midtrans | ~3.5 jam |
+| 4 | Database Undangan | ~3 jam |
+| 5 | Database Artikel | ~3.5 jam |
+| **Total** | | **~13.5 jam** |
+
+## File Stats (Setelah Semua Selesai)
+
+| Kategori | File Baru | File Update |
+|----------|-----------|-------------|
+| Auth | 7 | 3 |
+| Quiz CPNS | 12 | 3 |
+| Payment | 4 | 2 |
+| Undangan | 11 | 1 |
+| Artikel | 15 | 3 |
+| Lainnya | 0 | 5 |
+| **Total** | **49** | **17** |
 
 # NOTES
 
@@ -130,6 +317,31 @@ C:\laragon\www\rangkita\
 
 # CHANGELOG
 
+## Ses 6 Agu 2026 - Update Memory Files (finish)
+
+- **Finalisasi `AGENTS.md` & `SUMMARY.md`**: dokumentasi seluruh pekerjaan sesi planning (5 modul besar) dikunci di memory
+- **TODO lengkap**: 18 bug fix + Auth System + Quiz CPNS & Midtrans Payment + Database Undangan + Database Artikel (total ~13.5 jam kerja, 49 file baru + 17 file update)
+- **Changelog dirapikan**: urutan entry dikembalikan kronologis, Status Sekarang dipindah ke akhir, duplikat dihapus
+- **Karakter rusak dirapikan**: `?` yang seharusnya panah (`→`) diganti biar memory gampang dibaca AI
+- **Status**: file memory belum di-commit (HEAD `359eb40`), plan siap dieksekusi sesuai prioritas TODO
+
+## Ses 4 Agu 2026 (lanjutan) - Bug Fix + Behavior Rules + Update /finish
+
+- **Audit codebase lengkap**: ditemukan 45 issue (8 bug, 9 missing feature, 16 code quality, 9 UX, 3 unused files) via explore agent
+- **Bug fix (5 bug selesai, commit `359eb40`)**:
+  - Contact form error di `kontak.blade.php` - hapus `onsubmit="sendToWhatsapp(event)"` yang gak terdefinisi, biarin `addEventListener` yang handle
+  - Google Maps link `#` di preview - tambah `maps_url` di `getDummyWeddingData()` (PageController) + update `template-preview.blade.php`
+  - Google Maps dead button di detail - ganti `<button>` jadi `<a>` ke Google Maps
+  - Email mismatch - tampilan disamain jadi `andikafadil28@gmail.com` (sesuai link mailto)
+  - Marketplace link dead end - `href="#"` → `/produk`
+  - HTML structure broken di `template-preview.blade.php` - pindah script dari antara head/body ke akhir file sebelum `</html>`
+- **Verifikasi**: `php -l` PageController lolos, `php artisan view:cache` sukses (semua Blade compile), view:clear
+- **Push + Deploy**: commit `359eb40` di-push ke `origin/main`, user diajarin deploy Scenario A ke server (git pull, npm build, chown, optimize:clear, reload php8.3-fpm)
+- **TODO AGENTS.md diupdate**: tambah section "Bug Fix (Selesai)" dengan 5 item centang
+- **Behavior rules baru di AGENTS.md**: `## Plan vs Build` (plan = kasih step-by-step instruction, build = eksekusi langsung) + `## Token Management` (warning kalau token mau abis biar bisa /finish)
+- **Update `/finish`**: `commands/finish.md` sekarang suruh update AGENTS.md DAN SUMMARY.md; `scripts/finish.ps1` validasi dua file ($AgentsFile + $SummaryFile) sebelum sync ke server memory
+- **Status**: AGENTS.md masih uncommitted (behavior rules + TODO update), SUMMARY.md update sesi ini
+
 ## Ses 31 Jul 2026 - Setup Deployment Workflow
 
 - **Diskusi kemampuan opencode**: dibahas kemungkinan konek SSH ke server VirtualBox. Hasil: tool bash tidak bisa input password SSH interaktif, `plink`/`sshpass` belum terinstall, WSL cuma Docker Desktop. Keputusan user: Metode A (guided deploy), SSH key ditunda
@@ -167,14 +379,6 @@ C:\laragon\www\rangkita\
   - `5a7d32b` `setup behavior AI opencode + config agent plan/build` (opencode.json baru + AGENTS.md behavior rules + SUMMARY.md)
 - **Catatan**: tinggal restart opencode biar config aktif; pull di komputer rumah via `git pull --ff-only origin main` (tidak bisa di-remote dari sini).
 
-## Status Sekarang
-
-- HEAD: `5a7d32b` (branch `main`, up to date dengan `origin/main`)
-- Worktree bersih - semua perubahan sesi sudah di-commit & push
-- CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
-- Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
-- `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-
 ## Ses 4 Agu 2026 (lanjutan) - Fix Tab Keybind + Bikin tui.json
 
 - **Masalah**: pencet Tab muncul kotak autocomplete, bukan ganti agent build↔plan. Shift+Tab juga gak jalan.
@@ -186,3 +390,45 @@ C:\laragon\www\rangkita\
 - **File baru**: `tui.json` di root proyek
 - **Update AGENTS.md & SUMMARY.md**: tambah referensi tui.json + penjelasan keybind Tab/Shift+Tab
 - **Catatan**: config TUI gak hot-reload → harus restart opencode
+
+## Ses 4 Agu 2026 (lanjutan) - Planning Besar 5 Modul
+
+- **Planning selesai**: Diskusi panjang tentang 5 modul utama yang akan dibangun
+- **Modul 1 - Bug Fixing**: 18 issues teridentifikasi (2 critical, 2 high, 6 medium, 8 low)
+  - Critical: Data wedding hardcode di template-detail, link detail page gak ada di listing
+  - High: Script di luar body, countdown gak ada DOMContentLoaded wrapper
+  - Medium: Missing rel noopener, CSS selector mismatch, hardcoded names, form inputs, APP_DEBUG
+  - Low: Unused imports, duplicated WhatsApp number, unused files, font mismatch, locale, Vite, SEO, CSS duplikasi
+- **Modul 2 - Auth System**: Full auth dengan Google OAuth + register manual + admin role
+  - User model update: tambah google_id, avatar, role
+  - AuthController: register, login, logout, Google OAuth
+  - AdminMiddleware: cek role admin
+  - Views: register, login
+- **Modul 3 - Quiz CPNS + Midtrans Payment**: Sistem quiz interaktif dengan pembayaran
+  - Database: question_packages, questions, quiz_sessions, transactions, user_access
+  - 2 mode: Latihan (tanpa timer) + Test (timer sesuai durasi resmi CPNS)
+  - 9 paket soal (3 per kategori TWK/TIU/TKP), ~135 soal total
+  - Midtrans Snap: popup pembayaran, callback handling, grant akses
+  - Rasio timer: ~54 detik per soal (100 menit / 110 soal SKD CPNS)
+- **Modul 4 - Database Undangan**: Pindah data hardcoded ke database
+  - Database: templates, weddings, wedding_gallery, wedding_wishes
+  - AdminWeddingController: CRUD undangan
+  - WeddingController: public view + add wish
+  - Alur: admin input → DB → generate slug → user lihat via link
+- **Modul 5 - Database Artikel**: Full CMS artikel dengan SEO
+  - Database: categories, tags, articles, article_tag (pivot)
+  - AdminArticleController: CRUD + image upload + SEO settings
+  - ArticleController: public index, show, byCategory, byTag
+  - Fitur: draft/publish, featured image, view counter, SEO meta tags
+- **Total estimasi**: ~13.5 jam kerja
+- **File stats**: 49 file baru + 17 file update = 66 file total
+- **AGENTS.md diupdate**: TODO section lengkap dengan semua rencana
+
+## Status Sekarang
+
+- HEAD: `359eb40` (branch `main`, up to date dengan `origin/main`)
+- Worktree: `AGENTS.md` & `SUMMARY.md` modified (belum di-commit) - berisi planning 5 modul final
+- CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
+- Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
+- `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
+- **Planning final selesai**: 5 modul (Bug Fix, Auth, Quiz CPNS+Payment, Undangan DB, Artikel DB) dengan total ~13.5 jam kerja. Siap eksekusi.
