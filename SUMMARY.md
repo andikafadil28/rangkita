@@ -314,6 +314,29 @@ C:\laragon\www\rangkita\
 
 # CHANGELOG
 
+## Ses 11 Agu 2026 - Bug Fix 18/18 Selesai + Review Agent + Config Centralize
+
+- **Medium bug fix (Bug #5-#9, 5 selesai)**, commit `921b851`:
+  - Bug #5: `rel="noopener noreferrer"` ditambah di `produk-detail.blade.php:48`
+  - Bug #6: CSS selector `.location-section button` → `.location-section button, .location-section a` di `rangkita.css`
+  - Bug #7: Hardcoded "Dika & Nur" → "Pasangan Anda" di `undangan.blade.php`
+  - Bug #8: `name` attribute ditambah di 4 form input `kontak.blade.php`
+  - Bug #9: `APP_DEBUG=true` → `false` di `.env` (file gitignored, gak ke-commit)
+- **High-impact bug fix**: Config centralize WhatsApp + SEO meta + hapus dead Vite pipeline, commit `cadb15c`:
+  - Bug #11-#12: Nomor WA, email, instagram dipindah ke `config/services.php` + `.env` (`WHATSAPP_NUMBER`, `CONTACT_EMAIL`, `CONTACT_INSTAGRAM`), hardcoded di controller & blade dibersihin
+  - Bug #17: `layouts/app.blade.php` ditambah meta description, keywords, robots, author + Open Graph tags (og:title, og:description, og:type, og:site_name, og:url), support `@section` per halaman
+  - Bug #10: Unused import `Request` dihapus dari PageController
+  - Bug #15: Locale `en` → `id` di `.env` + `config/app.php` default
+  - Bug #18: Duplikat `.phone-screen` CSS dibersihin (merge ke satu definisi)
+  - Bug #13: Hapus file unused — `welcome.blade.php`, `landing1.blade.php`, `app.js`, `app.css`
+  - Bug #14-#16: Hapus pipeline Vite/Tailwind yang gak dipake — `vite.config.js`, `package-lock.json`, dependensi Vite/Tailwind dari `package.json`, script vite dari `composer.json` (setup & dev script). Total **-2336 baris** code dead
+- **Review agent baru**, commit `c738b4e`:
+  - `.opencode/agent/review.md` — agent review (primary mode, `opencode/mimo-v2.5-free`) untuk review code sebelum commit
+  - Tab sekarang cycle **plan → build → review → plan**; Shift+Tab reverse
+- **Memory files** diupdate: TODO semua dicentang (18/18), struktur folder & statistik proyek direvisi sesuai cleanup, Teknologi (Vite/Tailwind dihapus)
+- **Verifikasi**: `php -l` lolos, `view:cache` sukses, config cache sukses, `config('services.whatsapp.number')` terbaca `6285945155673`
+- **Push**: `921b851`, `cadb15c`, `c738b4e` ke `origin/main`
+
 ## Ses 11 Agu 2026 - Critical & High Bug Fix + Behavior AI Update
 
 - **Critical bug fix (2 selesai)**:
@@ -436,9 +459,12 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `359eb40` (branch `main`, up to date dengan `origin/main`)
-- Worktree: `AGENTS.md` & `SUMMARY.md` modified (belum di-commit) - berisi planning 5 modul final
-- CSS custom: 2083 baris (setelah pull, blok V1.6 override tidak dipakai)
+- HEAD: `c738b4e` (branch `main`, up to date dengan `origin/main`)
+- **Bug Fixing SELESAI 18/18** (commit `921b851` medium, `cadb15c` high-impact/cleanup, `c738b4e` review agent)
+- Worktree bersih
+- CSS custom: 2083 baris (setelah cleanup `.phone-screen` duplikat dihapus)
+- Vite/Tailwind/Instrument Sans pipeline dihapus — site murni pakai `rangkita.css` via `asset()`
+- `.opencode/agent/review.md` aktif: Tab = cycle plan → build → review → plan; Shift+Tab reverse
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
 - `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-- **Planning final selesai**: 5 modul (Bug Fix, Auth, Quiz CPNS+Payment, Undangan DB, Artikel DB) dengan total ~13.5 jam kerja. Siap eksekusi.
+- **Siap lanjut ke modul berikutnya: Auth System**
