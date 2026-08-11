@@ -1,6 +1,6 @@
 # CURRENT
 
-Fokus aktif: Eksekusi Bug Fix (4 dari 18 selesai: critical + high). Behavior AI diupdate (10 sub-section). Lanjut ke medium bugs.
+Fokus aktif: Bug Fixing **SELESAI** (18/18). Siap lanjut ke modul berikutnya (Auth System).
 
 # TODO
 
@@ -34,15 +34,15 @@ Fokus aktif: Eksekusi Bug Fix (4 dari 18 selesai: critical + high). Behavior AI 
 - [x] **Bug #9**: `APP_DEBUG=true` di .env → ubah ke `false`
 
 ### Low/Code Quality Bugs
-- [ ] **Bug #10**: Unused import `Request` di PageController (line 5)
-- [ ] **Bug #11**: WhatsApp number duplikat di 3 file → pindah ke config
-- [ ] **Bug #12**: Email & Instagram hardcoded di kontak
-- [ ] **Bug #13**: Unused files (welcome.blade.php, landing1.blade.php, app.js)
-- [ ] **Bug #14**: Font "Instrument Sans" di-Vite tapi gak dipake
-- [ ] **Bug #15**: Locale `en` tapi site Bahasa Indonesia → ubah ke `id`
-- [ ] **Bug #16**: Vite build gak pernah dijalankan
-- [ ] **Bug #17**: Gak ada meta SEO di layout
-- [ ] **Bug #18**: `.phone-screen` CSS defined twice
+- [x] **Bug #10**: Unused import `Request` di PageController (line 5)
+- [x] **Bug #11**: WhatsApp number duplikat di 3 file → pindah ke config
+- [x] **Bug #12**: Email & Instagram hardcoded di kontak
+- [x] **Bug #13**: Unused files (welcome.blade.php, landing1.blade.php, app.js)
+- [x] **Bug #14**: Font "Instrument Sans" di-Vite tapi gak dipake
+- [x] **Bug #15**: Locale `en` tapi site Bahasa Indonesia → ubah ke `id`
+- [x] **Bug #16**: Vite build gak pernah dijalankan
+- [x] **Bug #17**: Gak ada meta SEO di layout
+- [x] **Bug #18**: `.phone-screen` CSS defined twice
 
 ---
 
@@ -240,14 +240,10 @@ C:\laragon\www\rangkita\
 │   ├── Providers/AppServiceProvider.php
 │   └── View/Components/navbar.php
 ├── resources/
-│   ├── css/app.css             Import Tailwind CSS 4 (9 baris)
-│   ├── js/app.js               Kosong (placeholder)
 │   └── views/
 │       ├── landing.blade.php   Homepage utama (206 baris)
-│       ├── landing1.blade.php  Versi alternatif (379 baris, CSS inline)
-│       ├── welcome.blade.php   Welcome bawaan Laravel (tidak dipakai)
 │       ├── components/navbar.blade.php
-│       ├── layouts/app.blade.php   Layout utama (26 baris)
+│       ├── layouts/app.blade.php   Layout utama + SEO meta (35 baris)
 │       └── pages/              9 halaman
 │           ├── produk.blade.php
 │           ├── produk-detail.blade.php
@@ -272,8 +268,8 @@ C:\laragon\www\rangkita\
 ├── storage/                    Cache, sessions, logs, uploads
 ├── tests/                      4 file (Pest PHP, semua default)
 ├── bootstrap/
-├── node_modules/ + vendor/     Dependencies
-└── file config root: .env, composer.json, package.json, vite.config.js, opencode.json, tui.json
+├── vendor/                  Dependencies PHP
+└── file config root: .env, composer.json, package.json, opencode.json, tui.json
 ```
 
 ## Statistik Proyek
@@ -283,7 +279,7 @@ C:\laragon\www\rangkita\
 | Rute web | 10 | Semua GET, tanpa auth/API |
 | Controllers | 2 | 1 base abstrak + 1 PageController |
 | Models | 1 | User (default) |
-| View files | 14 | 3 root + 1 layout + 1 komponen + 9 pages |
+| View files | 12 | 1 root + 1 layout + 1 komponen + 9 pages |
 | Blade components | 1 | navbar |
 | Layout files | 1 | app.blade.php |
 | CSS custom | 2083 baris | public/css/rangkita.css (blok V1.6 sudah tidak dipakai) |
@@ -304,14 +300,13 @@ C:\laragon\www\rangkita\
 
 - **Single Controller Pattern**: Semua 10 rute di-handle satu PageController
 - **No Database**: Semua data adalah array hardcoded di PHP
-- **Custom CSS Dominan**: 2083 baris rangkita.css, bukan via Vite pipeline
+- **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
 - **No Auth**: Tidak ada autentikasi/admin panel
 - **No API**: Hanya web routes
 
 ## Teknologi
 
 - Laravel 13.8 / PHP ^8.3 / MySQL (DB "rangkita", belum aktif)
-- Tailwind CSS 4 + Vite 8 (untuk welcome page saja)
 - Pest PHP ^4.7 untuk testing
 - Font Instrument Sans (Bunny CDN)
 

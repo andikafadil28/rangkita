@@ -1140,13 +1140,6 @@ a {
       box-shadow: 0 14px 40px rgba(31, 22, 53, 0.08);
 }
 
-.phone-screen {
-      border-radius: 32px;
-      overflow: hidden;
-      background: #fff7fb;
-      border: 10px solid #1f1635;
-}
-
 .phone-template-hero {
       min-height: 360px;
       background: linear-gradient(135deg, #ff4f87, #7a4dff);

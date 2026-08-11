@@ -5,8 +5,6 @@
 @section('content')
 
     @php
-        $waNumber = '6285945155673';
-
         $basicMessage = 'Halo Rangkita, saya mau pesan Paket Basic Undangan Online.';
         $premiumMessage = 'Halo Rangkita, saya mau pesan Paket Premium Undangan Online.';
         $customMessage = 'Halo Rangkita, saya mau konsultasi Paket Custom Undangan Online.';

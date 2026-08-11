@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'number' => env('WHATSAPP_NUMBER', '6285945155673'),
+        'email' => env('CONTACT_EMAIL', 'andikafadil28@gmail.com'),
+        'instagram' => env('CONTACT_INSTAGRAM', 'andikafep123'),
+    ],
+
 ];

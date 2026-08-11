@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class PageController extends Controller
 {
     public function home()
@@ -34,7 +32,7 @@ class PageController extends Controller
                 'price' => 'Mulai Rp49.000',
                 'button' => 'Lihat Detail',
                 'button_detail' => 'Kontak WA',
-                'contact_url' => 'https://wa.me/6285945155673?text=Halo%20Rangkita,%20saya%20mau%20tanya%20produk%20Undangan%20Nikahan',
+                'contact_url' => 'https://wa.me/' . config('services.whatsapp.number') . '?text=Halo%20Rangkita,%20saya%20mau%20tanya%20produk%20Undangan%20Nikahan',
                 'detail' => [
                     'Undangan nikahan online dari Rangkita dibuat untuk pasangan yang ingin undangan praktis, modern, dan mudah dibagikan.',
                     'Produk ini cocok untuk acara pernikahan, lamaran, akad, resepsi, atau acara keluarga yang ingin punya undangan digital tanpa harus mencetak banyak kertas.',
@@ -76,7 +74,7 @@ class PageController extends Controller
                 'price' => 'Mulai Rp15.000',
                 'button' => 'Jelajahi Produk',
                 'button_detail' => 'Kontak WA',
-                'contact_url' => 'https://wa.me/6285945155673?text=Halo%20Rangkita,%20saya%20mau%20tanya%20produk',
+                'contact_url' => 'https://wa.me/' . config('services.whatsapp.number') . '?text=Halo%20Rangkita,%20saya%20mau%20tanya%20produk',
                 'detail' => [
                     'Produk digital Rangkita berisi file siap pakai yang bisa membantu kebutuhan harian pengguna.',
                     'Contohnya bisa berupa template undangan, checklist acara, worksheet, dokumen, ebook, desain, atau file digital lainnya.',
@@ -211,14 +209,19 @@ class PageController extends Controller
 
     public function kontak()
     {
-        return view('pages.kontak');
+        $waNumber = config('services.whatsapp.number');
+        $email = config('services.whatsapp.email');
+        $instagram = config('services.whatsapp.instagram');
+
+        return view('pages.kontak', compact('waNumber', 'email', 'instagram'));
     }
 
     public function undangan()
     {
         $templates = $this->getWeddingTemplates();
+        $waNumber = config('services.whatsapp.number');
 
-        return view('pages.undangan', compact('templates'));
+        return view('pages.undangan', compact('templates', 'waNumber'));
     }
 
     public function templateDetail($slug)
@@ -232,8 +235,9 @@ class PageController extends Controller
         }
 
         $wedding = $this->getDummyWeddingData();
+        $waNumber = config('services.whatsapp.number');
 
-        return view('pages.template-detail', compact('template', 'wedding'));
+        return view('pages.template-detail', compact('template', 'wedding', 'waNumber'));
     }
 
     private function getWeddingTemplates()

@@ -4,7 +4,6 @@
 
 @section('content')
     @php
-        $waNumber = '6285945155673';
         $waMessage = 'Halo Rangkita, saya mau tanya tentang produk digital Rangkita.';
     @endphp
 
@@ -67,8 +66,8 @@
                 <h3>Email</h3>
                 <p>Untuk kerja sama, pertanyaan resmi, atau kebutuhan yang lebih detail.</p>
 
-                <a href="mailto:andikafadil28@gmail.com">
-                    andikafadil28@gmail.com →
+                <a href="mailto:{{ $email }}">
+                    {{ $email }} →
                 </a>
             </div>
 
@@ -77,7 +76,7 @@
                 <h3>Instagram</h3>
                 <p>Lihat update produk, contoh desain, dan konten terbaru Rangkita.</p>
 
-                <a href="https://www.instagram.com/andikafep123/" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.instagram.com/{{ $instagram }}/" target="_blank" rel="noopener noreferrer">
                     Kunjungi Instagram →
                 </a>
             </div>

@@ -3,10 +3,6 @@
 @section('title', 'Template ' . $template['name'] . ' - Rangkita')
 
 @section('content')
-    @php
-        $waNumber = '6285945155673';
-    @endphp
-
     <section class="page template-detail-page">
         <a href="/undangan#template" class="back-link">← Kembali ke Template</a>
 
