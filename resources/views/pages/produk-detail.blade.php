@@ -45,7 +45,7 @@
                 @endforeach
             </div>
 
-            <a href="{{ $product['contact_url'] }}" class="btn-primary" target="_blank">
+            <a href="{{ $product['contact_url'] }}" class="btn-primary" target="_blank" rel="noopener noreferrer">
                 {{ $product['button_detail'] }}
             </a>
         </div>

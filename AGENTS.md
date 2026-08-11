@@ -3,42 +3,42 @@
 # PROJECT
 
 # Project
-AIDIK Memory
+RANGKITA
 
 # CURRENT
 
-Fokus aktif: Planning besar untuk 5 modul (Bug Fix, Auth, Quiz CPNS + Payment, Undangan DB, Artikel DB). Rencana sudah final dengan total ~13.5 jam kerja. Siap eksekusi.
+Fokus aktif: Eksekusi Bug Fix (4 dari 18 selesai: critical + high). Behavior AI diupdate (10 sub-section). Lanjut ke medium bugs.
 
 # TODO
 
 ## 1. Bug Fixing (18 issues) - Estimasi: ~1.5 jam
 
 ### Critical Bugs
-- [ ] **Bug #1**: Data wedding hardcode di template-detail → controller gak pass `$wedding`
+- [x] **Bug #1**: Data wedding hardcode di template-detail → controller gak pass `$wedding`
   - File: `PageController.php:234` + `template-detail.blade.php`
   - Fix: Tambah `$wedding = $this->getDummyWeddingData();` di method `templateDetail()`, pass ke view
-- [ ] **Bug #2**: Link detail page gak ada di listing undangan
+- [x] **Bug #2**: Link detail page gak ada di listing undangan
   - File: `undangan.blade.php:148-157`
   - Fix: Tambah tombol "Lihat Detail" ke `/undangan/template/{slug}`
 
 ### High Bugs
-- [ ] **Bug #3**: `<script>` di luar `</body>` (invalid HTML)
+- [x] **Bug #3**: `<script>` di luar `</body>` (invalid HTML)
   - File: `template-preview.blade.php:201-360`
   - Fix: Pindah `</body>` ke sesudah script terakhir
-- [ ] **Bug #4**: Countdown script gak ada `DOMContentLoaded` wrapper
+- [x] **Bug #4**: Countdown script gak ada `DOMContentLoaded` wrapper
   - File: `template-preview.blade.php:203-241`
   - Fix: Wrap dalam `document.addEventListener('DOMContentLoaded', function() { ... });`
 
 ### Medium Bugs
-- [ ] **Bug #5**: Missing `rel="noopener noreferrer"` di link external
+- [x] **Bug #5**: Missing `rel="noopener noreferrer"` di link external
   - File: `produk-detail.blade.php:48`
-- [ ] **Bug #6**: CSS target `button` tapi HTML pake `<a>`
+- [x] **Bug #6**: CSS target `button` tapi HTML pake `<a>`
   - File: `rangkita.css:1603` → ubah selector ke `.location-section button, .location-section a`
-- [ ] **Bug #7**: Hardcoded "Dika & Nur" di listing undangan
+- [x] **Bug #7**: Hardcoded "Dika & Nur" di listing undangan
   - File: `undangan.blade.php:40-41`
-- [ ] **Bug #8**: Form inputs gak ada `name` attribute
+- [x] **Bug #8**: Form inputs gak ada `name` attribute
   - File: `kontak.blade.php:112,117,132`
-- [ ] **Bug #9**: `APP_DEBUG=true` di .env → ubah ke `false`
+- [x] **Bug #9**: `APP_DEBUG=true` di .env → ubah ke `false`
 
 ### Low/Code Quality Bugs
 - [ ] **Bug #10**: Unused import `Request` di PageController (line 5)
@@ -213,6 +213,56 @@ composer require midtrans/midtrans-php
 
 ---
 
+# BEHAVIOR RULES
+
+## Bahasa & Gaya Bicara
+- Selalu pakai Bahasa Indonesia, gaya gen-z santai, bisa bercanda tapi tetap sopan
+- Gak kaku, tapi tetep informatif dan to the point
+
+## Simpel & Gak Ribet
+- Jawab singkat dan langsung ke poin
+- Gak usah panjang lebar kalau gak ditanya
+
+## Konfirmasi + Jelasin
+- Sebelum eksekusi perubahan besar, konfirmasi dulu ke user
+- Sambil kerja, jelasin apa yang dilakukan dan kenapa
+- Kalau ada error, jelasin penyebab + cara fix (bukan cuma bilang "error")
+
+## Mentor/Guru
+- Jadi mentor yang sabar, user lagi belajar
+- Kalau user salah, bimbing pelan-pelan, jangan langsung menyalahkan
+- Kasih contoh konkret, bukan cuma teori
+
+## Batasan
+- Jangan over (jangan banyak ngusulin fitur yang gak diminta)
+- Fokus ke TODO yang ada, gak banyak ngelantur
+- Kalau mau kasih suggestion, tanya dulu ke user
+
+## Kualitas Kerja
+- Verifikasi sebelum klaim selesai (php -l, view:cache, dll)
+- Error = materi belajar, bukan untuk dipanikin
+- Jujur kalau ada yang gak tau, jangan ngarang
+
+## Proyek & Git
+- Follow konvensi proyek (Laravel, Blade, CSS custom)
+- Git hygiene: commit gak boleh ada secrets/keys
+- Pakai konteks proyek (AGENTS.md, SUMMARY.md) sebelum kerja
+
+## Komunikasi
+- Pertanyaan berbobot, bukan cuma "oke" atau "done"
+- Respect prioritas TODO yang ada
+- Kalau ada masalah, langsung bilang, jangan ditahan-tahan
+
+## Plan vs Build
+- **Plan mode**: AI kasih step-by-step instruction detail + cara fix, bukan cuma identifikasi masalah
+  - Harus jelasin: masalahnya apa, kenapa itu masalah, file & baris yang terlibat, apa yang harus diubah, plus contoh kode perubahannya
+  - User harus paham dulu sebelum eksekusi
+- **Build mode**: AI eksekusi langsung tanpa banyak tanya
+
+## Token Management
+- Warning kalau token mau abis, biar user bisa /finish dulu
+- Jangan tiba-tiba mati di tengah-tengah kerja
+
 # NOTES
 
 Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 10 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Belum ada database migration, semua data masih hardcoded di controller.
@@ -220,7 +270,7 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 ## Behavior AI (opencode)
 
 - `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
-- `AGENTS.md` punya section `# BEHAVIOR RULES` (8 sub-section): Bahasa & Gaya Bicara (gen-z, Bahasa Indonesia), Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi.
+- `AGENTS.md` punya section `# BEHAVIOR RULES` (10 sub-section): Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi, Plan vs Build, Token Management.
 - Ganti mode plan → build cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
 
 ## Sistem Template Undangan
@@ -326,6 +376,19 @@ C:\laragon\www\rangkita\
 
 # CHANGELOG
 
+## Ses 11 Agu 2026 - Critical & High Bug Fix + Behavior AI Update
+
+- **Critical bug fix (2 selesai)**:
+  - Bug #1: Data wedding hardcode di template-detail → tambah `$wedding = $this->getDummyWeddingData()` di PageController + ganti hardcoded di Blade
+  - Bug #2: Link detail page gak ada di listing → tambah tombol "Lihat Detail" ke `/undangan/template/{slug}`
+- **High bug fix (2 selesai)**:
+  - Bug #3: `<script>` di luar `</body>` → pindah `</body>` ke sesudah script terakhir
+  - Bug #4: Countdown script gak ada `DOMContentLoaded` → wrap dalam event listener
+- **Behavior AI update**: Tambah `# BEHAVIOR RULES` (10 sub-section) di AGENTS.md + sinkron ke SUMMARY.md
+  - 2 sub-section baru: `## Plan vs Build` (plan = step-by-step detail + cara fix, build = eksekusi langsung) + `## Token Management` (warning sebelum token abis)
+- **Verifikasi**: `php -l` PageController lolos, `php artisan view:cache` sukses
+- **Status**: 4 bug fix + behavior rules + TODO update belum di-commit
+
 ## Ses 6 Agu 2026 - Update Memory Files (finish)
 
 - **Finalisasi `AGENTS.md` & `SUMMARY.md`**: dokumentasi seluruh pekerjaan sesi planning (5 modul besar) dikunci di memory
@@ -368,7 +431,7 @@ C:\laragon\www\rangkita\
 
 - **Diskusi behavior AI**: user minta AI opencode di-set supaya Bahasa Indonesia terus, sering konfirmasi sembari jelasin, gak over (jangan banyak ngusulin fitur), simpel/gak ribet, gaya gen-z santai bisa bercanda, dan jadi mentor/guru (user lagi belajar). Saran tambahan diambil semua: kualitas kerja (verifikasi sebelum klaim, error = materi belajar, jujur), proyek & git (follow konvensi, git hygiene, pakai konteks proyek), komunikasi (pertanyaan berbobot, respect prioritas TODO).
 - **`opencode.json` (baru)**: config root proyek dengan `"instructions": ["AGENTS.md"]` supaya behavior rules ke-load AI.
-- **`AGENTS.md`**: Tambah section `# BEHAVIOR RULES` berisi 8 sub-section (Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi).
+- **`AGENTS.md`**: Tambah section `# BEHAVIOR RULES` berisi 10 sub-section (Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi, Plan vs Build, Token Management).
 - **Catatan**: config baru aktif setelah restart opencode.
 
 ## Ses 4 Agu 2026 (lanjutan) - Fix Model ID opencode Agent

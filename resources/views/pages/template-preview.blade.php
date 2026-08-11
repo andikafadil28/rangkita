@@ -136,7 +136,8 @@
                 {{ $wedding['akad']['address'] }}
             </p>
 
-            <a href="{{ $wedding['maps_url'] }}" target="_blank" rel="noopener noreferrer" class="open-invitation-button">
+            <a href="{{ $wedding['maps_url'] }}" target="_blank" rel="noopener noreferrer"
+                class="open-invitation-button">
                 Buka Google Maps
             </a>
         </section>
@@ -198,46 +199,46 @@
         </section>
     </main>
 
-</body>
-
 <script>
-    const countdownGrid = document.querySelector('.countdown-grid');
+    document.addEventListener('DOMContentLoaded', function() {
+        const countdownGrid = document.querySelector('.countdown-grid');
 
-    if (countdownGrid) {
-        const targetDate = new Date(countdownGrid.dataset.targetDate).getTime();
+        if (countdownGrid) {
+            const targetDate = new Date(countdownGrid.dataset.targetDate).getTime();
 
-        const daysElement = document.getElementById('countdown-days');
-        const hoursElement = document.getElementById('countdown-hours');
-        const minutesElement = document.getElementById('countdown-minutes');
-        const secondsElement = document.getElementById('countdown-seconds');
+            const daysElement = document.getElementById('countdown-days');
+            const hoursElement = document.getElementById('countdown-hours');
+            const minutesElement = document.getElementById('countdown-minutes');
+            const secondsElement = document.getElementById('countdown-seconds');
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
 
-            if (distance <= 0) {
-                daysElement.textContent = '0';
-                hoursElement.textContent = '0';
-                minutesElement.textContent = '0';
-                secondsElement.textContent = '0';
-                return;
+                if (distance <= 0) {
+                    daysElement.textContent = '0';
+                    hoursElement.textContent = '0';
+                    minutesElement.textContent = '0';
+                    secondsElement.textContent = '0';
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((distance / (1000 * 60)) % 60);
+                const seconds = Math.floor((distance / 1000) % 60);
+
+                daysElement.textContent = days;
+                hoursElement.textContent = hours;
+                minutesElement.textContent = minutes;
+                secondsElement.textContent = seconds;
             }
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-            const minutes = Math.floor((distance / (1000 * 60)) % 60);
-            const seconds = Math.floor((distance / 1000) % 60);
+            updateCountdown();
 
-            daysElement.textContent = days;
-            hoursElement.textContent = hours;
-            minutesElement.textContent = minutes;
-            secondsElement.textContent = seconds;
+            setInterval(updateCountdown, 1000);
         }
-
-        updateCountdown();
-
-        setInterval(updateCountdown, 1000);
-    }
+    });
 </script>
 
 <script>
@@ -356,5 +357,7 @@
         }
     });
 </script>
+
+</body>
 
 </html>

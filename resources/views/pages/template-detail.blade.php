@@ -16,8 +16,8 @@
                     <div class="phone-template-hero {{ $template['theme_class'] ?? 'theme-default' }}">
                         <span>{{ $template['icon'] }}</span>
                         <p>The Wedding Of</p>
-                        <h2>Dika & Nur</h2>
-                        <small>Minggu, 12 Mei 2028</small>
+                        <h2>{{ $wedding['groom']['short_name'] }} & {{ $wedding['bride']['short_name'] }}</h2>
+                        <small>{{ $wedding['date'] }}</small>
                     </div>
 
                     <div class="phone-section intro-section">
@@ -28,32 +28,32 @@
                     </div>
 
                     <div class="phone-section couple-section">
-                        <div class="couple-photo">D</div>
+                        <div class="couple-photo">{{ $wedding['groom']['initial'] }}</div>
 
-                        <h3>Dika Putra</h3>
-                        <p>Putra dari Bapak & Ibu</p>
+                        <h3>{{ $wedding['groom']['full_name'] }}</h3>
+                        <p>{{ $wedding['groom']['parent'] }}</p>
 
                         <span>&</span>
 
-                        <div class="couple-photo">N</div>
+                        <div class="couple-photo">{{ $wedding['bride']['initial'] }}</div>
 
-                        <h3>Nur Aini</h3>
-                        <p>Putri dari Bapak & Ibu</p>
+                        <h3>{{ $wedding['bride']['full_name'] }}</h3>
+                        <p>{{ $wedding['bride']['parent'] }}</p>
                     </div>
 
                     <div class="phone-section event-section">
                         <h3>Detail Acara</h3>
 
                         <div class="event-mini-card">
-                            <strong>Akad Nikah</strong>
-                            <p>08.00 WIB</p>
-                            <small>Yogyakarta</small>
+                            <strong>{{ $wedding['akad']['title'] }}</strong>
+                            <p>{{ $wedding['akad']['time'] }}</p>
+                            <small>{{ $wedding['akad']['place'] }}</small>
                         </div>
 
                         <div class="event-mini-card">
-                            <strong>Resepsi</strong>
-                            <p>11.00 WIB</p>
-                            <small>Yogyakarta</small>
+                            <strong>{{ $wedding['resepsi']['title'] }}</strong>
+                            <p>{{ $wedding['resepsi']['time'] }}</p>
+                            <small>{{ $wedding['resepsi']['place'] }}</small>
                         </div>
                     </div>
 
@@ -70,24 +70,20 @@
 
                     <div class="phone-section location-section">
                         <h3>Lokasi Acara</h3>
-                        <p>Gedung Serbaguna, Yogyakarta</p>
+                        <p>{{ $wedding['akad']['place'] }}, {{ $wedding['akad']['address'] }}</p>
 
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('Gedung Serbaguna Yogyakarta') }}"
-                            target="_blank" rel="noopener noreferrer">Buka Google Maps</a>
+                        <a href="{{ $wedding['maps_url'] }}" target="_blank" rel="noopener noreferrer">Buka Google Maps</a>
                     </div>
 
                     <div class="phone-section wishes-section">
                         <h3>Ucapan Tamu</h3>
 
-                        <div class="wish-card">
-                            <strong>Andi</strong>
-                            <p>Semoga menjadi keluarga yang bahagia selalu.</p>
-                        </div>
-
-                        <div class="wish-card">
-                            <strong>Siti</strong>
-                            <p>Selamat menempuh hidup baru ya!</p>
-                        </div>
+                        @foreach ($wedding['wishes'] as $wish)
+                            <div class="wish-card">
+                                <strong>{{ $wish['name'] }}</strong>
+                                <p>{{ $wish['message'] }}</p>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

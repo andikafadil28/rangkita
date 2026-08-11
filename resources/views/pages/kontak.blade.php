@@ -109,17 +109,17 @@
                 <form id="contactForm">
                     <div class="form-group">
                         <label>Nama</label>
-                        <input type="text" id="name" placeholder="Masukkan nama kamu" required>
+                        <input type="text" id="name" name="name" placeholder="Masukkan nama kamu" required>
                     </div>
 
                     <div class="form-group">
                         <label>Email / WhatsApp</label>
-                        <input type="text" id="contact" placeholder="Contoh: 0812xxxx" required>
+                        <input type="text" id="contact" name="contact" placeholder="Contoh: 0812xxxx" required>
                     </div>
 
                     <div class="form-group">
                         <label>Topik</label>
-                        <select id="topic" required>
+                        <select id="topic" name="topic" required>
                             <option value="Undangan Online">Undangan Online</option>
                             <option value="Produk Digital">Produk Digital</option>
                             <option value="Soal CPNS">Soal CPNS</option>
@@ -129,7 +129,7 @@
 
                     <div class="form-group">
                         <label>Pesan</label>
-                        <textarea id="message" rows="5" placeholder="Tulis pesan kamu di sini" required></textarea>
+                        <textarea id="message" name="message" rows="5" placeholder="Tulis pesan kamu di sini" required></textarea>
                     </div>
 
                     <button type="submit" class="btn-primary">

@@ -37,7 +37,7 @@
         <div class="wedding-preview-card">
             <div class="preview-top">
                 <span>Undangan Digital</span>
-                <strong>Dika & Nur</strong>
+                <strong>Pasangan Anda</strong>
                 <small>Minggu, 12 Mei 2028</small>
             </div>
 
@@ -146,6 +146,10 @@
                         </ul>
 
                         <div class="template-actions">
+                            <a href="{{ url('/undangan/template/' . $template['slug']) }}" class="btn-secondary">
+                                Lihat Detail
+                            </a>
+
                             <a href="{{ url('/undangan/preview/' . $template['slug']) }}" class="btn-secondary">
                                 Preview
                             </a>

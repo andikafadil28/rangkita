@@ -231,7 +231,9 @@ class PageController extends Controller
             abort(404);
         }
 
-        return view('pages.template-detail', compact('template'));
+        $wedding = $this->getDummyWeddingData();
+
+        return view('pages.template-detail', compact('template', 'wedding'));
     }
 
     private function getWeddingTemplates()

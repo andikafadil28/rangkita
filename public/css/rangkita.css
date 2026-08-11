@@ -1600,7 +1600,7 @@ a {
       background: white;
 }
 
-.location-section button {
+.location-section button, .location-section a {
       margin-top: 14px;
       border: none;
       border-radius: 14px;
