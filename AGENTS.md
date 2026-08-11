@@ -269,9 +269,10 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 
 ## Behavior AI (opencode)
 
-- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
+- `opencode.json` di root proyek: config yang nge-load `AGENTS.md` + `SUMMARY.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
+- `.opencode/agent/review.md`: agent review (primary mode, `opencode/mimo-v2.5-free`) — review code changes sebelum commit.
 - `AGENTS.md` punya section `# BEHAVIOR RULES` (10 sub-section): Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi, Plan vs Build, Token Management.
-- Ganti mode plan → build cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
+- Ganti mode plan ↔ build ↔ review cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
 
 ## Sistem Template Undangan
 
@@ -328,6 +329,7 @@ C:\laragon\www\rangkita\
 ├── tests/                      4 file (Pest PHP, semua default)
 ├── bootstrap/
 ├── vendor/                  Dependencies PHP
+├── .opencode/agent/         Agent config (review.md)
 └── file config root: .env, composer.json, package.json, opencode.json, tui.json
 ```
 
