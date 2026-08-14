@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: Bug Fixing **SELESAI** (18/18). Siap lanjut ke modul berikutnya (Auth System).
+Fokus aktif: **Auth System (Manual, Opsi C)** — TODO diperbarui per langkah, siap eksekusi. Bug Fixing **SELESAI** (18/18).
 
 # TODO
 
@@ -53,31 +53,43 @@ Fokus aktif: Bug Fixing **SELESAI** (18/18). Siap lanjut ke modul berikutnya (Au
 
 ---
 
-## 2. Auth System - Estimasi: ~2 jam
+## 2. Auth System (Manual, Opsi C) - Estimasi: ~2 jam
 
-### Database
-- [ ] Migration: `add_role_to_users_table` (tambah `role` ENUM: user/admin)
-- [ ] Seeder: `AdminSeeder.php` (akun admin default)
+### Step 1: Install Package
+- [x] `composer require laravel/socialite` (untuk Google OAuth)
 
-### Controller & Middleware
-- [ ] `AuthController.php` (register, login, logout, Google OAuth)
+### Step 2: Database
+- [x] Migration: `add_role_to_users_table` (tambah `google_id` nullable unique, `avatar` nullable, `role` ENUM: user/admin default user)
+- [x] Seeder: `AdminSeeder.php` (akun admin default: admin@rangkita.com)
+
+### Step 3: Model
+- [ ] Update `User.php` (tambah `google_id`, `avatar`, `role` ke fillable + casts)
+
+### Step 4: Controller
+- [ ] `AuthController.php` (showLogin, login, showRegister, register, logout, redirectToGoogle, handleGoogleCallback, dashboard)
+
+### Step 5: Middleware
 - [ ] `AdminMiddleware.php` (cek role admin)
+- [ ] Register middleware di `bootstrap/app.php`
 
-### Views
-- [ ] `auth/register.blade.php`
-- [ ] `auth/login.blade.php`
+### Step 6: Routes
+- [ ] Auth routes guest (login, register, Google OAuth)
+- [ ] Authenticated routes (logout, dashboard)
+- [ ] Admin route group (prefix: `/admin`, middleware: auth+admin)
 
-### Config
-- [ ] Update `config/services.php` (Google OAuth credentials)
-- [ ] Update `.env` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
+### Step 7: Views
+- [ ] `auth/login.blade.php` (form email + password, link register)
+- [ ] `auth/register.blade.php` (form name + email + password, link login)
+- [ ] `auth/dashboard.blade.php` (welcome message "Selamat datang, [nama]!")
 
-### Install Package
-```bash
-composer require laravel/breeze --dev
-composer require laravel/socialite
-php artisan breeze:install blade
-npm install && npm run build
-```
+### Step 8: Config
+- [ ] Update `config/services.php` (tambah config google untuk Socialite)
+- [ ] Update `.env` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI)
+
+### Step 9: Post-Install Setup
+- [ ] `php artisan migrate`
+- [ ] `php artisan db:seed --class=AdminSeeder`
+- [ ] Test flow login/register/logout
 
 ---
 
@@ -203,13 +215,13 @@ composer require midtrans/midtrans-php
 
 | Kategori | File Baru | File Update |
 |----------|-----------|-------------|
-| Auth | 7 | 3 |
+| Auth | 7 | 4 |
 | Quiz CPNS | 12 | 3 |
 | Payment | 4 | 2 |
 | Undangan | 11 | 1 |
 | Artikel | 15 | 3 |
 | Lainnya | 0 | 5 |
-| **Total** | **49** | **17** |
+| **Total** | **49** | **18** |
 
 ---
 
@@ -272,7 +284,12 @@ composer require midtrans/midtrans-php
   - Harus jelasin: masalahnya apa, kenapa itu masalah, file & baris yang terlibat, apa yang harus diubah, plus contoh kode perubahannya
   - Harus include trade-off analysis kalau ada beberapa opsi solusi
   - User harus paham dulu sebelum eksekusi
-- **Build mode**: AI eksekusi langsung tanpa banyak tanya — tetap jelasin singkat kenapa pilih approach ini
+- **Build mode**: AI ajarin step by step, user kerjain sendiri dulu
+  - AI kasih instruction detail: file path, kode yang harus ditulis/diubah, command yang harus dijalankan
+  - User coba kerjain sendiri dulu
+  - Kalau user stuck/gak bisa → user bilang minta bantu → AI eksekusi langsung
+  - AI nunggu feedback setiap step sebelum lanjut ke step berikutnya
+  - Contoh flow: "Step 1: bikin file X di path Y. Copy kode ini. Kalau udah bilang oke, lanjut step 2."
 
 ## Problem Decomposition
 - Kalau dapet pertanyaan/bug yang kompleks, pecah dulu jadi sub-problem
@@ -335,7 +352,7 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 ## Behavior AI (opencode)
 
 - `opencode.json` di root proyek: config yang nge-load `AGENTS.md` + `SUMMARY.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
-- `.opencode/agent/review.md`: agent review (primary mode, `opencode/mimo-v2.5-free`) — review code changes sebelum commit.
+- `.opencode/agent/review.md`: agent review (primary mode, `opencode/mimo-v2.5-free`) — review code changes sebelum commit + progress tracking (cross-check TODO checkbox di AGENTS.md dengan git diff).
 - `AGENTS.md` punya section `# BEHAVIOR RULES` (17 sub-section): Bahasa & Gaya Bicara, Thorough tapi Terstruktur, Konfirmasi + Jelasin, Expert/Professional, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi, Plan vs Build, Problem Decomposition, Root Cause Analysis, Proactive Issue Detection, Ecosystem Awareness, Testing Mindset, Refactoring Instinct, Code Review, Token Management.
 - Ganti mode plan ↔ build ↔ review cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
 
@@ -437,6 +454,48 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 14 Agu 2026 - Behavior Rules Upgrade: Build Mode Mentoring + Review Progress Tracking
+
+- **Build mode diubah** dari "AI eksekusi langsung" → "AI ajarin step by step, user kerjain sendiri dulu"
+  - AI kasih instruction detail: file path, kode yang ditulis, command yang dijalankan
+  - User coba sendiri dulu, kalau stuck → user bilang minta bantu → AI eksekusi langsung
+  - AI nunggu feedback setiap step sebelum lanjut ke step berikutnya
+- **Review mode ditambah progress tracking** (`.opencode/agent/review.md`)
+  - Review agent baca TODO checkbox di AGENTS.md → cross-reference dengan git diff
+  - Highlight step yang udah dicentang tapi gak ada di diff, atau kode baru yang gak ke-track di TODO
+  - End with progress summary: "Progress: Step X-Y selesai, Step Z remaining"
+- **File diubah**: `AGENTS.md` (section Plan vs Build + NOTES) + `.opencode/agent/review.md`
+- **Status**: belum di-commit
+
+## Ses 14 Agu 2026 - Auth System Mulai (Manual, Opsi C) - Step 1 & 2
+
+- **TODO Auth System di-upgrade ke plan 9 langkah** (hapus Breeze, manual auth), disinkronin di `AGENTS.md` & `SUMMARY.md`
+- **Step 1 selesai**: `composer require laravel/socialite` (v5.29.0 + 5 dependency pendukung) — `composer.json` & `composer.lock` ke-update
+- **Step 2 selesai**:
+  - Migration `2026_08_14_062208_add_role_to_users_table.php` — tambah `google_id` (nullable unique), `avatar` (nullable), `role` ENUM (user/admin, default user)
+  - Seeder `AdminSeeder.php` — akun admin default `admin@rangkita.com` (password `admin12345`, pakai `updateOrCreate` biar idempotent)
+- **Catatan**: migration & seeder belum dijalankan (Step 9), seeder `role` butuh Step 3 (User model fillable) biar kepakai
+- **Status**: belum di-commit (bareng perubahan memory files sesi behavior rules sebelumnya)
+
+## Ses 14 Agu 2026 - Behavior Rules Upgrade: Expert Full Stack Developer
+
+- **Behavior rules di `AGENTS.md` diupgrade dari 10 → 17 sub-section** (persona AI jadi senior full-stack dev), commit `0c44acd`
+- **Section diubah (9)**:
+  - `Bahasa & Gaya Bicara` — jawaban technically weighted, pakai istilah teknis yang tepat + padanan Indonesia
+  - `Simpel & Gak Ribet` → `Thorough tapi Terstruktur` — boleh jawab panjang kalau perlu, pakai heading/list
+  - `Konfirmasi + Jelasin` — wajib jelasin kenapa pilih approach, trade-off analysis
+  - `Mentor/Guru` → `Expert/Professional` — act sebagai senior full-stack dev, kasih solusi proven, highlight code smell
+  - `Batasan` — boleh suggest alternatif tanpa ditanya, tapi TETAP user yang mutusin (format "Alternatif: ... — kelebihan/kekurangan")
+  - `Kualitas Kerja` — apply design patterns, Laravel conventions, hindari God Class
+  - `Proyek & Git` — ikuti naming convention codebase existing
+  - `Komunikasi` — insight berbobot, highlight potensi issue (security/performance/maintainability)
+  - `Plan vs Build` — plan include trade-off analysis, build tetap jelasin singkat kenapa
+- **Section baru (7)**: `Problem Decomposition`, `Root Cause Analysis`, `Proactive Issue Detection`, `Ecosystem Awareness`, `Testing Mindset`, `Refactoring Instinct`, `Code Review`
+  - User jawab 3 preferensi: (1) salah user → tunjukin + fix tapi tetap dibimbing, (2) saran alternatif → langsung suggest tapi user yang mutusin, (3) code review → detail per baris
+  - User minta tambahan "biar AI pinter" → tambah 6 section baru (decompose, root cause, proactive detection, ecosystem, testing, refactoring)
+- **Memori files diupdate**: referensi behavior rules `AGENTS.md` & `SUMMARY.md` disinkronin ke "17 sub-section" + daftar section baru
+- **Push**: `0c44acd` ke `origin/main` (worktree bersih)
 
 ## Ses 11 Agu 2026 - Bug Fix 18/18 Selesai + Review Agent + Config Centralize
 
@@ -583,9 +642,12 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `c738b4e` (branch `main`, up to date dengan `origin/main`)
+- HEAD: `0c44acd` (branch `main`, up to date dengan `origin/main`)
+- **Auth System (Manual, Opsi C) BERJALAN** — Step 1 (socialite) & Step 2 (migration + seeder) selesai, belum migrate
 - **Bug Fixing SELESAI 18/18** (commit `921b851` medium, `cadb15c` high-impact/cleanup, `c738b4e` review agent)
-- Worktree bersih
+- **Behavior rules diupgrade ke 17 sub-section** (commit `0c44acd`) — persona AI jadi expert full-stack dev
+- **Behavior rules diupdate**: Build mode mentoring (step-by-step + user kerjain sendiri), review mode progress tracking — belum di-commit
+- Worktree berubah: AGENTS.md, SUMMARY.md, composer.json, composer.lock, + 2 file baru (migration, seeder) — belum di-commit
 - CSS custom: 2083 baris (setelah cleanup `.phone-screen` duplikat dihapus)
 - Vite/Tailwind/Instrument Sans pipeline dihapus — site murni pakai `rangkita.css` via `asset()`
 - `.opencode/agent/review.md` aktif: Tab = cycle plan → build → review → plan; Shift+Tab reverse
