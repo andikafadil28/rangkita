@@ -212,7 +212,7 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 
 - `opencode.json` di root proyek: config yang nge-load `AGENTS.md` + `SUMMARY.md` sebagai instructions + mengatur model per agent (plan = `opencode/mimo-v2.5-free`, build = `opencode/deepseek-v4-flash-free`).
 - `.opencode/agent/review.md`: agent review (primary mode, `opencode/mimo-v2.5-free`) — review code changes sebelum commit.
-- `AGENTS.md` punya section `# BEHAVIOR RULES` (10 sub-section): Bahasa & Gaya Bicara, Simpel & Gak Ribet, Konfirmasi + Jelasin, Mentor/Guru, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi, Plan vs Build, Token Management.
+- `AGENTS.md` punya section `# BEHAVIOR RULES` (17 sub-section): Bahasa & Gaya Bicara, Thorough tapi Terstruktur, Konfirmasi + Jelasin, Expert/Professional, Batasan, Kualitas Kerja, Proyek & Git, Komunikasi, Plan vs Build, Problem Decomposition, Root Cause Analysis, Proactive Issue Detection, Ecosystem Awareness, Testing Mindset, Refactoring Instinct, Code Review, Token Management.
 - Ganti mode plan ↔ build ↔ review cukup tekan **Tab** atau **Shift+Tab** (dikonfigurasi via `tui.json` — Tab = `agent_cycle`, Shift+Tab = `agent_cycle_reverse`, `prompt.autocomplete.complete` dimatikan dari Tab biar gak konflik).
 
 ## Sistem Template Undangan
@@ -313,6 +313,24 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 14 Agu 2026 - Behavior Rules Upgrade: Expert Full Stack Developer
+
+- **Behavior rules di `AGENTS.md` diupgrade dari 10 → 17 sub-section** (persona AI jadi senior full-stack dev)
+- **Section diubah (9)**:
+  - `Bahasa & Gaya Bicara` — jawaban technically weighted, pakai istilah teknis yang tepat + padanan Indonesia
+  - `Simpel & Gak Ribet` → `Thorough tapi Terstruktur` — boleh jawab panjang kalau perlu, pakai heading/list
+  - `Konfirmasi + Jelasin` — wajib jelasin kenapa pilih approach, trade-off analysis
+  - `Mentor/Guru` → `Expert/Professional` — act sebagai senior full-stack dev, kasih solusi proven, highlight code smell
+  - `Batasan` — boleh suggest alternatif tanpa ditanya, tapi TETAP user yang mutusin (format "Alternatif: ... — kelebihan/kekurangan")
+  - `Kualitas Kerja` — apply design patterns, Laravel conventions, hindari God Class
+  - `Proyek & Git` — ikuti naming convention codebase existing
+  - `Komunikasi` — insight berbobot, highlight potensi issue (security/performance/maintainability)
+  - `Plan vs Build` — plan include trade-off analysis, build tetap jelasin singkat kenapa
+- **Section baru (7)**: `Problem Decomposition`, `Root Cause Analysis`, `Proactive Issue Detection`, `Ecosystem Awareness`, `Testing Mindset`, `Refactoring Instinct`, `Code Review`
+  - User jawab 3 preferensi: (1) salah user → tunjukin + fix tapi tetap dibimbing, (2) saran alternatif → langsung suggest tapi user yang mutusin, (3) code review → detail per baris
+  - User minta tambahan "biar AI pinter" → tambah 6 section baru (decompose, root cause, proactive detection, ecosystem, testing, refactoring)
+- **Referensi di `SUMMARY.md`** diupdate dari "10 sub-section" → "17 sub-section" + daftar section baru
 
 ## Ses 11 Agu 2026 - Bug Fix 18/18 Selesai + Review Agent + Config Centralize
 
