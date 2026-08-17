@@ -1,6 +1,6 @@
 # CURRENT
 
-Fokus aktif: **Auth System (Manual, Opsi C)** — TODO diperbarui per langkah, siap eksekusi. Bug Fixing **SELESAI** (18/18).
+Fokus aktif: **Quiz CPNS + Midtrans Payment** — Auth System **SELESAI** (9/9 step). Bug Fixing **SELESAI** (18/18).
 
 # TODO
 
@@ -56,33 +56,33 @@ Fokus aktif: **Auth System (Manual, Opsi C)** — TODO diperbarui per langkah, s
 - [x] Seeder: `AdminSeeder.php` (akun admin default: admin@rangkita.com)
 
 ### Step 3: Model
-- [ ] Update `User.php` (tambah `google_id`, `avatar`, `role` ke fillable + casts)
+- [x] Update `User.php` (tambah `google_id`, `avatar`, `role` ke fillable + casts)
 
 ### Step 4: Controller
-- [ ] `AuthController.php` (showLogin, login, showRegister, register, logout, redirectToGoogle, handleGoogleCallback, dashboard)
+- [x] `AuthController.php` (showLogin, login, showRegister, register, logout, redirectToGoogle, handleGoogleCallback, dashboard)
 
 ### Step 5: Middleware
-- [ ] `AdminMiddleware.php` (cek role admin)
-- [ ] Register middleware di `bootstrap/app.php`
+- [x] `AdminMiddleware.php` (cek role admin)
+- [x] Register middleware di `bootstrap/app.php`
 
 ### Step 6: Routes
-- [ ] Auth routes guest (login, register, Google OAuth)
-- [ ] Authenticated routes (logout, dashboard)
-- [ ] Admin route group (prefix: `/admin`, middleware: auth+admin)
+- [x] Auth routes guest (login, register, Google OAuth)
+- [x] Authenticated routes (logout, dashboard)
+- [x] Admin route group (prefix: `/admin`, middleware: auth+admin)
 
 ### Step 7: Views
-- [ ] `auth/login.blade.php` (form email + password, link register)
-- [ ] `auth/register.blade.php` (form name + email + password, link login)
-- [ ] `auth/dashboard.blade.php` (welcome message "Selamat datang, [nama]!")
+- [x] `auth/login.blade.php` (form email + password, link register)
+- [x] `auth/register.blade.php` (form name + email + password, link login)
+- [x] `auth/dashboard.blade.php` (welcome message "Selamat datang, [nama]!")
 
 ### Step 8: Config
-- [ ] Update `config/services.php` (tambah config google untuk Socialite)
-- [ ] Update `.env` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI)
+- [x] Update `config/services.php` (tambah config google untuk Socialite)
+- [x] Update `.env` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI)
 
 ### Step 9: Post-Install Setup
-- [ ] `php artisan migrate`
-- [ ] `php artisan db:seed --class=AdminSeeder`
-- [ ] Test flow login/register/logout
+- [x] `php artisan migrate`
+- [x] `php artisan db:seed --class=AdminSeeder`
+- [x] Test flow login/register/logout
 
 ---
 
@@ -218,7 +218,7 @@ composer require midtrans/midtrans-php
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 10 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Belum ada database migration, semua data masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 19 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Database users aktif (migrate + seed sudah jalan), data produk/template/artikel masih hardcoded di controller.
 
 ## Behavior AI (opencode)
 
@@ -235,6 +235,8 @@ Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 1
 - **Fitur**: Login, Register, Logout, Google OAuth, role-based access (user/admin).
 - **Security**: `Hash::make`/`Hash::check`, CSRF auto-handle, session-based auth via `Auth::attempt()`.
 - **Admin default**: admin@rangkita.com (via `AdminSeeder`).
+- **Routes**: 19 rute web (10 publik + 6 guest + 2 auth + 1 admin), grup `guest`/`auth`/`admin` + middleware alias `admin`.
+- **Status**: SELESAI 9/9 step — migrate + seed + test flow sukses.
 - **Pull workflow di komputer rumah**: `git pull` → `composer install` (kalau ada dependency baru) → `php artisan migrate` → `php artisan db:seed --class=AdminSeeder` → `php artisan config:clear` → test flow.
 
 ## Sistem Template Undangan
@@ -255,16 +257,21 @@ Temuan masalah:
 
 ```
 C:\laragon\www\rangkita\
-├── app/                        Kode aplikasi PHP (5 file)
+├── app/                        Kode aplikasi PHP (7 file)
 │   ├── Http/Controllers/
 │   │   ├── Controller.php      Base controller abstrak (8 baris)
-│   │   └── PageController.php  SEMUA logika utama (378 baris)
-│   ├── Models/User.php         Model bawaan Laravel
+│   │   ├── PageController.php  Logika halaman publik (378 baris)
+│   │   └── AuthController.php  Auth: login/register/logout/Google OAuth/dashboard
+│   ├── Http/Middleware/
+│   │   └── AdminMiddleware.php Cek role admin (abort 403)
+│   ├── Models/User.php         Model User (fillable + google_id/avatar/role)
 │   ├── Providers/AppServiceProvider.php
 │   └── View/Components/navbar.php
 ├── resources/
 │   └── views/
 │       ├── landing.blade.php   Homepage utama (206 baris)
+│       ├── auth/               Halaman auth (login, register, dashboard)
+│       ├── admin/              Halaman admin (dashboard)
 │       ├── components/navbar.blade.php
 │       ├── layouts/app.blade.php   Layout utama + SEO meta (35 baris)
 │       └── pages/              9 halaman
@@ -278,13 +285,15 @@ C:\laragon\www\rangkita\
 │           ├── artikel-detail.blade.php
 │           └── kontak.blade.php
 ├── routes/
-│   ├── web.php                 10 rute GET (semua ke PageController)
+│   ├── web.php                 19 rute (10 publik + 6 guest + 2 auth + 1 admin)
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
-│   ├── migrations/             3 migration default (users, cache, jobs)
-│   └── seeders/DatabaseSeeder.php
-├── config/                     10 file config (semua default Laravel)
+│   ├── migrations/             4 migration (3 default + add_role_to_users_table)
+│   └── seeders/
+│       ├── DatabaseSeeder.php
+│       └── AdminSeeder.php     Akun admin default
+├── config/                     10 file config (services.php + config google)
 ├── public/
 │   ├── css/rangkita.css        CSS CUSTOM UTAMA (2083 baris)
 │   └── images/logo-rangkita.png
@@ -300,15 +309,17 @@ C:\laragon\www\rangkita\
 
 | Komponen | Jumlah | Keterangan |
 |----------|--------|------------|
-| Rute web | 10 | Semua GET, tanpa auth/API |
-| Controllers | 2 | 1 base abstrak + 1 PageController |
-| Models | 1 | User (default) |
-| View files | 12 | 1 root + 1 layout + 1 komponen + 9 pages |
+| Rute web | 19 | 10 publik + 6 guest + 2 auth + 1 admin |
+| Controllers | 3 | 1 base abstrak + PageController + AuthController |
+| Middleware | 1 | AdminMiddleware (role admin) |
+| Models | 1 | User (fillable + google_id/avatar/role) |
+| View files | 16 | 1 root + 1 layout + 1 komponen + 9 pages + 3 auth + 1 admin |
 | Blade components | 1 | navbar |
 | Layout files | 1 | app.blade.php |
 | CSS custom | 2083 baris | public/css/rangkita.css (blok V1.6 sudah tidak dipakai) |
-| Migrations | 3 | Semua default Laravel |
-| Config files | 10 | Semua default |
+| Migrations | 4 | 3 default + add_role_to_users_table |
+| Seeders | 2 | DatabaseSeeder + AdminSeeder |
+| Config files | 10 | services.php + config google |
 | Test files | 4 | Semua default |
 
 ## Data Hardcoded di PageController
@@ -322,19 +333,41 @@ C:\laragon\www\rangkita\
 
 ## Pola Arsitektur
 
-- **Single Controller Pattern**: Semua 10 rute di-handle satu PageController
-- **No Database**: Semua data adalah array hardcoded di PHP
+- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth)
+- **Database Aktif**: users table + role (migrate + seed sudah dijalankan), data lain masih hardcoded
 - **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
-- **No Auth**: Tidak ada autentikasi/admin panel
+- **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
 - **No API**: Hanya web routes
 
 ## Teknologi
 
-- Laravel 13.8 / PHP ^8.3 / MySQL (DB "rangkita", belum aktif)
+- Laravel 13.8 / PHP ^8.3 / MySQL (DB "rangkita", aktif setelah migrate)
+- `laravel/socialite` ^5.29 untuk Google OAuth
 - Pest PHP ^4.7 untuk testing
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 17 Agu 2026 - Auth System Selesai (9/9 step)
+
+- **Step 3 selesai**: `User.php` diupdate — `#[Fillable(['name', 'email', 'password', 'google_id', 'avatar', 'role'])]`, `php -l` lolos
+- **Step 4 selesai**: `AuthController.php` baru (8 method: showLogin, login, showRegister, register, logout, redirectToGoogle, handleGoogleCallback, dashboard)
+  - Login: `Auth::attempt` + `session()->regenerate()` (session fixation protection)
+  - Register: validasi `unique:users,email` + `Hash::make` + auto-login
+  - Google OAuth: `Socialite::driver('google')`, fallback match by `google_id` OR `email`, kalau user existing daftar manual → `google_id` di-update, password random `str()->random(32)` buat user baru
+  - Logout: `session()->invalidate()` + `regenerateToken()` (anti CSRF session reuse)
+- **Step 5 selesai**: `AdminMiddleware.php` baru — cek `auth()->guest() || role !== 'admin'` → `abort(403)`, registered sebagai alias `admin` di `bootstrap/app.php`
+- **Step 6 selesai**: `routes/web.php` jadi 19 rute (10 publik + 6 guest + 2 auth + 1 admin)
+  - Grup `guest`: login, login.submit, register, register.submit, google.redirect, google.callback
+  - Grup `auth`: logout (POST), dashboard
+  - Grup `admin` (prefix `/admin`, middleware `['auth', 'admin']`): placeholder `admin.dashboard`
+- **Step 7 selesai**: 3 view baru — `auth/login.blade.php`, `auth/register.blade.php`, `auth/dashboard.blade.php` + `admin/dashboard.blade.php` (placeholder). Semua form pakai `@csrf`, error validation, `old()` re-populate
+- **Step 8 selesai**: `config/services.php` + block `google` (client_id, client_secret, redirect), `.env` + `GOOGLE_CLIENT_ID/SECRET/REDIRECT_URI` (kosong, tinggal diisi dari Google Cloud Console), `.env.example` diupdate biar template ke-track git
+- **Step 9 selesai**: DB `rangkita` dibuat di MySQL (ternyata belum ada), `php artisan migrate --force` (4 migration jalan), `db:seed --class=AdminSeeder`, verifikasi role=admin + hash valid + `Auth::attempt` sukses
+- **File baru**: AuthController, AdminMiddleware, migration `add_role_to_users_table`, AdminSeeder (dari step 2), 3 view auth + 1 admin dashboard
+- **File update**: User.php, bootstrap/app.php, routes/web.php, config/services.php, .env, .env.example, composer.json, composer.lock
+- **Verifikasi**: `php -l` semua lolos, `view:cache` sukses, `route:list` 23 route (19 app + 4 vendor), tinker auth test sukses
+- **Status**: belum di-commit
 
 ## Ses 14 Agu 2026 - Behavior Rules Upgrade: Build Mode Mentoring + Review Progress Tracking
 
@@ -522,15 +555,17 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `0c44acd` (branch `main`, up to date dengan `origin/main`)
-- **Auth System (Manual, Opsi C) BERJALAN** — Step 1 (socialite) & Step 2 (migration + seeder) selesai, belum migrate
+- HEAD: `0c44acd` (branch `main`) — Auth System selesai tapi **belum di-commit**
+- **Auth System (Manual, Opsi C) SELESAI 9/9 step** — migrate + seed + test flow sukses, login admin terverifikasi
 - **Bug Fixing SELESAI 18/18** (commit `921b851` medium, `cadb15c` high-impact/cleanup, `c738b4e` review agent)
 - **Behavior rules diupgrade ke 17 sub-section** (commit `0c44acd`) — persona AI jadi expert full-stack dev
 - **Behavior rules diupdate**: Build mode mentoring (step-by-step + user kerjain sendiri), review mode progress tracking — belum di-commit
-- Worktree berubah: AGENTS.md, SUMMARY.md, composer.json, composer.lock, + 2 file baru (migration, seeder) — belum di-commit
+- Worktree berubah: AGENTS.md, SUMMARY.md, composer.json, composer.lock, + Auth System files (AuthController, AdminMiddleware, AdminSeeder, migration, 4 views) — belum di-commit
+- DB `rangkita` aktif: 4 migration jalan, akun admin `admin@rangkita.com` (role admin, hash valid)
+- Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal diisi dari Google Cloud Console
 - CSS custom: 2083 baris (setelah cleanup `.phone-screen` duplikat dihapus)
 - Vite/Tailwind/Instrument Sans pipeline dihapus — site murni pakai `rangkita.css` via `asset()`
 - `.opencode/agent/review.md` aktif: Tab = cycle plan → build → review → plan; Shift+Tab reverse
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
 - `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-- **Siap lanjut ke modul berikutnya: Auth System**
+- **Siap lanjut ke modul berikutnya: Quiz CPNS + Midtrans Payment**
