@@ -3,10 +3,13 @@
   "instructions": ["AGENTS.md", "SUMMARY.md"],
   "agent": {
     "plan": {
-      "model": "opencode/mimo-v2.5-free"
+      "model": "opencode/big-pickle"
     },
     "build": {
-      "model": "opencode/deepseek-v4-flash-free"
+      "model": "opencode/big-pickle"
+    },
+    "reasoning": {
+      "model": "opencode/nemotron-3-ultra-free"
     }
   }
 }
