@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Quiz CPNS + Midtrans Payment** — Auth System **SELESAI** (9/9 step). Bug Fixing **SELESAI** (18/18).
+Fokus aktif: **Quiz CPNS + Midtrans Payment IN PROGRESS** — SDK Midtrans terinstall (v2.6.2), 5 migration dibuat (2/5 schema selesai), config midtrans terisi, seeder 3 paket + 100 soal TIU terisi. Auth System **SELESAI** (9/9 step, committed). Bug Fixing **SELESAI** (18/18).
 
 # TODO
 
@@ -96,21 +96,21 @@ Fokus aktif: **Quiz CPNS + Midtrans Payment** — Auth System **SELESAI** (9/9 s
 ## 3. Quiz CPNS + Midtrans Payment - Estimasi: ~3.5 jam
 
 ### Database
-- [ ] Migration: `question_packages` (id, category, name, slug, total_questions, difficulty, price, is_active)
-- [ ] Migration: `questions` (id, package_id, question_text, option_a/b/c/d, correct_answer, explanation, difficulty)
-- [ ] Migration: `quiz_sessions` (id, user_id, package_id, mode, score, answers JSON, time_spent, time_limit)
-- [ ] Migration: `transactions` (id, user_id, package_id, order_id, gross_amount, payment_type, status, snap_token)
-- [ ] Migration: `user_access` (id, user_id, package_id, transaction_id, access_granted)
-- [ ] Seeder: `QuestionPackageSeeder.php` (9 paket: 3 per kategori TWK/TIU/TKP)
-- [ ] Seeder: `QuestionSeeder.php` (~135 soal total)
+- [x] Migration: `question_packages` (id, category, name, slug, total_questions, difficulty, price, is_active) — schema terisi
+- [x] Migration: `questions` (id, package_id, question_text, option_a/b/c/d/e, correct_answer enum a-e, explanation, difficulty) — schema terisi (option_e nullable, enum a-e untuk fleksibilitas 4/5 opsi)
+- [ ] Migration: `quiz_sessions` (id, user_id, package_id, mode, score, answers JSON, time_spent, time_limit) — file dibuat, schema masih skeleton
+- [ ] Migration: `transactions` (id, user_id, package_id, order_id, gross_amount, payment_type, status, snap_token) — file dibuat, schema masih skeleton
+- [ ] Migration: `user_access` (id, user_id, package_id, transaction_id, access_granted) — file dibuat, schema masih skeleton
+- [x] Seeder: `QuestionPackageSeeder.php` (3 paket TIU: verbal 30, numerik 50, penalaran 20)
+- [x] Seeder: `QuestionSeeder.php` (100 soal TIU dengan answer key + explanation dari PDF KCD)
 
 ### Controller
 - [ ] `CpnsController.php` (index, category, quiz, submit, result)
 - [ ] `PaymentController.php` (create, callback, success)
 
 ### Config
-- [ ] `config/midtrans.php` (server_key, client_key, is_production)
-- [ ] Update `.env` (MIDTRANS_SERVER_KEY, MIDTRANS_CLIENT_KEY)
+- [x] `config/midtrans.php` (server_key, client_key, is_production — sandbox)
+- [x] Update `.env` (MIDTRANS_SERVER_KEY, MIDTRANS_CLIENT_KEY terisi sandbox keys)
 
 ### Views
 - [ ] `cpns.blade.php` (UPDATE: 3 kategori + jumlah paket)
@@ -120,9 +120,7 @@ Fokus aktif: **Quiz CPNS + Midtrans Payment** — Auth System **SELESAI** (9/9 s
 - [ ] `cpns-payment-success.blade.php` (BARU: sukses bayar)
 
 ### Install Package
-```bash
-composer require midtrans/midtrans-php
-```
+- [x] `composer require midtrans/midtrans-php` — v2.6.2 terinstall
 
 ### Alur Pembayaran
 1. User pilih paket berbayar → klik "Beli & Mulai"
@@ -347,7 +345,7 @@ composer require midtrans/midtrans-php
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 19 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Database users aktif (migrate + seed sudah jalan), data produk/template/artikel masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 19 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Database users + quiz (question_packages + questions) aktif (migrate + seed sudah jalan), data produk/template/artikel masih hardcoded di controller.
 
 ## Behavior AI (opencode)
 
@@ -406,10 +404,12 @@ C:\laragon\www\rangkita\
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
-│   ├── migrations/             4 migration (3 default + add_role_to_users_table)
+│   ├── migrations/             9 migration (3 default + add_role_to_users_table + 5 quiz cpns)
 │   └── seeders/
 │       ├── DatabaseSeeder.php
-│       └── AdminSeeder.php     Akun admin default
+│       ├── AdminSeeder.php     Akun admin default
+│       ├── QuestionPackageSeeder.php  3 paket TIU
+│       └── QuestionSeeder.php  100 soal TIU
 ├── config/                     10 file config (services.php + config google)
 ├── public/
 │   ├── css/rangkita.css        CSS CUSTOM UTAMA (2083 baris)
@@ -434,8 +434,8 @@ C:\laragon\www\rangkita\
 | Blade components | 1 | navbar |
 | Layout files | 1 | app.blade.php |
 | CSS custom | 2083 baris | public/css/rangkita.css (blok V1.6 sudah tidak dipakai) |
-| Migrations | 4 | 3 default + add_role_to_users_table |
-| Seeders | 2 | DatabaseSeeder + AdminSeeder |
+| Migrations | 9 | 3 default + add_role_to_users_table + 5 quiz cpns (2 schema selesai, 3 skeleton) |
+| Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
 | Config files | 10 | services.php + config google |
 | Test files | 4 | Semua default |
 
@@ -451,7 +451,7 @@ C:\laragon\www\rangkita\
 ## Pola Arsitektur
 
 - **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth)
-- **Database Aktif**: users table + role (migrate + seed sudah dijalankan), data lain masih hardcoded
+- **Database Aktif**: users table + role + question_packages + questions (100 soal) sudah migrate & seed, data lain masih hardcoded
 - **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
 - **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
 - **No API**: Hanya web routes
@@ -460,10 +460,39 @@ C:\laragon\www\rangkita\
 
 - Laravel 13.8 / PHP ^8.3 / MySQL (DB "rangkita", aktif setelah migrate)
 - `laravel/socialite` ^5.29 untuk Google OAuth
+- `midtrans/midtrans-php` ^2.6.2 untuk Snap API pembayaran quiz CPNS
 - Pest PHP ^4.7 untuk testing
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 22 Agu 2026 (Sesi 2) - Modul 3 Seeder + Config Midtrans Selesai
+
+- **Schema fix batch 1**: FK `package_id` di 4 migration file (questions, quiz_sessions, transactions, user_access) diubah dari `->constrained()` → `->constrained('question_packages')` — Laravel infer `packages` dari column name `package_id`, padahal tabelnya `question_packages`
+- **Schema fix batch 2**: `option_e` ditambah nullable + `correct_answer` di-upgrade dari `enum('a','b','c','d')` → `enum('a','b','c','d','e')` — CPNS 4 opsi, Polri bisa 5 opsi
+- **Config Midtrans**: `config/midtrans.php` dibuat (server_key, client_key, is_production), `.env` + `.env.example` diupdate dengan sandbox keys (`Mid-server-*`, `Mid-client-*` format baru, bukan `SB-Mid-*` lama). Keys verified via live API test
+- **Seeder 1 — QuestionPackageSeeder**: 3 paket TIU: Verbal (30 soal, gratis), Numerik (50 soal, Rp15.000), Penalaran (20 soal, gratis)
+- **Seeder 2 — QuestionSeeder**: 100 soal TIU diekstrak dari PDF KCD (`Soal_KECERDASAN MINGGUAN_KCD-M-2627-8 (1).pdf`, 26 halaman) via `pdftotext`. Termasuk:
+  - 30 verbal: definisi kata (BAROMETER, KWARTIR), antonim/sinonim, analogi, klasifikasi, odd-one-out, baris deret
+  - 50 numerik: pola bilangan, operasi hitung, cerita (kecepatan, luas, usia, aritmetika sosial, campuran)
+  - 20 penalaran: silogisme, logika kondisional, urutan, kesimpulan teks, kode numerik
+  - Setiap soal punya: jawaban benar + penjelasan (explanation) + difficulty sedang
+- **Bug fix — compact()**: `compact()` di method `q()` gak dipake — Laravel `DB::table()->insert()` sort columns alphabetically, bikin values scramble. Diganti explicit associative array
+- **Bug fix — extra null arg**: Semua 100 panggilan `q()` punya argumen `null` extra sebelum correct_answer, bikin parameter shift. Fix massal via regex replace `,null,` → `,`
+- **UTF-8 BOM**: File `QuestionSeeder.php` awalnya punya BOM (3 bytes `\xEF\xBB\xBF`), PHP parse error. Fix: rewrite tanpa BOM
+- **MySQL**: Laragon MySQL 8.0.30 harus di-start manual (bukan service), `mysqld.exe` langsung via `C:\laragon\bin\mysql\mysql-8.0.30-winx64\bin\mysqld.exe --defaults-file=...`
+- **Verifikasi**: `php artisan migrate:fresh --seed` sukses — 9 migration + 3 seeders (AdminSeeder + QuestionPackageSeeder + QuestionSeeder). DB check: 3 packages, 100 questions, data valid (correct_answer, difficulty, option_a-e semua terisi)
+- **Next**: batch 2 schema skeleton (quiz_sessions, transactions, user_access) → CpnsController + PaymentController → views
+
+## Ses 22 Agu 2026 - Modul 3 Quiz CPNS Dimulai + Agent Model Switch
+
+- **Agent model switch** (commit `5c5552f`): build agent `opencode/deepseek-v4-flash-free` gak available lagi di provider opencode → diganti ke `opencode/big-pickle`. Referensi model di AGENTS.md & SUMMARY.md disinkronin. Ternyata Auth System udah ke-commit sebelumnya (`9b02a59`) — memory "belum di-commit" outdated, dikoreksi
+- **Modul 3 Step 1 selesai** (build mode mentoring — user jalankan sendiri): `composer require midtrans/midtrans-php` v2.6.2 (official SDK Snap API)
+- **Step 2 selesai**: generate 5 migration via `php artisan make:migration --create` (user jalankan) — question_packages → questions → quiz_sessions → transactions → user_access (urutan timestamp = urutan dependency FK)
+- **Step 3 batch 1 selesai**: schema terisi untuk `question_packages` (enum category twk/tiu/tkp, slug unique, price unsignedInteger Rupiah default(0)=gratis, is_active boolean default true) + `questions` (`foreignId('package_id')->constrained()->cascadeOnDelete()`, option_a-d string, enum correct_answer a/b/c/d, explanation nullable)
+- **Batch 2 pending**: quiz_sessions + transactions + user_access masih skeleton
+- **Commit + Push**: `6bc1922` feat: quiz cpns setup - midtrans sdk + 5 table migrations (7 file, +216 baris) ke origin/main
+- **Next**: batch 2 schema → migrate → config/midtrans.php + .env keys → seeder (9 paket + ~135 soal) → CpnsController + PaymentController → views
 
 ## Ses 17 Agu 2026 - Auth System Selesai (9/9 step)
 
@@ -673,20 +702,17 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `0c44acd` (branch `main`) — Auth System selesai tapi **belum di-commit**
-- **Auth System (Manual, Opsi C) SELESAI 9/9 step** — migrate + seed + test flow sukses, login admin terverifikasi
-- **Bug Fixing SELESAI 18/18** (commit `921b851` medium, `cadb15c` high-impact/cleanup, `c738b4e` review agent)
-- **Behavior rules diupgrade ke 17 sub-section** (commit `0c44acd`) — persona AI jadi expert full-stack dev
-- **Behavior rules diupdate**: Build mode mentoring (step-by-step + user kerjain sendiri), review mode progress tracking — belum di-commit
-- Worktree berubah: AGENTS.md, SUMMARY.md, composer.json, composer.lock, + Auth System files (AuthController, AdminMiddleware, AdminSeeder, migration, 4 views) — belum di-commit
-- DB `rangkita` aktif: 4 migration jalan, akun admin `admin@rangkita.com` (role admin, hash valid)
+- HEAD: `6bc1922` (branch `main`) — pushed ke origin/main, worktree bersih
+- **Modul 3 Quiz CPNS + Midtrans IN PROGRESS**: SDK midtrans v2.6.2 terinstall, 5 migration dibuat, schema 2/5 selesai (question_packages + questions), config midtrans terisi, seeder 3 paket + 100 soal TIU terisi
+- **Auth System SELESAI 9/9 step** dan sudah committed (`9b02a59`) — migrate + seed + test flow sukses
+- **Bug Fixing SELESAI 18/18** (commit `921b851`, `cadb15c`, `c738b4e`)
+- Agent model: plan/build = `opencode/big-pickle`, reasoning = `opencode/nemotron-3-ultra-free`, review agent = `mimo-v2.5-free` (commit `5c5552f`)
+- DB `rangkita` aktif: users table + role + question_packages + questions (100 soal) — sudah di-migrate & seed
 - Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal diisi dari Google Cloud Console
-- CSS custom: 2083 baris (setelah cleanup `.phone-screen` duplikat dihapus)
-- Vite/Tailwind/Instrument Sans pipeline dihapus — site murni pakai `rangkita.css` via `asset()`
-- `.opencode/agent/review.md` aktif: Tab = cycle plan → build → review → plan; Shift+Tab reverse
+- Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2 terinstall
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
 - `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-- **Siap lanjut ke modul berikutnya: Quiz CPNS + Midtrans Payment**
+- **Lanjutan Modul 3**: batch 2 schema (quiz_sessions, transactions, user_access) → CpnsController + PaymentController → views
 
 
 # STYLE
