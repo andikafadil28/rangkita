@@ -117,13 +117,6 @@ class PageController extends Controller
         return view('pages.produk-detail', compact('product'));
     }
 
-
-
-    public function cpns()
-    {
-        return view('pages.cpns');
-    }
-
     public function artikel()
     {
         $articles = $this->getArticles();
