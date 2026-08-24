@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Quiz SOAL + Midtrans Payment — Step 6 Test Flow (tinggal verifikasi akhir)** — Full rename CPNS → SOAL selesai (`ff5e41f`), 6 views quiz + payment jadi (`f633449`, +801 baris), 4 bug fix payment ter-verify via sandbox test (`b0dcc29`). Semua pushed ke origin/main. Auth System **SELESAI** (9/9 step). Bug Fixing **SELESAI** (18/18). Lanjut: **Modul 4 Database Undangan** setelah test flow beres.
+Fokus aktif: **Verifikasi akhir Modul 3** (Step A: quiz Numerik 50 soal mode latihan+test pakai admin; Step B: flow "Lanjut Bayar" token lama pakai akun baru) — nunggu test manual user. Bug `payment_type` NULL udah difix (`e9d34c2`). Setelah verifikasi beres: **Modul 6 Admin Panel Kelola Soal** (didahulukan, sebelum Modul 4 Undangan).
 
 # TODO
 
@@ -159,6 +159,38 @@ Fokus aktif: **Quiz SOAL + Midtrans Payment — Step 6 Test Flow (tinggal verifi
 
 ---
 
+## 6. Admin Panel Kelola Soal - Estimasi: ~2.5 jam ⭐ PRIORITAS BERIKUTNYA
+
+> CRUD paket + soal dari dashboard, role admin saja. Input form satuan (bulk load awal tetap via Seeder). ZERO migration — semua kolom DB udah cukup.
+
+### Routes (~12 baru, group `/admin` existing auth+admin)
+- [ ] CRUD paket: index/create/store/edit/update/destroy (`/admin/soal/paket[...]`)
+- [ ] Nested CRUD soal per paket (`/admin/soal/paket/{paket}/soal[...]`)
+- Binding paket via slug (getRouteKeyName), soal via id
+
+### Controllers (2 baru)
+- [ ] `AdminQuestionPackageController` (CRUD paket)
+  - Validasi: category in twk/tiu/tkp, slug auto Str::slug + unique ignore self, price integer min:0, is_active boolean
+  - Delete guard: block kalau `transactions()`/`userAccess()` exists (integritas finansial); else hard delete (soal cascade via FK)
+- [ ] `AdminQuestionController` (nested CRUD soal)
+  - Validasi kunci: `correct_answer` HARUS opsi yang terisi (jawab 'e' saat opsi_e kosong = reject, custom after-rule)
+  - Sync `total_questions` ke parent tiap store/update/destroy soal (anti data-drift; badge halaman publik tetap akurat)
+
+### Views (~8)
+- [ ] `admin/layouts/admin.blade.php` (navbar minimal + container)
+- [ ] `admin/dashboard.blade.php` (UPDATE → home menu card)
+- [ ] `admin/packages/{index,create,edit}.blade.php` (withCount soal live)
+- [ ] `admin/questions/{index,create,edit}.blade.php` (paginate 20)
+
+### CSS
+- [ ] Blok admin panel ke rangkita.css (~200 baris)
+
+### Verifikasi
+- [ ] php -l, route:list, view:cache
+- [ ] Happy path + edge case (correct_answer E kosong reject; delete paket ada transaksi blocked) + regression quiz publik & timer
+
+---
+
 ## 4. Database Undangan - Estimasi: ~3 jam
 
 ### Database
@@ -234,7 +266,8 @@ Fokus aktif: **Quiz SOAL + Midtrans Payment — Step 6 Test Flow (tinggal verifi
 | 3 | Quiz SOAL + Midtrans | ~3.5 jam |
 | 4 | Database Undangan | ~3 jam |
 | 5 | Database Artikel | ~3.5 jam |
-| **Total** | | **~13.5 jam** |
+| 6 | Admin Panel Kelola Soal | ~2.5 jam |
+| **Total** | | **~16 jam** |
 
 ## File Stats (Setelah Semua Selesai)
 
@@ -245,8 +278,9 @@ Fokus aktif: **Quiz SOAL + Midtrans Payment — Step 6 Test Flow (tinggal verifi
 | Payment | 4 | 2 |
 | Undangan | 11 | 1 |
 | Artikel | 15 | 3 |
+| Admin Panel Soal | 8 | 3 |
 | Lainnya | 0 | 5 |
-| **Total** | **49** | **18** |
+| **Total** | **57** | **21** |
 
 ---
 
@@ -507,6 +541,14 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 24 Agu 2026 (Sesi 2) - Fix payment_type NULL + Plan Modul 6 Admin Panel Soal
+
+- **Bug fix `payment_type` NULL** (`e9d34c2`): transaksi paid lewat jalur sync (bukan webhook) gak nyimpen payment_type. Root cause ganda: (1) `syncWithMidtrans()` cuma return string status — data `payment_type` dari API Midtrans dibuang; (2) di `create()` jalur paid row transaction BAHKAN GAK DIUPDATE sama sekali (tetep pending di DB walau Midtrans bilang paid). Fix: `syncWithMidtrans()` return model Transaction + persist status+payment_type sekali tempat (single source of truth); `create()`/`success()` simplify tinggal baca `->status`. Kondisi update: status berubah ATAU payment_type kosong (auto-backfill kasus lama)
+- **Verified via script PHP bootstrap + reflection** (method private): row #4 BEFORE payment_type=NULL → AFTER='echannel' — user ternyata bayar subuh tadi pakai e-channel transfer, bukan QRIS. Script sementara dihapus setelah test
+- **Insight state DB**: admin@rangkita.com udah paid TIU Numerik (echannel Rp15rb) + user_access granted + quiz Verbal latihan skor 37 → yang ke-test subuh tadi = pembayaran + quiz PAKET GRATIS. Dua item TODO sisa memang belum keverifikasi: DB buktiin 0 transaksi pending yang di-reuse + 0 quiz_sessions numerik
+- **Keputusan verifikasi lanjutan**: pakai AKUN BARU (bukan reset data admin) — sekalian test access isolation antar user. Step A quiz Numerik pakai admin (udah punya akses), Step B "Lanjut Bayar" pakai akun baru
+- **Modul 6 Admin Panel Kelola Soal planned** (~2.5 jam): CRUD paket+soal dari dashboard admin, form input satuan aja (bulk load tetap seeder), ZERO migration, delete guard integritas finansial (block kalau ada transaksi/user_access), sync total_questions anti data-drift, correct_answer wajib opsi terisi. DIDAHULUKAN sebelum Modul 4 Undangan (keputusan user)
 
 ## Ses 24 Agu 2026 - Modul 3 Views + Full Rename CPNS → SOAL + Test Flow & 4 Bug Fix
 
@@ -789,8 +831,10 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `b0dcc29` (branch `main`) — **sudah di-push** ke origin/main, worktree bersih
-- **Modul 3 Quiz SOAL + Midtrans**: Step 1-5 SELESAI (5 tabel migrated+seeded, 5 models, SoalController + PaymentController, 26 rute aktif, 6 views). Step 6 test flow hampir selesai — sisa verifikasi akhir: flow "Lanjut Bayar" token lama + quiz berbayar penuh
+- HEAD: `e9d34c2` (branch `main`) — fix payment_type ke-commit, memory files update sesi ini belum di-push
+- **Modul 3 Quiz SOAL + Midtrans**: Step 1-5 SELESAI (5 tabel migrated+seeded, 5 models, SoalController + PaymentController, 26 rute aktif, 6 views). Step 6 tinggal verifikasi akhir manual: Step A quiz Numerik 50 soal dua mode + Step B flow "Lanjut Bayar" token lama pakai akun baru
+- **Bug fix payment_type NULL** (`e9d34c2`): syncWithMidtrans() return Transaction + persist status+payment_type; backfill row lama verified (echannel)
+- **Modul 6 Admin Panel Kelola Soal** planned & didahulukan (~2.5 jam) — CRUD paket+soal dari dashboard admin, form satuan, zero migration, delete guard finansial, sync total_questions
 - **Rename CPNS → SOAL selesai** (`ff5e41f`): route /soal, SoalController, soal.* route names, views soal-*, navbar/landing/meta/kontak copy ikut diganti
 - **Auth System SELESAI 9/9 step** dan sudah committed (`9b02a59`) — migrate + seed + test flow sukses
 - **Bug Fixing SELESAI 18/18** (commit `921b851`, `cadb15c`, `c738b4e`)
@@ -801,7 +845,7 @@ C:\laragon\www\rangkita\
 - MySQL Laragon harus start manual: `mysqld.exe --defaults-file=C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini` (sering mati sendiri antar sesi)
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
 - `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-- **Lanjutan**: verifikasi akhir test flow → update memory → **Modul 4 Database Undangan**
+- **Lanjutan**: verifikasi akhir test flow → update memory → **Modul 6 Admin Panel Kelola Soal** → **Modul 4 Database Undangan**
 
 
 # STYLE
