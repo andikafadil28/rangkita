@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Midtrans\Config;
 use Midtrans\Notification;
 use Midtrans\Snap;
+use Midtrans\Transaction as MidtransTransaction;
 
 class PaymentController extends Controller
 {
@@ -24,6 +25,27 @@ class PaymentController extends Controller
             ->where('status', 'pending')
             ->latest()
             ->first();
+
+        if ($transaction) {
+            $status = $this->syncWithMidtrans($transaction);
+
+            if ($status === 'paid') {
+                UserAccess::firstOrCreate(
+                    [
+                        'user_id' => $transaction->user_id,
+                        'package_id' => $transaction->package_id,
+                    ],
+                    ['transaction_id' => $transaction->id]
+                );
+
+                return redirect()->route('soal.quiz', [$package, 'mode' => 'test']);
+            }
+
+            if (in_array($status, ['expired', 'cancelled', 'failed'])) {
+                $transaction->update(['status' => $status]);
+                $transaction = null;
+            }
+        }
 
         if (! $transaction || ! $transaction->snap_token) {
             Config::$serverKey = config('midtrans.server_key');
@@ -50,6 +72,11 @@ class PaymentController extends Controller
                 'customer_details' => [
                     'first_name' => auth()->user()->name,
                     'email' => auth()->user()->email,
+                ],
+                'callbacks' => [
+                    'finish' => route('payment.success'),
+                    'unfinish' => route('payment.success'),
+                    'error' => route('payment.success'),
                 ],
             ]);
 
@@ -78,6 +105,7 @@ class PaymentController extends Controller
 
     public function callback(Request $request)
     {
+        Config::$serverKey = config('midtrans.server_key');
         $notif = new Notification();
         $transaction = Transaction::where('order_id', $notif->order_id)->first();
 
@@ -94,13 +122,7 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
-        $status = match ($notif->transaction_status) {
-            'capture', 'settlement' => 'paid',
-            'deny' => 'failed',
-            'expire' => 'expired',
-            'cancel' => 'cancelled',
-            default => 'pending',
-        };
+        $status = $this->mapStatus($notif->transaction_status);
 
         $transaction->update([
             'status' => $status,
@@ -128,8 +150,27 @@ class PaymentController extends Controller
             ->latest()
             ->first();
 
+        if ($transaction && $transaction->status === 'pending') {
+            $status = $this->syncWithMidtrans($transaction);
+
+            if ($status === 'paid') {
+                $transaction->update(['status' => 'paid']);
+
+                UserAccess::firstOrCreate(
+                    [
+                        'user_id' => $transaction->user_id,
+                        'package_id' => $transaction->package_id,
+                    ],
+                    ['transaction_id' => $transaction->id]
+                );
+            } elseif ($status !== 'pending') {
+                $transaction->update(['status' => $status]);
+            }
+        }
+
         return view('pages.soal-payment-success', [
             'package' => $transaction?->package,
+            'status' => $transaction?->status,
         ]);
     }
 
@@ -139,5 +180,30 @@ class PaymentController extends Controller
             ->userAccess()
             ->where('package_id', $package->id)
             ->exists();
+    }
+
+    private function syncWithMidtrans(Transaction $transaction): string
+    {
+        try {
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$isProduction = (bool) config('midtrans.is_production');
+
+            $status = MidtransTransaction::status($transaction->order_id);
+
+            return $this->mapStatus($status->transaction_status);
+        } catch (\Throwable) {
+            return 'pending';
+        }
+    }
+
+    private function mapStatus(string $midtransStatus): string
+    {
+        return match ($midtransStatus) {
+            'capture', 'settlement' => 'paid',
+            'deny' => 'failed',
+            'expire' => 'expired',
+            'cancel' => 'cancelled',
+            default => 'pending',
+        };
     }
 }
