@@ -1,6 +1,6 @@
 # CURRENT
 
-Fokus aktif: **Quiz CPNS + Midtrans Payment IN PROGRESS** — SDK Midtrans terinstall (v2.6.2), 5 migration dibuat (2/5 schema selesai), config midtrans terisi, seeder 3 paket + 100 soal TIU terisi. Auth System **SELESAI** (9/9 step, committed). Bug Fixing **SELESAI** (18/18).
+Fokus aktif: **Quiz CPNS + Midtrans Payment IN PROGRESS** — backend selesai: 5 migration schema lengkap (9/9 Ran), 5 Eloquent models, CpnsController + PaymentController, 26 rute aktif, commit `cb6c271` (belum push). Sisa Modul 3: 5 views quiz + test flow end-to-end. Auth System **SELESAI** (9/9 step, committed). Bug Fixing **SELESAI** (18/18).
 
 # TODO
 
@@ -91,26 +91,43 @@ Fokus aktif: **Quiz CPNS + Midtrans Payment IN PROGRESS** — SDK Midtrans terin
 ### Database
 - [x] Migration: `question_packages` (id, category, name, slug, total_questions, difficulty, price, is_active) — schema terisi
 - [x] Migration: `questions` (id, package_id, question_text, option_a/b/c/d, correct_answer, explanation, difficulty) — schema terisi
-- [ ] Migration: `quiz_sessions` (id, user_id, package_id, mode, score, answers JSON, time_spent, time_limit) — file dibuat, schema masih skeleton
-- [ ] Migration: `transactions` (id, user_id, package_id, order_id, gross_amount, payment_type, status, snap_token) — file dibuat, schema masih skeleton
-- [ ] Migration: `user_access` (id, user_id, package_id, transaction_id, access_granted) — file dibuat, schema masih skeleton
-- [x] Seeder: `QuestionPackageSeeder.php` (3 paket TIU: verbal 30, numerik 50, penalaran 20)
+- [x] Migration: `quiz_sessions` (id, user_id, package_id, mode, score, answers JSON, time_spent, time_limit) — schema lengkap + sudah Ran
+- [x] Migration: `transactions` (id, user_id, package_id, order_id unique, gross_amount, payment_type, status enum pending/paid/failed/expired/cancelled, snap_token) — schema lengkap + sudah Ran
+- [x] Migration: `user_access` (id, user_id, package_id, transaction_id nullable) — schema lengkap; kolom `access_granted` di-drop karena redundant (keberadaan row = punya akses), unique(['user_id','package_id'])
+- [x] Seeder: `QuestionPackageSeeder.php` (3 paket TIU: verbal 30 gratis, numerik 50 Rp15.000, penalaran 20 gratis)
 - [x] Seeder: `QuestionSeeder.php` (100 soal TIU dengan answer key + explanation dari PDF KCD)
 
+### Models
+- [x] 5 model baru: `QuestionPackage`, `Question`, `QuizSession`, `Transaction`, `UserAccess` — style PHP attribute `#[Fillable([...])]` konsisten dengan User.php
+- [x] FK eksplisit `'package_id'` di semua relasi ke QuestionPackage (6 titik) — Eloquent infer `question_package_id` dari nama class, padahal kolom asli `package_id`
+- [x] `UserAccess` pakai `$table = 'user_access'` eksplisit — default inference jadi `user_accesses` (salah)
+- [x] `QuestionPackage::getRouteKeyName()` = `'slug'` → route model binding via slug (`/cpns/paket/tiu-verbal/...`)
+- [x] `QuizSession` casts `answers => array` (JSON auto encode/decode)
+- [x] `User.php` +3 relasi balik: quizSessions, transactions, userAccess
+
 ### Controller
-- [ ] `CpnsController.php` (index, category, quiz, submit, result)
-- [ ] `PaymentController.php` (create, callback, success)
+- [x] `CpnsController.php` (index groupBy category, category validasi twk/tiu/tkp, quiz gate akses + mode latihan/test, submit skor server-side, result authorization check + rekap per soal)
+- [x] `PaymentController.php` (create reuse pending transaction + Snap::createTransaction, callback verify signature sha512 timing-safe + grant akses firstOrCreate, success)
+- [x] Konstanta `SECONDS_PER_QUESTION = 54` di CpnsController (timer mode test)
+
+### Routes
+- [x] Grup publik `cpns.index` (/cpns) + `cpns.category` (/cpns/kategori/{category}) — route lama `/cpns` PageController@cpns dihapus bareng method dead-nya
+- [x] Rute auth: `cpns.quiz`, `cpns.submit` (POST), `cpns.result` (/hasil-quiz/{session}), `payment.create` (/cpns/paket/{package}/beli), `payment.success`
+- [x] Webhook `POST /payment/callback` tanpa auth + CSRF exempt via `validateCsrfTokens(except:)` di bootstrap/app.php
+- [x] Total rute sekarang 26
 
 ### Config
 - [x] `config/midtrans.php` (server_key, client_key, is_production — sandbox)
 - [x] Update `.env` (MIDTRANS_SERVER_KEY, MIDTRANS_CLIENT_KEY terisi sandbox keys)
 
 ### Views
-- [ ] `cpns.blade.php` (UPDATE: 3 kategori + jumlah paket)
-- [ ] `cpns-category.blade.php` (BARU: list paket + pilihan mode)
-- [ ] `cpns-quiz.blade.php` (BARU: halaman quiz + timer)
-- [ ] `cpns-result.blade.php` (BARU: hasil + rekap)
-- [ ] `cpns-payment-success.blade.php` (BARU: sukses bayar)
+- [ ] `cpns.blade.php` (UPDATE: 3 kategori + jumlah paket — controller sekarang pass `$packages` groupBy category)
+- [ ] `cpns-category.blade.php` (BARU: list paket + pilihan mode, butuh `$category`, `$packages`, `$ownedIds`)
+- [ ] `cpns-quiz.blade.php` (BARU: halaman quiz + timer, butuh `$package`, `$mode`, `$timeLimit`, `$questions` — TANPA kolom jawaban)
+- [ ] `cpns-result.blade.php` (BARU: hasil + rekap, butuh `$session`, `$package`, `$recap`, `$correctCount`, `$wrongCount`, `$skippedCount`)
+- [ ] `cpns-payment.blade.php` (BARU: popup Midtrans Snap JS, butuh `$package`, `$snapToken`, `$clientKey`)
+- [ ] `cpns-payment-success.blade.php` (BARU: sukses bayar, butuh `$package` nullable)
+- [ ] Catatan: 5 view cpns belum ada → halaman tsb masih 500 kalau diakses; `/cpns`, `/cpns/kategori/{cat}`, login + flow lain aman
 
 ### Install Package
 - [x] `composer require midtrans/midtrans-php` — v2.6.2 terinstall
@@ -216,7 +233,17 @@ Fokus aktif: **Quiz CPNS + Midtrans Payment IN PROGRESS** — SDK Midtrans terin
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 19 rute halaman, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Database users + quiz (question_packages + questions) aktif (migrate + seed sudah jalan), data produk/template/artikel masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 26 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2083 baris. Database quiz CPNS aktif penuh (5 tabel + 5 model + 2 controller), data produk/template/artikel masih hardcoded di controller.
+
+## Modul 3 Quiz CPNS + Midtrans (Backend)
+
+- **Database**: 5 tabel aktif — question_packages, questions, quiz_sessions, transactions, user_access. Semua migrated + seeded.
+- **Models**: QuestionPackage (slug route binding, isFree()), Question, QuizSession (casts answers array), Transaction, UserAccess ($table eksplisit). FK `package_id` eksplisit di semua relasi ke QuestionPackage (Eloquent infer salah).
+- **CpnsController**: index groupBy category → category validasi twk/tiu/tkp → quiz gate akses + mode latihan/test (timer test = soal × 54 dtk) → submit skor server-side → result dengan authorization check + rekap per soal.
+- **PaymentController**: create (reuse pending transaction + Snap::createTransaction) → callback webhook (verify signature sha512 timing-safe + grant akses firstOrCreate idempotent) → success.
+- **Security**: soal ke client TANPA correct_answer/explanation; skor dihitung server-side; webhook CSRF-exempt (`payment/callback`) di bootstrap/app.php; signature Midtrans wajib diverifikasi.
+- **Order ID format**: `RANGKITA-{userId}-{ymdHis}-{Str::upper(Str::random(6))}`.
+- **Status**: backend SELESAI (commit `cb6c271`, belum push) — sisa 5 views + test flow end-to-end.
 
 ## Behavior AI (opencode)
 
@@ -255,14 +282,22 @@ Temuan masalah:
 
 ```
 C:\laragon\www\rangkita\
-├── app/                        Kode aplikasi PHP (7 file)
+├── app/                        Kode aplikasi PHP
 │   ├── Http/Controllers/
 │   │   ├── Controller.php      Base controller abstrak (8 baris)
-│   │   ├── PageController.php  Logika halaman publik (378 baris)
-│   │   └── AuthController.php  Auth: login/register/logout/Google OAuth/dashboard
+│   │   ├── PageController.php  Logika halaman publik (~378 baris)
+│   │   ├── AuthController.php  Auth: login/register/logout/Google OAuth/dashboard
+│   │   ├── CpnsController.php  Quiz CPNS: index/category/quiz/submit/result
+│   │   └── PaymentController.php Midtrans: create/callback/success
 │   ├── Http/Middleware/
 │   │   └── AdminMiddleware.php Cek role admin (abort 403)
-│   ├── Models/User.php         Model User (fillable + google_id/avatar/role)
+│   ├── Models/                 6 model
+│   │   ├── User.php            + relasi balik quizSessions/transactions/userAccess
+│   │   ├── QuestionPackage.php Slug route binding + isFree() helper
+│   │   ├── Question.php        belongsTo package (FK eksplisit)
+│   │   ├── QuizSession.php     casts answers array
+│   │   ├── Transaction.php     belongsTo user+package
+│   │   └── UserAccess.php      $table eksplisit 'user_access'
 │   ├── Providers/AppServiceProvider.php
 │   └── View/Components/navbar.php
 ├── resources/
@@ -272,34 +307,34 @@ C:\laragon\www\rangkita\
 │       ├── admin/              Halaman admin (dashboard)
 │       ├── components/navbar.blade.php
 │       ├── layouts/app.blade.php   Layout utama + SEO meta (35 baris)
-│       └── pages/              9 halaman
+│       └── pages/              9 halaman (5 view cpns baru PENDING)
 │           ├── produk.blade.php
 │           ├── produk-detail.blade.php
 │           ├── undangan.blade.php
 │           ├── template-detail.blade.php
 │           ├── template-preview.blade.php
-│           ├── cpns.blade.php
+│           ├── cpns.blade.php  (perlu UPDATE untuk data dari controller)
 │           ├── artikel.blade.php
 │           ├── artikel-detail.blade.php
 │           └── kontak.blade.php
 ├── routes/
-│   ├── web.php                 19 rute (10 publik + 6 guest + 2 auth + 1 admin)
+│   ├── web.php                 26 rute (11 publik + 6 guest + 7 auth + 1 admin + 1 webhook)
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
-│   ├── migrations/             9 migration (3 default + add_role_to_users_table + 5 quiz cpns)
+│   ├── migrations/             9 migration — SEMUA schema lengkap & Ran
 │   └── seeders/
-│       ├── DatabaseSeeder.php
+│       ├── DatabaseSeeder.php  (+ AdminSeeder, QuestionPackageSeeder, QuestionSeeder)
 │       ├── AdminSeeder.php     Akun admin default
-│       ├── QuestionPackageSeeder.php  3 paket TIU
+│       ├── QuestionPackageSeeder.php  3 paket TIU (numerik Rp15.000)
 │       └── QuestionSeeder.php  100 soal TIU
-├── config/                     10 file config (services.php + config google)
+├── config/                     11 file config (services.php + midtrans.php)
 ├── public/
 │   ├── css/rangkita.css        CSS CUSTOM UTAMA (2083 baris)
 │   └── images/logo-rangkita.png
 ├── storage/                    Cache, sessions, logs, uploads
 ├── tests/                      4 file (Pest PHP, semua default)
-├── bootstrap/
+├── bootstrap/                  app.php + CSRF exempt payment/callback
 ├── vendor/                  Dependencies PHP
 ├── .opencode/agent/         Agent config (review.md)
 └── file config root: .env, composer.json, package.json, opencode.json, tui.json
@@ -309,17 +344,17 @@ C:\laragon\www\rangkita\
 
 | Komponen | Jumlah | Keterangan |
 |----------|--------|------------|
-| Rute web | 19 | 10 publik + 6 guest + 2 auth + 1 admin |
-| Controllers | 3 | 1 base abstrak + PageController + AuthController |
+| Rute web | 26 | 11 publik + 6 guest + 7 auth + 1 admin + 1 webhook |
+| Controllers | 5 | 1 base abstrak + PageController + AuthController + CpnsController + PaymentController |
 | Middleware | 1 | AdminMiddleware (role admin) |
-| Models | 1 | User (fillable + google_id/avatar/role) |
+| Models | 6 | User + 5 model quiz cpns (attribute `#[Fillable]`) |
 | View files | 16 | 1 root + 1 layout + 1 komponen + 9 pages + 3 auth + 1 admin |
 | Blade components | 1 | navbar |
 | Layout files | 1 | app.blade.php |
 | CSS custom | 2083 baris | public/css/rangkita.css (blok V1.6 sudah tidak dipakai) |
-| Migrations | 9 | 3 default + add_role_to_users_table + 5 quiz cpns (2 schema selesai, 3 skeleton) |
+| Migrations | 9 | 3 default + add_role_to_users_table + 5 quiz cpns — semua schema lengkap & Ran |
 | Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
-| Config files | 10 | services.php + config google |
+| Config files | 11 | services.php + midtrans.php + config google |
 | Test files | 4 | Semua default |
 
 ## Data Hardcoded di PageController
@@ -333,10 +368,12 @@ C:\laragon\www\rangkita\
 
 ## Pola Arsitektur
 
-- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth)
-- **Database Aktif**: users table + role + question_packages + questions (100 soal) sudah migrate & seed, data lain masih hardcoded
+- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + CpnsController (quiz CPNS) + PaymentController (Midtrans)
+- **Database Aktif**: users table + role + 5 tabel quiz cpns (question_packages, questions, quiz_sessions, transactions, user_access) — semua migrate & seed
 - **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
 - **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
+- **Quiz Gate**: paket gratis langsung akses; berbayar cek row `user_access`; tanpa akses → redirect `payment.create`
+- **Payment Security**: skor dihitung server-side, soal dikirim ke client TANPA correct_answer/explanation, webhook Midtrans diverifikasi signature sha512 (`hash_equals` timing-safe), CSRF exempt hanya untuk callback
 - **No API**: Hanya web routes
 
 ## Teknologi
@@ -348,6 +385,36 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 22 Agu 2026 (Sesi 3) - Modul 3 Backend Selesai: Models + Controllers + Routes
+
+- **Koreksi memory**: Batch 2 schema ternyata UDAH selesai sebelum sesi — 5/5 migration terisi lengkap + 9/9 status Ran (user kerjain sendiri setelah sesi 2 tutup, TODO belum dicentang). Diverifikasi via `migrate:status` + baca file
+- **Step 2 Models (5 file baru + 1 edit)**:
+  - `QuestionPackage.php`: casts is_active, `getRouteKeyName() = 'slug'`, relasi questions/quizSessions/userAccess, helper `isFree()`
+  - `Question.php`, `QuizSession.php` (casts answers array), `Transaction.php`, `UserAccess.php` ($table eksplisit)
+  - `User.php`: +3 relasi balik (quizSessions, transactions, userAccess) + import HasMany
+- **Bug fix — FK inference**: Eloquent cari kolom `question_package_id` (dari nama class QuestionPackage), padahal kolom asli `package_id` → error "Unknown column". Fix: FK eksplisit `'package_id'` di SEMUA relasi ke QuestionPackage (6 titik: questions, quizSessions, userAccess di package; package di question/quizSession/transaction/userAccess)
+- **Schema change**: Kolom `access_granted` di-drop dari migration user_access (keputusan user: "yang paling recomen") — redundant karena keberadaan row = punya akses. Edit migration lama aman karena dev stage + langsung fresh ulang
+- **Bug fix data seeder**: TIU Numerik price 0 → 15000 (harusnya paket berbayar untuk test Midtrans). Ketahuan pas verifikasi tinker: `where('price','>',0)->first()` return null
+- **Verifikasi models**: `migrate:fresh --seed` sukses, script test bootstrap Laravel: count questions verbal=30, isFree() benar per paket, routeKey="tiu-verbal" (slug binding aktif), UserAccess::count() tanpa error table not found, casts JSON answers works
+- **Commit**: `cb6c271` feat(cpns): models + batch 2 schema + seeders (17 file, +550/-80) — include warisan sesi 2 yang belum ke-commit (schema batch 2, seeder, config midtrans). Audit secrets dulu: config/midtrans.php pakai env(), .env.example cuma placeholder kosong. Belum push
+- **Step 3 Controllers**: `CpnsController.php` baru:
+  - index: packages groupBy category; category: validasi twk/tiu/tkp → abort 404 kalau invalid
+  - quiz: gate akses (berbayar + tanpa row user_access → redirect payment.create), mode latihan/test dari query param, time_limit test = jumlah_soal × 54 detik (konstanta SECONDS_PER_QUESTION)
+  - submit: validasi answers array (in:a-e), skor dihitung SERVER-SIDE vs pluck correct_answer, simpan QuizSession, redirect result
+  - result: authorization check `session->user_id === auth()->id()` → abort 403, rekap collection per soal (user_answer, is_correct, is_skipped)
+  - SECURITY: query soal select eksplisit TANPA correct_answer/explanation biar gak bocor ke client
+- **Step 3 Controllers**: `PaymentController.php` baru:
+  - create: gate isFree/hasAccess → redirect quiz; reuse pending transaction (kalau snap_token ada); else Snap::createTransaction dengan transaction_details/item_details/customer_details; order_id format `RANGKITA-{userId}-{ymdHis}-{Str::upper(Str::random(6))}`
+  - callback: `new Notification()` (SDK parse php://input), verify signature sha512(order_id+status_code+gross_amount+serverKey) pakai `hash_equals` timing-safe, match status capture/settlement→paid, deny→failed, expire→expired, cancel→cancelled; paid → UserAccess::firstOrCreate (idempotent)
+  - success: halaman sukses + lookup transaksi by order_id optional
+- **Step 4 Routes** (+8 rute → total 26): grup publik cpns.index/cpns.category; auth cpns.quiz, cpns.submit (POST), cpns.result (/hasil-quiz/{session}), payment.create (/cpns/paket/{package}/beli — binding slug), payment.success (/pembayaran/sukses); webhook POST /payment/callback tanpa auth
+- **CSRF exempt**: `$middleware->validateCsrfTokens(except: ['payment/callback'])` di bootstrap/app.php — webhook Midtrans server-to-server gak bawa CSRF token
+- **Cleanup**: route `/cpns` PageController@cpns dihapus + method `cpns()` dead dihapus dari PageController (method cuma return view statis)
+- **Code smell fixed**: ternary dengan assignment di PaymentController::create diganti if/else biasa
+- **Verifikasi controllers/routes**: php -l 5 file clean, `route:list --except-vendor` 26 rute semua ter-bind benar, HTTP smoke test GET /cpns = 200 OK (artisan serve port 8098), view:cache sukses
+- **Catatan PowerShell**: `tinker --execute` ribet quoting ($ di-expand PS double-quote, inner quotes hilang) → workaround: script PHP sementara dengan manual bootstrap (`require vendor/autoload.php` + `$app->make(Kernel)->bootstrap()`), hapus setelah pakai
+- **Pending Modul 3**: Step 5 Views (cpns.blade update + 5 view baru: cpns-category, cpns-quiz, cpns-result, cpns-payment [popup Snap JS], cpns-payment-success) + Step 6 test flow end-to-end. Halaman quiz/category/result/payment masih 500 karena view belum ada
 
 ## Ses 22 Agu 2026 (Sesi 2) - Modul 3 Seeder + Config Midtrans Selesai
 
@@ -584,14 +651,14 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `6bc1922` (branch `main`) — pushed ke origin/main, worktree bersih
-- **Modul 3 Quiz CPNS + Midtrans IN PROGRESS**: SDK midtrans v2.6.2 terinstall, 5 migration dibuat, schema 2/5 selesai (question_packages + questions), config midtrans terisi, seeder 3 paket + 100 soal TIU terisi
+- HEAD: `cb6c271` (branch `main`) — **belum di-push** ke origin/main, worktree bersih
+- **Modul 3 Quiz CPNS + Midtrans IN PROGRESS**: backend SELESAI (5 tabel migrated+seeded, 5 models, CpnsController + PaymentController, 26 rute aktif) — sisa 5 views + test flow
 - **Auth System SELESAI 9/9 step** dan sudah committed (`9b02a59`) — migrate + seed + test flow sukses
 - **Bug Fixing SELESAI 18/18** (commit `921b851`, `cadb15c`, `c738b4e`)
 - Agent model: plan/build = `opencode/big-pickle`, reasoning = `opencode/nemotron-3-ultra-free`, review agent = `mimo-v2.5-free` (commit `5c5552f`)
-- DB `rangkita` aktif: users table + role + question_packages + questions (100 soal) — sudah di-migrate & seed
+- DB `rangkita` aktif: users table + role + 5 tabel quiz cpns (100 soal TIU seeded, paket numerik Rp15.000) — sudah di-migrate & seed
 - Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal diisi dari Google Cloud Console
 - Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2 terinstall
 - Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
 - `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-- **Lanjutan Modul 3**: batch 2 schema (quiz_sessions, transactions, user_access) → CpnsController + PaymentController → views
+- **Lanjutan Modul 3**: Step 5 Views (cpns.blade update + cpns-category/cpns-quiz/cpns-result/cpns-payment/cpns-payment-success) → Step 6 test flow end-to-end (quiz gratis + beli via Midtrans sandbox)
