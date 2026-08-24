@@ -27,9 +27,9 @@ class PaymentController extends Controller
             ->first();
 
         if ($transaction) {
-            $status = $this->syncWithMidtrans($transaction);
+            $transaction = $this->syncWithMidtrans($transaction);
 
-            if ($status === 'paid') {
+            if ($transaction->status === 'paid') {
                 UserAccess::firstOrCreate(
                     [
                         'user_id' => $transaction->user_id,
@@ -41,8 +41,7 @@ class PaymentController extends Controller
                 return redirect()->route('soal.quiz', [$package, 'mode' => 'test']);
             }
 
-            if (in_array($status, ['expired', 'cancelled', 'failed'])) {
-                $transaction->update(['status' => $status]);
+            if (in_array($transaction->status, ['expired', 'cancelled', 'failed'])) {
                 $transaction = null;
             }
         }
@@ -151,11 +150,9 @@ class PaymentController extends Controller
             ->first();
 
         if ($transaction && $transaction->status === 'pending') {
-            $status = $this->syncWithMidtrans($transaction);
+            $transaction = $this->syncWithMidtrans($transaction);
 
-            if ($status === 'paid') {
-                $transaction->update(['status' => 'paid']);
-
+            if ($transaction->status === 'paid') {
                 UserAccess::firstOrCreate(
                     [
                         'user_id' => $transaction->user_id,
@@ -163,8 +160,6 @@ class PaymentController extends Controller
                     ],
                     ['transaction_id' => $transaction->id]
                 );
-            } elseif ($status !== 'pending') {
-                $transaction->update(['status' => $status]);
             }
         }
 
@@ -182,18 +177,26 @@ class PaymentController extends Controller
             ->exists();
     }
 
-    private function syncWithMidtrans(Transaction $transaction): string
+    private function syncWithMidtrans(Transaction $transaction): Transaction
     {
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = (bool) config('midtrans.is_production');
+
         try {
-            Config::$serverKey = config('midtrans.server_key');
-            Config::$isProduction = (bool) config('midtrans.is_production');
-
-            $status = MidtransTransaction::status($transaction->order_id);
-
-            return $this->mapStatus($status->transaction_status);
+            $remote = MidtransTransaction::status($transaction->order_id);
+            $status = $this->mapStatus($remote->transaction_status);
         } catch (\Throwable) {
-            return 'pending';
+            return $transaction;
         }
+
+        if ($status !== $transaction->status || empty($transaction->payment_type)) {
+            $transaction->update([
+                'status' => $status,
+                'payment_type' => $remote->payment_type ?? null,
+            ]);
+        }
+
+        return $transaction->fresh();
     }
 
     private function mapStatus(string $midtransStatus): string
