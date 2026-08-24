@@ -16,7 +16,7 @@ class PaymentController extends Controller
     public function create(QuestionPackage $package)
     {
         if ($package->isFree() || $this->hasAccess($package)) {
-            return redirect()->route('cpns.quiz', [$package, 'mode' => 'test']);
+            return redirect()->route('soal.quiz', [$package, 'mode' => 'test']);
         }
 
         $transaction = Transaction::where('user_id', auth()->id())
@@ -69,7 +69,7 @@ class PaymentController extends Controller
             }
         }
 
-        return view('pages.cpns-payment', [
+        return view('pages.soal-payment', [
             'package' => $package,
             'snapToken' => $transaction->snap_token,
             'clientKey' => config('midtrans.client_key'),
@@ -128,7 +128,7 @@ class PaymentController extends Controller
             ->latest()
             ->first();
 
-        return view('pages.cpns-payment-success', [
+        return view('pages.soal-payment-success', [
             'package' => $transaction?->package,
         ]);
     }

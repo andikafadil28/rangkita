@@ -7,7 +7,7 @@ use App\Models\QuestionPackage;
 use App\Models\QuizSession;
 use Illuminate\Http\Request;
 
-class CpnsController extends Controller
+class SoalController extends Controller
 {
     public const CATEGORIES = [
         'twk' => 'Tes Wawasan Kebangsaan',
@@ -21,7 +21,7 @@ class CpnsController extends Controller
     {
         $packages = QuestionPackage::where('is_active', true)->get()->groupBy('category');
 
-        return view('pages.cpns', compact('packages'));
+        return view('pages.soal', compact('packages'));
     }
 
     public function category(string $category)
@@ -36,7 +36,7 @@ class CpnsController extends Controller
             ? auth()->user()->userAccess()->pluck('package_id')
             : collect();
 
-        return view('pages.cpns-category', compact('category', 'packages', 'ownedIds'));
+        return view('pages.soal-category', compact('category', 'packages', 'ownedIds'));
     }
 
     public function quiz(Request $request, QuestionPackage $package)
@@ -53,7 +53,7 @@ class CpnsController extends Controller
             ? $totalQuestions * self::SECONDS_PER_QUESTION
             : null;
 
-        return view('pages.cpns-quiz', [
+        return view('pages.soal-quiz', [
             'package' => $package,
             'mode' => $mode,
             'timeLimit' => $timeLimit,
@@ -103,7 +103,7 @@ class CpnsController extends Controller
                 : null,
         ]);
 
-        return redirect()->route('cpns.result', $session);
+        return redirect()->route('soal.result', $session);
     }
 
     public function result(QuizSession $session)
@@ -124,7 +124,7 @@ class CpnsController extends Controller
             ];
         });
 
-        return view('pages.cpns-result', [
+        return view('pages.soal-result', [
             'session' => $session,
             'package' => $session->package,
             'recap' => $recap,

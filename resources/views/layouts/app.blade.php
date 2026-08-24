@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Rangkita - Rangkai Kebutuhan Digitalmu')</title>
 
-    <meta name="description" content="@yield('meta_description', 'Rangkita adalah platform undangan digital online, soal CPNS, produk digital, dan artikel SEO. Rangkai kebutuhan digitalmu dalam satu tempat.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'undangan digital, undangan online, soal CPNS, produk digital, Rangkita')">
+    <meta name="description" content="@yield('meta_description', 'Rangkita adalah platform undangan digital online, soal latihan ujian, produk digital, dan artikel SEO. Rangkai kebutuhan digitalmu dalam satu tempat.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'undangan digital, undangan online, soal latihan ujian, produk digital, Rangkita')">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Rangkita">
 

@@ -42,8 +42,8 @@ class PageController extends Controller
             [
                 'icon' => '📘',
                 'tag' => 'Edukasi',
-                'slug' => 'soal-cpns-latihan-ujian',
-                'title' => 'Soal CPNS & Latihan Ujian',
+                'slug' => 'soal-latihan-ujian',
+                'title' => 'Soal & Latihan Ujian',
                 'description' => 'Paket latihan soal digital untuk bantu pengguna belajar lebih terarah sebelum menghadapi ujian atau seleksi.',
                 'features' => [
                     'Paket soal siap latihan',
@@ -55,7 +55,7 @@ class PageController extends Controller
                 'button_detail' => 'Ikuti Update',
                 'contact_url' => '/kontak',
                 'detail' => [
-                    'Produk soal CPNS dan latihan ujian dibuat untuk membantu pengguna belajar dengan lebih terarah.',
+                    'Produk soal latihan ujian dibuat untuk membantu pengguna belajar dengan lebih terarah.',
                     'Materi nantinya bisa dibagi menjadi beberapa kategori seperti TWK, TIU, TKP, latihan pembahasan, dan simulasi soal.',
                     'Untuk tahap awal, halaman ini masih berupa konsep produk. Nanti bisa dikembangkan menjadi katalog paket soal atau sistem latihan berbasis web.',
                 ],

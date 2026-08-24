@@ -24,8 +24,8 @@
             Undangan
         </a>
 
-        <a href="/cpns" class="{{ request()->is('cpns*') ? 'active' : '' }}">
-            CPNS
+        <a href="/soal" class="{{ request()->is('soal*') ? 'active' : '' }}">
+            Soal
         </a>
 
         <a href="/artikel" class="{{ request()->is('artikel*') ? 'active' : '' }}">

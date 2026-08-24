@@ -121,7 +121,7 @@
                         <select id="topic" name="topic" required>
                             <option value="Undangan Online">Undangan Online</option>
                             <option value="Produk Digital">Produk Digital</option>
-                            <option value="Soal CPNS">Soal CPNS</option>
+                            <option value="Soal & Latihan Ujian">Soal & Latihan Ujian</option>
                             <option value="Artikel / Kerja Sama">Artikel / Kerja Sama</option>
                         </select>
                     </div>

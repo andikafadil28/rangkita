@@ -21,7 +21,7 @@
 
             <p>
                 Rangkita hadir sebagai platform digital lokal yang merangkai kebutuhan pengguna:
-                mulai dari undangan nikahan online, soal CPNS dan latihan ujian, produk digital siap pakai,
+                mulai dari undangan nikahan online, soal latihan ujian, produk digital siap pakai,
                 sampai artikel informatif yang mudah ditemukan lewat Google.
             </p>
 
@@ -40,7 +40,7 @@
             </div>
 
             <div class="mini-card">
-                <strong>📘 Soal CPNS & Latihan Ujian</strong>
+                <strong>📘 Soal & Latihan Ujian</strong>
                 <p>Paket soal, pembahasan, dan latihan untuk bantu persiapan seleksi.</p>
             </div>
 
@@ -91,7 +91,7 @@
                 <div class="product-icon">📘</div>
                 <span class="product-tag">Edukasi</span>
 
-                <h3>Soal CPNS & Latihan Ujian</h3>
+                <h3>Soal & Latihan Ujian</h3>
 
                 <p>
                     Paket latihan soal digital untuk bantu pengguna belajar lebih terarah
@@ -108,7 +108,7 @@
                     Segera Hadir
                 </div>
 
-                <a href="/cpns" class="product-action">Ikuti Update</a>
+                <a href="/soal" class="product-action">Ikuti Update</a>
             </div>
 
             <div class="product-card">
