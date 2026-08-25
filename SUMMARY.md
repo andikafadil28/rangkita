@@ -29,6 +29,6 @@ Fokus aktif: **Modul 3 + Modul 6 SELESAI**. Sesi 25 Agu 2026: verifikasi akhir M
 
 # Changelog Terbaru
 
-- **25 Agu 2026**: Modul 3 verifikasi akhir SELESAI (Step A+B lolos) → Modul 6 Admin Panel Kelola Soal SELESAI (3 controller, 19 rute admin, 14 views, kategori dinamis via `soal_categories` table + enum→FK migration). Bug fixes: `transactions()` missing → 500 hapus paket, `Route::resource->parameters()` gak jalan di Laravel 13, button alignment.
+- **25 Agu 2026**: Modul 3 verifikasi akhir SELESAI (Step A+B lolos) → Modul 6 Admin Panel Kelola Soal SELESAI (3 controller, 19 rute admin, 14 views, kategori dinamis via `soal_categories` table + enum→FK migration). Bug fixes: `transactions()` missing → 500 hapus paket, `Route::resource->parameters()` gak jalan di Laravel 13, button alignment. Deploy server verified (`e69d84f`).
 - **24 Agu 2026 (Sesi 2+3)**: fix `payment_type` NULL (`e9d34c2`); memory files compress -67% (`befab6d`); rename CPNS → SOAL (`ff5e41f`); 4 bug fix payment (`b0dcc29`); agent vision `build-complex.md`.
 - Riwayat lengkap sesi 4–22 Agu: `docs/CHANGELOG-archive.md`

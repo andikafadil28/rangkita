@@ -497,10 +497,11 @@ C:\laragon\www\rangkita\
 - **Button alignment fix**: empty state tabel mepet gak ada napas + back-link nempel langsung → fix CSS: `.admin-actions form { margin: 0 }` + `align-items: center`, `.admin-empty { padding: 36px }` center, `.back-link` admin margin-top 24px, `.table-scroll { margin-bottom: 6px }`
 - **Layout admin**: extends `layouts.app` + admin bar navigasi (Dashboard, Kelola Paket, Kategori, Lihat Situs) + flash messages area + `yield meta_robots` untuk noindex admin pages
 - **Route count update**:26 → 44 (+18 admin routes); controllers 5 → 8; models6 → 7; migrations9 → 10; views21 → 35; CSS2546 → ~3000 baris
+- **Deploy server verified**: commit `e69d84f` push + pull ke server `dikadevit.my.id` → `sudo php artisan optimize:clear` diperlukan karena `bootstrap/cache/` di-own web server user, bukan user SSH
 
 ## Status Sekarang
 
-- HEAD: (uncommitted) branch `main` — Modul 3 verifikasi + Modul 6 admin panel selesai, belum di-commit
+- HEAD: `e69d84f` (branch `main`) — semua commit ke-push, worktree bersih
 - **Modul 3 Quiz SOAL + Midtrans**: ✅ SELESAI — Step A/B verifikasi manual lolos tanpa bug
 - **Modul 6 Admin Panel Kelola Soal**: ✅ SELESAI — CRUD paket+soal+kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB, bug fixes (transactions() missing, Route::resource->parameters(), button alignment)
 - **Kategori Soal Dinamis**: ✅ SELESAI — tabel `soal_categories` + migrasi enum→FK, admin bisa tambah kategori baru tanpa edit kode
@@ -512,7 +513,7 @@ C:\laragon\www\rangkita\
 - Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal isi dari Google Cloud Console
 - Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2; webhook gak bisa nyampe localhost
 - MySQL Laragon harus start manual: `mysqld.exe --defaults-file=C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini`
-- Deploy workflow: user bilang "deploy" → opencode commit+push → user copy-paste command server
+- Deploy workflow: user bilang "deploy" → opencode commit+push → user copy-paste command server. **Catatan deploy sesi ini**: user SSH gak punya akses tulis ke `bootstrap/cache/` (di-own `www-data`/web server user) → `php artisan optimize:clear` permission denied → fix: `sudo php artisan optimize:clear`. Ini berlaku untuk semua `artisan` command yang nulis ke `bootstrap/cache/`
 - **Lanjutan**: **Modul 4 Database Undangan** → Modul 5 Artikel
 
 

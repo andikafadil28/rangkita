@@ -35,6 +35,17 @@
         <a href="/kontak" class="{{ request()->is('kontak*') ? 'active' : '' }}">
             Kontak
         </a>
+
+        @auth
+            <a href="{{ route('dashboard') }}" class="{{ request()->is('dashboard*') ? 'active' : '' }}">Dashboard</a>
+            <form action="{{ route('logout') }}" method="POST" class="nav-auth-form">
+                @csrf
+                <button type="submit" class="nav-logout-btn">Keluar</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="{{ request()->is('login*') ? 'active' : '' }}">Masuk</a>
+            <a href="{{ route('register') }}" class="{{ request()->is('register*') ? 'active' : '' }}">Daftar</a>
+        @endauth
     </div>
 </nav>
 

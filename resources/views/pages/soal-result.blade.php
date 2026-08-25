@@ -86,7 +86,10 @@
             <a href="{{ route('soal.quiz', [$package, 'mode' => $session->mode]) }}" class="btn-secondary">
                 Ulangi Quiz
             </a>
-            <a href="{{ route('soal.category', $package->category) }}" class="btn-primary">
+            <a href="{{ route('soal.history') }}" class="btn-secondary">
+                Lihat Riwayat
+            </a>
+            <a href="{{ route('soal.category', $package->soalCategory) }}" class="btn-primary">
                 Balik ke Kategori
             </a>
         </div>

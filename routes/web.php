@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/soal/paket/{package}/quiz', [SoalController::class, 'quiz'])->name('soal.quiz');
     Route::post('/soal/paket/{package}/submit', [SoalController::class, 'submit'])->name('soal.submit');
     Route::get('/hasil-soal/{session}', [SoalController::class, 'result'])->name('soal.result');
+    Route::get('/soal/riwayat', [SoalController::class, 'history'])->name('soal.history');
     Route::get('/soal/paket/{package}/beli', [PaymentController::class, 'create'])->name('payment.create');
     Route::get('/pembayaran/sukses', [PaymentController::class, 'success'])->name('payment.success');
 });

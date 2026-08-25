@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\QuizSession;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -111,8 +112,24 @@ class AuthController extends Controller
 
     public function dashboard()
     {
+        $userId = auth()->id();
+
+        $recentSessions = QuizSession::with('package.soalCategory')
+            ->where('user_id', $userId)
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        $stats = [
+            'total' => QuizSession::where('user_id', $userId)->count(),
+            'avgScore' => (int) round(QuizSession::where('user_id', $userId)->avg('score')),
+            'bestScore' => QuizSession::where('user_id', $userId)->max('score') ?? 0,
+        ];
+
         return view('auth.dashboard', [
             'user' => Auth::user(),
+            'recentSessions' => $recentSessions,
+            'stats' => $stats,
         ]);
     }
 }

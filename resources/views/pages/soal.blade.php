@@ -18,14 +18,18 @@
                 @endphp
 
                 <div class="card soal-card">
-                    <div class="card-icon">{{ $cat->icon }}</div>
+                    <div class="card-icon">{{ $cat->icon ?: '📚' }}</div>
 
                     <h3>{{ $cat->name }}</h3>
 
                     <p>{{ $cat->description }}</p>
 
                     <div class="soal-card-footer">
-                        <span class="badge">{{ $count }} paket</span>
+                        @if ($count > 0)
+                            <span class="badge">{{ $count }} paket</span>
+                        @else
+                            <span class="badge badge-soft">Segera hadir</span>
+                        @endif
                         <a href="{{ route('soal.category', $cat) }}">Lihat Paket &rarr;</a>
                     </div>
                 </div>

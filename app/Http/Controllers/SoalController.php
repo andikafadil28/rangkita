@@ -130,6 +130,16 @@ class SoalController extends Controller
         ]);
     }
 
+    public function history()
+    {
+        $sessions = QuizSession::with('package.soalCategory')
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10);
+
+        return view('pages.soal-history', compact('sessions'));
+    }
+
     private function hasAccess(QuestionPackage $package): bool
     {
         if ($package->isFree()) {
