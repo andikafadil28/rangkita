@@ -5,30 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Models\QuestionPackage;
 use App\Models\QuizSession;
+use App\Models\SoalCategory;
 use Illuminate\Http\Request;
 
 class SoalController extends Controller
 {
-    public const CATEGORIES = [
-        'twk' => 'Tes Wawasan Kebangsaan',
-        'tiu' => 'Tes Intelegensia Umum',
-        'tkp' => 'Tes Karakteristik Pribadi',
-    ];
-
     private const SECONDS_PER_QUESTION = 54;
 
     public function index()
     {
-        $packages = QuestionPackage::where('is_active', true)->get()->groupBy('category');
+        $categories = SoalCategory::withCount('packages')
+            ->with(['packages' => fn ($q) => $q->where('is_active', true)])
+            ->orderBy('sort_order')
+            ->get();
 
-        return view('pages.soal', compact('packages'));
+        return view('pages.soal', compact('categories'));
     }
 
-    public function category(string $category)
+    public function category(SoalCategory $category)
     {
-        abort_unless(array_key_exists($category, self::CATEGORIES), 404);
-
-        $packages = QuestionPackage::where('category', $category)
+        $packages = $category->packages()
             ->where('is_active', true)
             ->get();
 

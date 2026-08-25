@@ -1,16 +1,14 @@
 @extends('layouts.app')
 
-@section('title', \App\Http\Controllers\SoalController::CATEGORIES[$category] . ' - Rangkita')
-
-@php
-    $label = \App\Http\Controllers\SoalController::CATEGORIES[$category];
-@endphp
+@section('title', $category->name . ' - Rangkita')
 
 @section('content')
     <section class="page">
-        <h1 class="page-title">{{ $label }}</h1>
+        <h1 class="page-title">{{ $category->name }}</h1>
 
         <p class="page-desc">
+            {{ $category->description }}
+            <br>
             Pilih paket soal, lalu kerjakan lewat mode latihan atau mode test.
             Mode test pakai timer sesuai durasi resmi seleksi.
         </p>
@@ -65,6 +63,6 @@
             @endforelse
         </div>
 
-        <a href="{{ route('soal.index') }}" class="back-link">← Kembali ke semua kategori</a>
+        <a href="{{ route('soal.index') }}" class="back-link">&larr; Kembali ke semua kategori</a>
     </section>
 @endsection

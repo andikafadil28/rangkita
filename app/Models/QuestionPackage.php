@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['category', 'name', 'slug', 'total_questions', 'difficulty', 'price', 'is_active'])]
+#[Fillable(['soal_category_id', 'name', 'slug', 'total_questions', 'difficulty', 'price', 'is_active'])]
 class QuestionPackage extends Model
 {
     protected function casts(): array
@@ -21,9 +22,19 @@ class QuestionPackage extends Model
         return 'slug';
     }
 
+    public function soalCategory(): BelongsTo
+    {
+        return $this->belongsTo(SoalCategory::class, 'soal_category_id');
+    }
+
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class, 'package_id');
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'package_id');
     }
 
     public function quizSessions(): HasMany

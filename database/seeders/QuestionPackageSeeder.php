@@ -12,9 +12,11 @@ class QuestionPackageSeeder extends Seeder
      */
     public function run(): void
     {
+        $tiuId = DB::table('soal_categories')->where('slug', 'tiu')->first()->id;
+
         DB::table('question_packages')->insert([
             [
-                'category' => 'tiu',
+                'soal_category_id' => $tiuId,
                 'name' => 'TIU Verbal',
                 'slug' => 'tiu-verbal',
                 'total_questions' => 30,
@@ -25,7 +27,7 @@ class QuestionPackageSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'category' => 'tiu',
+                'soal_category_id' => $tiuId,
                 'name' => 'TIU Numerik',
                 'slug' => 'tiu-numerik',
                 'total_questions' => 50,
@@ -36,7 +38,7 @@ class QuestionPackageSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'category' => 'tiu',
+                'soal_category_id' => $tiuId,
                 'name' => 'TIU Penalaran',
                 'slug' => 'tiu-penalaran',
                 'total_questions' => 20,

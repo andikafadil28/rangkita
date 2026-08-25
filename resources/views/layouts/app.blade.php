@@ -8,7 +8,7 @@
 
     <meta name="description" content="@yield('meta_description', 'Rangkita adalah platform undangan digital online, soal latihan ujian, produk digital, dan artikel SEO. Rangkai kebutuhan digitalmu dalam satu tempat.')">
     <meta name="keywords" content="@yield('meta_keywords', 'undangan digital, undangan online, soal latihan ujian, produk digital, Rangkita')">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
     <meta name="author" content="Rangkita">
 
     <meta property="og:type" content="website">

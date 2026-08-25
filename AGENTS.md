@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Verifikasi akhir Modul 3** (Step A: quiz Numerik 50 soal mode latihan+test pakai admin; Step B: flow "Lanjut Bayar" token lama pakai akun baru) — nunggu test manual user. Bug `payment_type` NULL udah difix (`e9d34c2`). Setelah verifikasi beres: **Modul 6 Admin Panel Kelola Soal** (didahulukan, sebelum Modul 4 Undangan).
+Fokus aktif: **Modul 3 + Modul 6 SELESAI**. Sesi 25 Agu 2026: verifikasi akhir Modul 3 (quiz Numerik 50 soal + flow "Lanjut Bayar") tanpa bug → Modul 6 Admin Panel Kelola Soal (CRUD paket/soal/kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB). Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
 
 # TODO
 
@@ -37,9 +37,9 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 - **Sandbox test**: quiz gratis latihan+test OK; QRIS settle → akses granted; webhook simulasi payload + signature valid OK; 4 bug fix (`b0dcc29`: serverKey null di callback, expired token reuse, callbacks finish/unfinish/error, halaman sukses status-aware)
 - **Insight Midtrans**: SDK `Notification` zero-trust (cuma ambil transaction_id dari payload, sisanya fetch ulang server-to-server); minimum amount per metode bayar beda-beda (VA/kartu ~Rp10rb, e-wallet/QRIS longgar sampai Rp1)
 
-### Sisa Verifikasi Akhir
-- [ ] Step A: quiz Numerik 50 soal dua mode (latihan + test pakai timer) — pakai akun admin (udah punya akses paid)
-- [ ] Step B: flow "Lanjut Bayar" token lama dari halaman sukses pending — pakai AKUN BARU (sekalian test access isolation antar user)
+### Sisa Verifikasi Akhir - ✅ SELESAI
+- [x] Step A: quiz Numerik 50 soal dua mode (latihan + test pakai timer) — pakai akun admin (udah punya akses paid)
+- [x] Step B: flow "Lanjut Bayar" token lama dari halaman sukses pending — pakai AKUN BARU (sekalian test access isolation antar user)
 
 ### Alur Pembayaran
 1. User pilih paket berbayar → klik "Beli & Mulai" → backend buat transaksi + snap_token
@@ -48,35 +48,57 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 
 ---
 
-## 6. Admin Panel Kelola Soal - Estimasi: ~2.5 jam ⭐ PRIORITAS BERIKUTNYA
+## 6. Admin Panel Kelola Soal - ✅ SELESAI (25 Agu 2026)
 
-> CRUD paket + soal dari dashboard, role admin saja. Input form satuan (bulk load awal tetap via Seeder). ZERO migration — semua kolom DB udah cukup.
+> CRUD paket + soal + kategori dari dashboard, role admin saja. Form input satuan (bulk load awal tetap via Seeder). Termasuk fitur kategori dinamis (migrasi enum → FK).
 
-### Routes (~12 baru, group `/admin` existing auth+admin)
-- [ ] CRUD paket: index/create/store/edit/update/destroy (`/admin/soal/paket[...]`)
-- [ ] Nested CRUD soal per paket (`/admin/soal/paket/{paket}/soal[...]`)
-- Binding paket via slug (getRouteKeyName), soal via id
+### Routes (19 admin, group `/admin` existing auth+admin)
+- [x] CRUD paket: index/create/store/edit/update/destroy (`/admin/soal/paket[...]`) — explicit routes (bukan resource, karena Laravel 13 `parameters()` gak jalan)
+- [x] Nested CRUD soal per paket (`/admin/soal/paket/{package}/soal[...]`)
+- [x] CRUD kategori (`/admin/soal/kategori[...]`)
+- Binding paket via slug (getRouteKeyName), soal via id, kategori via slug
 
-### Controllers (2 baru)
-- [ ] `AdminQuestionPackageController` (CRUD paket)
-  - Validasi: category in twk/tiu/tkp, slug auto Str::slug + unique ignore self, price integer min:0, is_active boolean
-  - Delete guard: block kalau `transactions()`/`userAccess()` exists (integritas finansial); else hard delete (soal cascade via FK)
-- [ ] `AdminQuestionController` (nested CRUD soal)
-  - Validasi kunci: `correct_answer` HARUS opsi yang terisi (jawab 'e' saat opsi_e kosong = reject, custom after-rule)
-  - Sync `total_questions` ke parent tiap store/update/destroy soal (anti data-drift; badge halaman publik tetap akurat)
+### Controllers (3 baru)
+- [x] `AdminQuestionPackageController` (CRUD paket)
+  - Validasi: `soal_category_id` exists:soal_categories, slug auto Str::slug + unique ignore self, price integer min:0, is_active boolean
+  - Delete guard: block kalau `transactions()`/`userAccess()`/`quizSessions()` exists (integritas finansial + riwayat quiz); else hard delete (soal cascade via FK)
+- [x] `AdminQuestionController` (nested CRUD soal)
+  - Validasi kunci: `correct_answer` HARUS opsi yang terisi (closure rule — jawab 'e' saat opsi_e kosong = reject, error nempel di field)
+  - Sync `total_questions` ke parent tiap store/update/destroy soal (anti data-drift)
+- [x] `AdminSoalCategoryController` (CRUD kategori soal)
+  - Delete guard: block kalau ada paket pakai kategori ini
 
-### Views (~8)
-- [ ] `admin/layouts/admin.blade.php` (navbar minimal + container)
-- [ ] `admin/dashboard.blade.php` (UPDATE → home menu card)
-- [ ] `admin/packages/{index,create,edit}.blade.php` (withCount soal live)
-- [ ] `admin/questions/{index,create,edit}.blade.php` (paginate 20)
+### Views (14 baru + 1 update)
+- [x] `admin/layouts/admin.blade.php` (extends app.blade, admin bar + flash messages)
+- [x] `admin/dashboard.blade.php` (UPDATE → home menu card: Kelola Soal aktif, Undangan/Artikel "Segera")
+- [x] `admin/packages/{index,create,edit,_form}.blade.php` (withCount soal live)
+- [x] `admin/questions/{index,create,edit,_form}.blade.php` (paginate 20, radio correct_answer)
+- [x] `admin/categories/{index,create,edit,_form}.blade.php` (icon + sort_order + deskripsi)
+- [x] `admin/partials/pagination.blade.php` (custom, tanpa Tailwind dependency)
+- [x] `layouts/app.blade.php` (UPDATE: yield meta_robots untuk admin noindex)
 
 ### CSS
-- [ ] Blok admin panel ke rangkita.css (~200 baris)
+- [x] Blok admin panel ke rangkita.css (~460 baris) + alignment fixes (form margin, flex center)
+
+### Database
+- [x] Migration: `soal_categories` (id, name, slug unique, icon, description, sort_order) + alter `question_packages`: enum `category` → FK `soal_category_id` non-nullable + drop kolom lama + data migrate inline
+- [x] Seeder inline: TWK (🇮🇩), TIU (🧠), TKP (🎯) + description
+
+### Model Updates
+- [x] `SoalCategory.php` baru — `#[Fillable]`, `HasMany` packages, slug binding
+- [x] `QuestionPackage.php` — tambah `soalCategory()` BelongsTo + `transactions()` HasMany (sebelumnya missing → bug 500)
+
+### Bug Fixes Dalam Sesi
+- [x] `QuestionPackage::transactions()` missing → 500 error saat hapus paket. Root cause: relationship gak didefinisikan padahal FK `package_id` ada di tabel transactions
+- [x] `Route::resource->parameters()` gak jalan di Laravel 13 → param kegenerate `{paket}`/`{soal}` bukan `{package}`/`{question}` → diganti explicit routes
+- [x] Button alignment: `<form>` wrapper tombol Hapus punya default margin browser → flex misaligned → fix: `.admin-actions form { margin: 0 }` + `align-items: center`
 
 ### Verifikasi
-- [ ] php -l, route:list, view:cache
-- [ ] Happy path + edge case (correct_answer E kosong reject; delete paket ada transaksi blocked) + regression quiz publik & timer
+- [x] php -l bersih semua file baru
+- [x] route:list 19 admin rute
+- [x] view:cache compile OK
+- [x] DB: migration sukses, data migrate, kolom enum ke-drop
+- [x] Smoke test: /soal publik 200, /admin 302 (auth jalan), /admin/soal/* 302
 
 ---
 
@@ -295,7 +317,7 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 26 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 2546 baris. Database quiz SOAL aktif penuh (5 tabel + 5 model + 2 controller), data produk/template/artikel masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 44 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3000 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 8 controller), data produk/template/artikel masih hardcoded di controller.
 
 ## Behavior AI (opencode)
 
@@ -330,12 +352,16 @@ C:\laragon\www\rangkita\
 │   │   ├── PageController.php  Logika halaman publik (~378 baris)
 │   │   ├── AuthController.php  Auth: login/register/logout/Google OAuth/dashboard
 │   │   ├── SoalController.php  Quiz SOAL: index/category/quiz/submit/result
-│   │   └── PaymentController.php Midtrans: create/callback/success
+│   │   ├── PaymentController.php Midtrans: create/callback/success
+│   │   ├── AdminQuestionPackageController.php  CRUD paket soal
+│   │   ├── AdminQuestionController.php  Nested CRUD soal per paket
+│   │   └── AdminSoalCategoryController.php  CRUD kategori soal
 │   ├── Http/Middleware/
 │   │   └── AdminMiddleware.php Cek role admin (abort 403)
-│   ├── Models/                 6 model
+│   ├── Models/                 7 model
 │   │   ├── User.php            + relasi balik quizSessions/transactions/userAccess
-│   │   ├── QuestionPackage.php Slug route binding + isFree() helper
+│   │   ├── SoalCategory.php    Kategori soal (TWK/TIU/TKP), HasMany packages
+│   │   ├── QuestionPackage.php Slug route binding + soalCategory() + isFree()
 │   │   ├── Question.php        belongsTo package (FK eksplisit)
 │   │   ├── QuizSession.php     casts answers array
 │   │   ├── Transaction.php     belongsTo user+package
@@ -344,65 +370,53 @@ C:\laragon\www\rangkita\
 │   └── View/Components/navbar.php
 ├── resources/
 │   └── views/
-│       ├── landing.blade.php   Homepage utama (206 baris)
-│       ├── auth/               Halaman auth (login, register, dashboard)
-│       ├── admin/              Halaman admin (dashboard)
+│       ├── landing.blade.php   Homepage utama
+│       ├── auth/               Login, register, dashboard user
+│       ├── admin/              Admin panel
+│       │   ├── layouts/admin.blade.php  Admin bar + flash messages
+│       │   ├── dashboard.blade.php      Menu card (Soal aktif, lainnya "Segera")
+│       │   ├── packages/       CRUD paket soal (index/create/edit/_form)
+│       │   ├── questions/      CRUD soal (index/create/edit/_form)
+│       │   ├── categories/     CRUD kategori soal (index/create/edit/_form)
+│       │   └── partials/pagination.blade.php  Custom pagination
 │       ├── components/navbar.blade.php
-│       ├── layouts/app.blade.php   Layout utama + SEO meta (35 baris)
-│       └── pages/              14 halaman (9 lama + 6 view soal baru)
-│           ├── produk.blade.php
-│           ├── produk-detail.blade.php
-│           ├── undangan.blade.php
-│           ├── template-detail.blade.php
-│           ├── template-preview.blade.php
-│           ├── soal.blade.php
-│           ├── soal-category.blade.php
-│           ├── soal-quiz.blade.php
-│           ├── soal-result.blade.php
-│           ├── soal-payment.blade.php
-│           ├── soal-payment-success.blade.php
-│           ├── artikel.blade.php
-│           ├── artikel-detail.blade.php
-│           └── kontak.blade.php
+│       ├── layouts/app.blade.php   Layout utama + SEO meta + yield meta_robots
+│       └── pages/              14 halaman publik
+│           ├── soal.blade.php           Index kategori dari DB (icon+deskripsi)
+│           ├── soal-category.blade.php  List paket per kategori
+│           ├── soal-quiz.blade.php      Quiz timer + auto-submit
+│           ├── soal-result.blade.php    Skor + breakdown + pembahasan
+│           ├── soal-payment.blade.php   Snap popup
+│           ├── soal-payment-success.blade.php  Status-aware 3 state
+│           └── ... (produk, undangan, artikel, kontak)
 ├── routes/
-│   ├── web.php                 26 rute (11 publik + 6 guest + 7 auth + 1 admin + 1 webhook)
+│   ├── web.php                 44 rute (11 publik + 6 guest + 7 auth + 19 admin + 1 webhook)
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
-│   ├── migrations/             9 migration — SEMUA schema lengkap & Ran
-│   └── seeders/
-│       ├── DatabaseSeeder.php  (+ AdminSeeder, QuestionPackageSeeder, QuestionSeeder)
-│       ├── AdminSeeder.php     Akun admin default
-│       ├── QuestionPackageSeeder.php  3 paket TIU (numerik Rp15.000)
-│       └── QuestionSeeder.php  100 soal TIU
-├── config/                     11 file config (services.php + midtrans.php)
+│   ├── migrations/             10 migration — SEMUA schema lengkap & Ran
+│   └── seeders/                4 seeder
+├── config/                     services.php + midtrans.php + config google
 ├── public/
-│   ├── css/rangkita.css        CSS CUSTOM UTAMA (2083 baris)
-│   └── images/logo-rangkita.png
+│   └── css/rangkita.css        CSS CUSTOM UTAMA (~3000 baris)
 ├── storage/                    Cache, sessions, logs, uploads
-├── tests/                      4 file (Pest PHP, semua default)
 ├── bootstrap/                  app.php + CSRF exempt payment/callback
 ├── vendor/                  Dependencies PHP
-├── .opencode/agent/         Agent config (review.md)
-└── file config root: .env, composer.json, package.json, opencode.json, tui.json
+└── .opencode/agent/         Agent configs (review.md, build-complex.md)
 ```
 
 ## Statistik Proyek
 
 | Komponen | Jumlah | Keterangan |
 |----------|--------|------------|
-| Rute web | 26 | 11 publik + 6 guest + 7 auth + 1 admin + 1 webhook |
-| Controllers | 5 | 1 base abstrak + PageController + AuthController + SoalController + PaymentController |
+| Rute web | 44 | 11 publik + 6 guest + 7 auth + 19 admin + 1 webhook |
+| Controllers | 8 | 1 base + PageController + AuthController + SoalController + PaymentController + AdminQuestionPackageController + AdminQuestionController + AdminSoalCategoryController |
 | Middleware | 1 | AdminMiddleware (role admin) |
-| Models | 6 | User + 5 model quiz soal (attribute `#[Fillable]`) |
-| View files | 21 | 1 root + 1 layout + 1 komponen + 14 pages + 3 auth + 1 admin |
-| Blade components | 1 | navbar |
-| Layout files | 1 | app.blade.php |
-| CSS custom | 2546 baris | public/css/rangkita.css (termasuk blok SOAL & QUIZ) |
-| Migrations | 9 | 3 default + add_role_to_users_table + 5 quiz soal — semua schema lengkap & Ran |
+| Models | 7 | User + QuestionPackage + Question + QuizSession + Transaction + UserAccess + SoalCategory |
+| View files | 35 | 1 root + 1 layout + 1 komponen + 14 pages + 3 auth + 15 admin |
+| CSS custom | ~3000 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL) |
+| Migrations | 10 | 3 default + role + 5 quiz soal + soal_categories+enum→FK |
 | Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
-| Config files | 11 | services.php + midtrans.php + config google |
-| Test files | 4 | Semua default |
 
 ## Data Hardcoded di PageController
 
@@ -415,8 +429,8 @@ C:\laragon\www\rangkita\
 
 ## Pola Arsitektur
 
-- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + SoalController (quiz SOAL) + PaymentController (Midtrans)
-- **Database Aktif**: users table + role + 5 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access) — semua migrate & seed
+- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + SoalController (quiz SOAL) + PaymentController (Midtrans) + 3 Admin controllers (CRUD paket/soal/kategori)
+- **Database Aktif**: users table + role + 5 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access) + soal_categories — semua migrate & seed
 - **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
 - **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
 - **Quiz Gate**: paket gratis langsung akses; berbayar cek row `user_access`; tanpa akses → redirect `payment.create`
@@ -432,6 +446,18 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 24 Agu 2026 (Sesi 3) - Optimasi Memory Files (-67% Token) + Push Backlog
+
+- **Keluhan user**: konteks awal tiap sesi (AGENTS.md + SUMMARY.md full load) makan ~1/4 token dia. Analisis: kedua file total ~1.607 baris dengan mayoritas DUPLIKAT (TODO/CURRENT/status sama persis di keduanya karena dua-duanya ke-load sebagai instructions)
+- **Keputusan**: opsi 1 = dedup + arsip changelog lama (rekomendasi AI). Alternatif yang ditunda: `/caveman-compress` (format telegrafis kurang enak dibaca) dan off-load on-demand ke file terpisah
+- **Arsip dibuat**: `docs/CHANGELOG-archive.md` (269 baris) — seluruh entry sesi 4–22 Agu dipindah UTUH dari AGENTS.md via script PowerShell .NET marker-based (`IndexOf("## Ses 22 Agu (Sesi 3)")` → `"## Status Sekarang"`), UTF-8 tanpa BOM, plus pointer satu baris di posisi asal
+- **Compress TODO**: Modul 1 (Bug Fixing 18/18) & Modul 2 (Auth 9/9) jadi paragraf ringkas SELESAI + pointer ke arsip; Modul 3 diringkas dari checklist per-file jadi bullet teknis kunci (FK eksplisit, order_id format, insight Midtrans zero-trust & min amount per metode, timer 54 dtk) — hanya item aktif (Step A/B verifikasi) yang tetap checkbox
+- **SUMMARY.md rewrite total**: 746 → 34 baris (CURRENT + tabel status modul + teknologi singkat + changelog 2 entry) + aturan baru: *"jangan nambah-nambah detail di sini, taruh di AGENTS.md"* biar gak bengkak lagi
+- **Hasil**: konteks ke-load tiap sesi 1.607 → 522 baris (**hemat ~67%**); info aktif gak ada yang hilang (behavior rules 17 sub-section utuh, TODO aktif lengkap) — diverifikasi grep markers + line count
+- **Temuan penting**: command `/finish` & `scripts/finish.ps1` GAK ADA di repo (folder `scripts`, `commands`, `.opencode/command` semua kosong/gak exist) padahal tercatat dibikin sesi 4 Agu — kemungkinan kehapus saat cleanup atau cuma lokal & tak pernah ke-commit. Dampak: memory files belum ke-sync ke server (backup GitHub aman)
+- **Commit + push**: `b8ef2d4` chore(opencode): agent build-complex (file yang sebelumnya masih untracked) + `befab6d` docs: compress memory files. Push sukses bawa **4 commit sekaligus** (termasuk `e9d34c2` fix payment_type & `10b922a` yang ternyata belum ke-push) → `main` = `origin/main`, worktree bersih
+- **Format commit pakai skill caveman-commit**: conventional commits, subject ≤50 char, body hanya untuk why non-obvious
 
 ## Ses 24 Agu 2026 (Sesi 2) - Fix payment_type NULL + Plan Modul 6 Admin Panel Soal
 
@@ -461,24 +487,33 @@ C:\laragon\www\rangkita\
 
 > Riwayat sesi 4-22 Agu 2026 (setup deployment, bug fix awal, auth system, backend Modul 3) diarsip ke `docs/CHANGELOG-archive.md`.
 
+## Ses 25 Agu 2026 - Modul 3 Verifikasi + Modul 6 Admin Panel + Kategori Dinamis
+
+- **Modul 3 verifikasi akhir SELESAI**: Step A quiz Numerik 50 soal dua mode (latihan + test timer) pakai admin → lolos; Step B flow "Lanjut Bayar" token lama pakai akun baru → akses terisolasi dengan benar. No bugs ditemukan.
+- **Modul 6 Admin Panel Kelola Soal SELESAI**: 3 controller baru, 19 rute admin, 14 view baru + 1 update, CSS admin panel ~460 baris. CRUD paket (binding slug) + nested CRUD soal (binding id) + CRUD kategori (binding slug)
+- **Bug fix transactions() missing**: `QuestionPackage` gak punya relationship `transactions()` padahal guard di controller manggil `$package->transactions()->exists()` → `BadMethodCallException` → 500 error saat hapus paket. Fix: tambahin `HasMany` relationship. Root cause: relationship dihapus/dilupakan saat refactor, FK `package_id` ada tapi model gak define relasinya
+- **Bug fix Route::resource->parameters()**: `->parameters(['soal/paket' => 'package'])` gak jalan di Laravel 13 — param kegenerate `{paket}`/`{soal}` (dari nama resource), bukan `{package}`/`{question}` (yang diinginkan). Fix: ganti ke explicit routes, sekalian konsisten sama style file
+- **Kategori Soal Dinamis SELESAI**: Migration baru `soal_categories` (name, slug, icon, description, sort_order) + alter `question_packages`: enum `category` → FK `soal_category_id` non-nullable + drop kolom lama + data migrate inline (TWK/TIU/TKP). `SoalCategory` model baru, `SoalController` ganti const → DB query, admin bisa tambah kategori lewat panel tanpa edit kode. Kategori publik sekarang tampil dengan icon + deskripsi dari DB
+- **Button alignment fix**: empty state tabel mepet gak ada napas + back-link nempel langsung → fix CSS: `.admin-actions form { margin: 0 }` + `align-items: center`, `.admin-empty { padding: 36px }` center, `.back-link` admin margin-top 24px, `.table-scroll { margin-bottom: 6px }`
+- **Layout admin**: extends `layouts.app` + admin bar navigasi (Dashboard, Kelola Paket, Kategori, Lihat Situs) + flash messages area + `yield meta_robots` untuk noindex admin pages
+- **Route count update**:26 → 44 (+18 admin routes); controllers 5 → 8; models6 → 7; migrations9 → 10; views21 → 35; CSS2546 → ~3000 baris
+
 ## Status Sekarang
 
-- HEAD: `e9d34c2` (branch `main`) — fix payment_type ke-commit, memory files update sesi ini belum di-push
-- **Modul 3 Quiz SOAL + Midtrans**: Step 1-5 SELESAI (5 tabel migrated+seeded, 5 models, SoalController + PaymentController, 26 rute aktif, 6 views). Step 6 tinggal verifikasi akhir manual: Step A quiz Numerik 50 soal dua mode + Step B flow "Lanjut Bayar" token lama pakai akun baru
-- **Bug fix payment_type NULL** (`e9d34c2`): syncWithMidtrans() return Transaction + persist status+payment_type; backfill row lama verified (echannel)
-- **Modul 6 Admin Panel Kelola Soal** planned & didahulukan (~2.5 jam) — CRUD paket+soal dari dashboard admin, form satuan, zero migration, delete guard finansial, sync total_questions
-- **Rename CPNS → SOAL selesai** (`ff5e41f`): route /soal, SoalController, soal.* route names, views soal-*, navbar/landing/meta/kontak copy ikut diganti
-- **Auth System SELESAI 9/9 step** dan sudah committed (`9b02a59`) — migrate + seed + test flow sukses
-- **Bug Fixing SELESAI 18/18** (commit `921b851`, `cadb15c`, `c738b4e`)
-- Agent model: plan/build = `opencode/big-pickle` (TEXT-ONLY, gak bisa baca gambar), reasoning = `opencode/nemotron-3-ultra-free`, review agent = `mimo-v2.5-free`, build-complex (vision: gambar/PDF) = `muse-spark-1.2-contributor-free`; Tab cycle: build → build-complex → plan → review
-- Agent baru `.opencode/agent/build-complex.md` (vision via muse-spark) **belum di-commit** & belum ke-test — wajib restart opencode dulu biar config aktif
-- DB `rangkita` aktif: users table + role + 5 tabel quiz soal (100 soal TIU seeded, paket numerik Rp15.000) — sudah di-migrate & seed; payments di-reset bersih (0 transactions, 0 user_access) biar semua akun bisa test ulang
-- Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal diisi dari Google Cloud Console
-- Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2 terinstall; webhook gak bisa nyampe localhost → simulasi manual payload POST + transaction_id valid
-- MySQL Laragon harus start manual: `mysqld.exe --defaults-file=C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini` (sering mati sendiri antar sesi)
-- Deploy workflow aktif: user bilang "deploy" → opencode commit+push lokal → user copy-paste command server (Scenario A/B/C sesuai file yang berubah)
-- `tui.json` aktif: Tab = ganti agent, Shift+Tab = reverse, autocomplete dimatikan dari Tab
-- **Lanjutan**: verifikasi akhir test flow → update memory → **Modul 6 Admin Panel Kelola Soal** → **Modul 4 Database Undangan**
+- HEAD: (uncommitted) branch `main` — Modul 3 verifikasi + Modul 6 admin panel selesai, belum di-commit
+- **Modul 3 Quiz SOAL + Midtrans**: ✅ SELESAI — Step A/B verifikasi manual lolos tanpa bug
+- **Modul 6 Admin Panel Kelola Soal**: ✅ SELESAI — CRUD paket+soal+kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB, bug fixes (transactions() missing, Route::resource->parameters(), button alignment)
+- **Kategori Soal Dinamis**: ✅ SELESAI — tabel `soal_categories` + migrasi enum→FK, admin bisa tambah kategori baru tanpa edit kode
+- **Rename CPNS → SOAL selesai** (`ff5e41f`)
+- **Auth System SELESAI 9/9 step** (`9b02a59`)
+- **Bug Fixing SELESAI 18/18** (`359eb40`, `921b851`, `cadb15c`)
+- Agent model: plan/build = `opencode/big-pickle` (TEXT-ONLY), reasoning = `opencode/nemotron-3-ultra-free`, review = `mimo-v2.5-free`, build-complex = `muse-spark-1.2-contributor-free`
+- DB `rangkita` aktif: 6 tabel + `soal_categories` (10+1 kategori seeded) — semua migrate & seed
+- Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal isi dari Google Cloud Console
+- Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2; webhook gak bisa nyampe localhost
+- MySQL Laragon harus start manual: `mysqld.exe --defaults-file=C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini`
+- Deploy workflow: user bilang "deploy" → opencode commit+push → user copy-paste command server
+- **Lanjutan**: **Modul 4 Database Undangan** → Modul 5 Artikel
 
 
 # STYLE

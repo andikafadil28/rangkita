@@ -2,25 +2,6 @@
 
 @section('title', 'Soal & Latihan Ujian - Rangkita')
 
-@php
-    $categories = \App\Http\Controllers\SoalController::CATEGORIES;
-
-    $categoryMeta = [
-        'twk' => [
-            'icon' => '🇮🇩',
-            'desc' => 'Nasionalisme, integritas, bela negara, pilar negara, dan bahasa Indonesia.',
-        ],
-        'tiu' => [
-            'icon' => '🧠',
-            'desc' => 'Kemampuan verbal, numerik, penalaran logis, dan analitis.',
-        ],
-        'tkp' => [
-            'icon' => '🎯',
-            'desc' => 'Pelayanan publik, kejujuran, komitmen, disiplin, dan kerja sama.',
-        ],
-    ];
-@endphp
-
 @section('content')
     <section class="page">
         <h1 class="page-title">Soal & Latihan Ujian</h1>
@@ -31,25 +12,30 @@
         </p>
 
         <div class="grid soal-category-grid">
-            @foreach ($categories as $key => $label)
+            @forelse ($categories as $cat)
                 @php
-                    $meta = $categoryMeta[$key];
-                    $count = $packages->get($key, collect())->count();
+                    $count = $cat->packages->count();
                 @endphp
 
                 <div class="card soal-card">
-                    <div class="card-icon">{{ $meta['icon'] }}</div>
+                    <div class="card-icon">{{ $cat->icon }}</div>
 
-                    <h3>{{ $label }}</h3>
+                    <h3>{{ $cat->name }}</h3>
 
-                    <p>{{ $meta['desc'] }}</p>
+                    <p>{{ $cat->description }}</p>
 
                     <div class="soal-card-footer">
                         <span class="badge">{{ $count }} paket</span>
-                        <a href="{{ route('soal.category', $key) }}">Lihat Paket →</a>
+                        <a href="{{ route('soal.category', $cat) }}">Lihat Paket &rarr;</a>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="card soal-card">
+                    <div class="card-icon">📚</div>
+                    <h3>Belum Ada Kategori</h3>
+                    <p>Kategori soal segera hadir. Pantengin terus ya!</p>
+                </div>
+            @endforelse
         </div>
     </section>
 @endsection

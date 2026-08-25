@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminQuestionController;
+use App\Http\Controllers\AdminQuestionPackageController;
+use App\Http\Controllers\AdminSoalCategoryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SoalController;
@@ -44,8 +47,35 @@ Route::middleware('auth')->group(function () {
 Route::post('/payment/callback', [PaymentController::class, 'callback'])
     ->name('payment.callback');
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard');
-    })->name('admin.dashboard');
+    })->name('dashboard');
+
+    Route::prefix('soal/paket')->name('packages.')->group(function () {
+        Route::get('/', [AdminQuestionPackageController::class, 'index'])->name('index');
+        Route::get('/create', [AdminQuestionPackageController::class, 'create'])->name('create');
+        Route::post('/', [AdminQuestionPackageController::class, 'store'])->name('store');
+        Route::get('/{package}/edit', [AdminQuestionPackageController::class, 'edit'])->name('edit');
+        Route::put('/{package}', [AdminQuestionPackageController::class, 'update'])->name('update');
+        Route::delete('/{package}', [AdminQuestionPackageController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('soal/paket/{package}/soal')->name('questions.')->group(function () {
+        Route::get('/', [AdminQuestionController::class, 'index'])->name('index');
+        Route::get('/create', [AdminQuestionController::class, 'create'])->name('create');
+        Route::post('/', [AdminQuestionController::class, 'store'])->name('store');
+        Route::get('/{question}/edit', [AdminQuestionController::class, 'edit'])->name('edit');
+        Route::put('/{question}', [AdminQuestionController::class, 'update'])->name('update');
+        Route::delete('/{question}', [AdminQuestionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('soal/kategori')->name('categories.')->group(function () {
+        Route::get('/', [AdminSoalCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [AdminSoalCategoryController::class, 'create'])->name('create');
+        Route::post('/', [AdminSoalCategoryController::class, 'store'])->name('store');
+        Route::get('/{category}/edit', [AdminSoalCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category}', [AdminSoalCategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [AdminSoalCategoryController::class, 'destroy'])->name('destroy');
+    });
 });
