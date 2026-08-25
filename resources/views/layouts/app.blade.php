@@ -17,7 +17,7 @@
     <meta property="og:description" content="@yield('meta_description', 'Rangkai kebutuhan digitalmu dalam satu tempat.')">
     <meta property="og:url" content="{{ url()->current() }}">
 
-    <link rel="stylesheet" href="{{ asset('css/rangkita.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/rangkita.css') }}?v={{ filemtime(public_path('css/rangkita.css')) }}">
 </head>
 
 <body>

@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Modul 3 + Modul 6 SELESAI**. Sesi 25 Agu 2026: verifikasi akhir Modul 3 (quiz Numerik 50 soal + flow "Lanjut Bayar") tanpa bug → Modul 6 Admin Panel Kelola Soal (CRUD paket/soal/kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB). Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
+Fokus aktif: **Modul 3 + Modul 6 SELESAI + Riwayat Quiz + Layout Fix**. Sesi 25 Agu 2026: rapihin layout soal (icon, equal-height cards, badge) + navbar auth-aware (Masuk/Daftar vs Dashboard/Keluar) + riwayat quiz (`/soal/riwayat` + dashboard stats) + fix bug `$package->category`. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
 
 # TODO
 
@@ -317,7 +317,7 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 44 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3000 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 8 controller), data produk/template/artikel masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 45 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3100 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 8 controller), data produk/template/artikel masih hardcoded di controller.
 
 ## Behavior AI (opencode)
 
@@ -351,7 +351,7 @@ C:\laragon\www\rangkita\
 │   │   ├── Controller.php      Base controller abstrak (8 baris)
 │   │   ├── PageController.php  Logika halaman publik (~378 baris)
 │   │   ├── AuthController.php  Auth: login/register/logout/Google OAuth/dashboard
-│   │   ├── SoalController.php  Quiz SOAL: index/category/quiz/submit/result
+│   │   ├── SoalController.php  Quiz SOAL: index/category/quiz/submit/result/history
 │   │   ├── PaymentController.php Midtrans: create/callback/success
 │   │   ├── AdminQuestionPackageController.php  CRUD paket soal
 │   │   ├── AdminQuestionController.php  Nested CRUD soal per paket
@@ -381,16 +381,17 @@ C:\laragon\www\rangkita\
 │       │   └── partials/pagination.blade.php  Custom pagination
 │       ├── components/navbar.blade.php
 │       ├── layouts/app.blade.php   Layout utama + SEO meta + yield meta_robots
-│       └── pages/              14 halaman publik
+│       └── pages/              15 halaman publik
 │           ├── soal.blade.php           Index kategori dari DB (icon+deskripsi)
 │           ├── soal-category.blade.php  List paket per kategori
 │           ├── soal-quiz.blade.php      Quiz timer + auto-submit
 │           ├── soal-result.blade.php    Skor + breakdown + pembahasan
+│           ├── soal-history.blade.php   Riwayat quiz (paginate 10)
 │           ├── soal-payment.blade.php   Snap popup
 │           ├── soal-payment-success.blade.php  Status-aware 3 state
 │           └── ... (produk, undangan, artikel, kontak)
 ├── routes/
-│   ├── web.php                 44 rute (11 publik + 6 guest + 7 auth + 19 admin + 1 webhook)
+│   ├── web.php                 45 rute (11 publik + 6 guest + 8 auth + 19 admin + 1 webhook)
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
@@ -409,12 +410,12 @@ C:\laragon\www\rangkita\
 
 | Komponen | Jumlah | Keterangan |
 |----------|--------|------------|
-| Rute web | 44 | 11 publik + 6 guest + 7 auth + 19 admin + 1 webhook |
+| Rute web | 45 | 11 publik + 6 guest + 8 auth + 19 admin + 1 webhook |
 | Controllers | 8 | 1 base + PageController + AuthController + SoalController + PaymentController + AdminQuestionPackageController + AdminQuestionController + AdminSoalCategoryController |
 | Middleware | 1 | AdminMiddleware (role admin) |
 | Models | 7 | User + QuestionPackage + Question + QuizSession + Transaction + UserAccess + SoalCategory |
-| View files | 35 | 1 root + 1 layout + 1 komponen + 14 pages + 3 auth + 15 admin |
-| CSS custom | ~3000 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL) |
+| View files | 36 | 1 root + 1 layout + 1 komponen + 15 pages + 3 auth + 15 admin |
+| CSS custom | ~3100 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL) |
 | Migrations | 10 | 3 default + role + 5 quiz soal + soal_categories+enum→FK |
 | Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
 
@@ -487,6 +488,39 @@ C:\laragon\www\rangkita\
 
 > Riwayat sesi 4-22 Agu 2026 (setup deployment, bug fix awal, auth system, backend Modul 3) diarsip ke `docs/CHANGELOG-archive.md`.
 
+## Ses 25 Agu 2026 (Sesi 2) - Layout Fix + Riwayat Quiz + Auth Navbar
+
+- **Scope A — Layout Fix** (commit `f66e8ec`):
+  - Icon TWK `🇮🇩` → `📜` via DB update — flag emoji fallback jadi "ID" text di Windows/Chrome
+  - Icon fallback `$cat->icon ?: '📚'` di `soal.blade.php` — biar kategori `testing` (icon NULL) gak tampil kosong
+  - Badge "0 paket" → "Segera hadir" (badge-soft) di TWK/TKP — lebih ramah dari "0 paket"
+  - Equal-height cards: `.soal-card { display:flex; flex-direction:column; height:100% }` + `p { flex:1 }` — deskripsi beda panjang gak bikin card beda tinggi
+  - Back-link spacing: `.soal-package-list { margin-bottom: 24px }` — "← Kembali" gak nempel card lagi
+
+- **Scope C — Navbar Auth-aware** (`navbar.blade.php`):
+  - Guest: "Masuk" + "Daftar" (flat `<a>` links, konsisten sama nav-link lain)
+  - Auth: "Dashboard" + "Keluar" (POST form, CSRF-protected via `@csrf`)
+  - CSS: `.nav-logout-btn` (desktop + mobile) — transparent button, gak keliatan kayak button, lebih clean dari link merah
+  - `.nav-auth-form` inline supaya form gak break flex layout navbar
+
+- **Scope B — Riwayat Quiz**:
+  - `SoalController::history()` — `QuizSession::with('package.soalCategory')->where('user_id', auth()->id())->latest()->paginate(10)` — eager load relasi biar gak N+1
+  - Route: `GET /soal/riwayat` → `soal.history` dalam `middleware('auth')` group (`web.php:43`)
+  - View baru: `pages/soal-history.blade.php` — list card per attempt (kategori, nama paket, mode badge, skor besar warna threshold ≥70 hijau / ≥50 kuning / <50 merah, tanggal `d M Y H:i`, "Lihat Hasil →"). Empty state + pagination (reuse `admin/partials/pagination.blade.php`)
+  - `AuthController::dashboard()` upgrade: query `recentSessions` (latest 3) + `stats { total, avgScore, bestScore }` — eager load `package.soalCategory`
+  - `auth/dashboard.blade.php` rewrite: 3 stat-box + riwayat terbaru 3 + "Lihat Semua Riwayat →" + tombol "Kerjakan Soal" + tombol "Keluar"
+  - `soal-result.blade.php` tambah link "Lihat Riwayat" di `quiz-submit-row`
+
+- **Bug fix pre-existing** (`soal-result.blade.php:92`):
+  - `$package->category` → `$package->soalCategory` — property `category` gak ada di QuestionPackage (relationship-nya namanya `soalCategory()`), jadi `route('soal.category', null)` → "Missing required parameter"
+  - Bug lama yang gak pernah ke-trigger karena user jarang klik "Balik ke Kategori" dari halaman result
+
+- **CSS tambahan** (~223 baris): `.history-list`, `.history-item`, `.history-score` (3 warna threshold), `.history-empty`, `.dashboard-header`, `.dashboard-stats`, `.dashboard-section`, `.dashboard-footer`, `.nav-logout-btn`, `.nav-auth-form`, responsive mobile `@media (max-width: 720px)`
+
+- **Verifikasi**: php -l bersih semua file, view:cache compile OK, smoke test `/soal` 200, `/soal/kategori/tiu` 200, `/soal/riwayat` 302 (redirect to login), `/login` 200, `/register` 200
+
+- **Stats**: Routes 44 → 45 (+1 `soal.history`); Views 35 → 36 (+1 `soal-history`); CSS ~2874 → ~3097 (+223 baris)
+
 ## Ses 25 Agu 2026 - Modul 3 Verifikasi + Modul 6 Admin Panel + Kategori Dinamis
 
 - **Modul 3 verifikasi akhir SELESAI**: Step A quiz Numerik 50 soal dua mode (latihan + test timer) pakai admin → lolos; Step B flow "Lanjut Bayar" token lama pakai akun baru → akses terisolasi dengan benar. No bugs ditemukan.
@@ -501,10 +535,11 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `e69d84f` (branch `main`) — semua commit ke-push, worktree bersih
+- HEAD: `f66e8ec` (branch `main`) — semua commit ke-push, worktree bersih
 - **Modul 3 Quiz SOAL + Midtrans**: ✅ SELESAI — Step A/B verifikasi manual lolos tanpa bug
 - **Modul 6 Admin Panel Kelola Soal**: ✅ SELESAI — CRUD paket+soal+kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB, bug fixes (transactions() missing, Route::resource->parameters(), button alignment)
 - **Kategori Soal Dinamis**: ✅ SELESAI — tabel `soal_categories` + migrasi enum→FK, admin bisa tambah kategori baru tanpa edit kode
+- **Riwayat Quiz**: ✅ SELESAI — `/soal/riwayat` (paginate 10, eager load package+soalCategory), dashboard upgrade (3 stats + recent 3 + link riwayat), auth-aware navbar (Masuk/Daftar vs Dashboard/Keluar), icon TWK fix (`🇮🇩` → `📜`), equal-height cards, fix bug `$package->category`
 - **Rename CPNS → SOAL selesai** (`ff5e41f`)
 - **Auth System SELESAI 9/9 step** (`9b02a59`)
 - **Bug Fixing SELESAI 18/18** (`359eb40`, `921b851`, `cadb15c`)
