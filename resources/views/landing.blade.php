@@ -94,21 +94,21 @@
                 <h3>Soal & Latihan Ujian</h3>
 
                 <p>
-                    Paket latihan soal digital untuk bantu pengguna belajar lebih terarah
-                    sebelum menghadapi ujian atau seleksi.
+                    Paket latihan soal TWK, TIU, dan TKP dengan sistem skor dinamis,
+                    timer, dan pembahasan lengkap.
                 </p>
 
                 <ul>
-                    <li>Paket soal siap latihan</li>
-                    <li>Cocok untuk belajar mandiri</li>
-                    <li>Format digital mudah diakses</li>
+                    <li>Soal TWK, TIU, TKP lengkap</li>
+                    <li>Mode latihan & test dengan timer</li>
+                    <li>Pembahasan detail setiap soal</li>
                 </ul>
 
                 <div class="product-price">
-                    Segera Hadir
+                    Mulai Gratis
                 </div>
 
-                <a href="/soal" class="product-action">Ikuti Update</a>
+                <a href="/soal" class="product-action">Lihat Soal</a>
             </div>
 
             <div class="product-card">
