@@ -47,7 +47,7 @@
                         <a href="{{ route('payment.create', $package) }}" class="btn-primary">
                             Lanjut Bayar
                         </a>
-                        <a href="{{ route('soal.category', $package->category) }}" class="btn-secondary">
+                        <a href="{{ route('soal.category', $package->soalCategory) }}" class="btn-secondary">
                             Nanti Saja
                         </a>
                     </div>

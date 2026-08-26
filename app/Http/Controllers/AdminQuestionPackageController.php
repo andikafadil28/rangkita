@@ -98,9 +98,19 @@ class AdminQuestionPackageController extends Controller
             'point_correct' => ['nullable', 'integer', 'min:0'],
             'point_blank' => ['nullable', 'integer'],
             'point_wrong' => ['nullable', 'integer'],
+            'display_mode' => ['required', 'in:scroll,step'],
+            'allow_back' => ['nullable', 'boolean'],
+            'time_limit' => ['nullable', 'integer', 'min:60', 'max:86400'],
         ]);
 
         $data['is_active'] = $request->boolean('is_active');
+        $data['allow_back'] = $request->boolean('allow_back');
+
+        if (! $request->filled('time_limit')) {
+            $data['time_limit'] = null;
+        } else {
+            $data['time_limit'] = (int) $request->input('time_limit');
+        }
 
         if (! $request->filled('point_correct')) {
             $data['point_correct'] = null;

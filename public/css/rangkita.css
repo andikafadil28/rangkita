@@ -2364,6 +2364,127 @@ body.invitation-locked {
       flex-wrap: wrap;
 }
 
+/* Quiz step mode */
+
+.quiz-step {
+      display: none;
+}
+
+.quiz-step.active {
+      display: block;
+      animation: stepFadeIn 0.2s ease;
+}
+
+.quiz-step.hidden {
+      display: none !important;
+}
+
+.quiz-step.slide-left {
+      animation: stepSlideLeft 0.15s ease forwards;
+}
+
+.quiz-step.slide-right {
+      animation: stepSlideRight 0.15s ease forwards;
+}
+
+@keyframes stepFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stepSlideLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(-30px); }
+}
+
+@keyframes stepSlideRight {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(30px); }
+}
+
+.quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin: 36px 0 60px;
+}
+
+.quiz-nav.hidden {
+      display: none;
+}
+
+.quiz-progress {
+      font-size: 13px;
+      font-weight: 600;
+}
+
+/* Quiz recap */
+
+.quiz-recap {
+      padding: 28px;
+      margin-bottom: 24px;
+}
+
+.quiz-recap.hidden {
+      display: none;
+}
+
+.quiz-recap-summary {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #555;
+}
+
+.quiz-recap-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+}
+
+.recap-item-number {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+}
+
+.recap-answered {
+      background: #d4edda;
+      color: #155724;
+}
+
+.recap-unanswered {
+      background: #f8d7da;
+      color: #721c24;
+}
+
+.recap-num-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      color: inherit;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+}
+
+.recap-num-btn:hover {
+      text-decoration: underline;
+}
+
+.recap-num-static {
+      font-weight: 700;
+      font-size: 14px;
+}
+
 /* Hasil quiz */
 
 .result-hero {
@@ -2534,6 +2655,16 @@ body.invitation-locked {
 
       .quiz-question {
             padding: 24px 18px 18px 56px;
+      }
+
+      .quiz-nav {
+            flex-direction: column;
+      }
+
+      .quiz-nav .btn-secondary,
+      .quiz-nav .btn-primary {
+            width: 100%;
+            text-align: center;
       }
 }
 

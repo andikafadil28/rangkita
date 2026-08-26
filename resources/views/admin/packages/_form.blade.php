@@ -77,8 +77,48 @@
         <div class="hint">Kosongkan "Poin Jawaban Benar" untuk menggunakan sistem persentase (0-100). Isi untuk sistem poin — contoh: Benar=5, Kosong=0, Salah=-2 (minus buat penalti).</div>
     </fieldset>
 
+    <fieldset class="scoring-fieldset">
+        <legend>Pengaturan Quiz</legend>
+        <div class="field-row">
+            <div class="field">
+                <label for="display_mode">Mode Tampilan</label>
+                <select name="display_mode" id="display_mode">
+                    <option value="scroll" @selected(old('display_mode', $package->display_mode ?? 'scroll') === 'scroll')">Scroll (Semua Soal)</option>
+                    <option value="step" @selected(old('display_mode', $package->display_mode ?? 'scroll') === 'step')">Step (Satu Per Satu)</option>
+                </select>
+                @error('display_mode')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+            <div class="field">
+                <label for="time_limit">Waktu Pengerjaan Test (detik)</label>
+                <input type="number" name="time_limit" id="time_limit" min="60" max="86400" value="{{ old('time_limit', $package->time_limit) }}" placeholder="Kosongkan = 54 detik/soal">
+                @error('time_limit')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+        </div>
+        <div class="field field-checkbox" id="allowBackWrapper">
+            <input type="hidden" name="allow_back" value="0">
+            <input type="checkbox" name="allow_back" id="allow_back" value="1" @checked(old('allow_back', $package->allow_back ?? true))>
+            <label for="allow_back">Boleh kembali ke soal sebelumnya (mode Step)</label>
+            @error('allow_back')<div class="error-text">{{ $message }}</div>@enderror
+        </div>
+        <div class="hint">Mode Scroll: semua soal tampil sekaligus, scroll ke bawah. Mode Step: satu soal per layar dengan navigasi Next/Previous. Waktu kosong = otomatis 54 detik per soal.</div>
+    </fieldset>
+
     <div class="form-actions">
         <button type="submit" class="btn-primary">{{ $package->exists ? 'Simpan Perubahan' : 'Buat Paket' }}</button>
         <a href="{{ route('admin.packages.index') }}" class="btn-secondary">Batal</a>
     </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modeSelect = document.getElementById('display_mode');
+        var wrapper = document.getElementById('allowBackWrapper');
+
+        function toggleAllowBack() {
+            wrapper.style.display = modeSelect.value === 'step' ? '' : 'none';
+        }
+
+        modeSelect.addEventListener('change', toggleAllowBack);
+        toggleAllowBack();
+    });
+</script>

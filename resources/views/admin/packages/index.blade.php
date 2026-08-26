@@ -13,12 +13,10 @@
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Kategori</th>
-                        <th>Nama</th>
-                        <th>Jumlah Soal</th>
-                        <th>Tingkat</th>
-                        <th>Harga</th>
-                        <th>Poin</th>
+                        <th>Nama Paket</th>
+                        <th>Soal</th>
+                        <th>Tingkat & Harga</th>
+                        <th>Poin & Mode</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -26,20 +24,23 @@
                 <tbody>
                     @forelse ($packages as $package)
                         <tr>
-                            <td><span class="badge badge-soft">{{ $package->soalCategory->name }}</span></td>
                             <td>
+                                <span class="badge badge-soft" style="margin-bottom:4px">{{ $package->soalCategory->name }}</span>
                                 <strong>{{ $package->name }}</strong>
                                 <div class="hint">{{ $package->slug }}</div>
                             </td>
-                            <td>{{ $package->questions_count }} soal</td>
-                            <td>{{ ucfirst($package->difficulty) }}</td>
-                            <td>{{ $package->isFree() ? 'Gratis' : 'Rp' . number_format($package->price, 0, ',', '.') }}</td>
+                            <td>{{ $package->questions_count }}</td>
+                            <td>
+                                <div>{{ ucfirst($package->difficulty) }}</div>
+                                <div class="hint">{{ $package->isFree() ? 'Gratis' : 'Rp' . number_format($package->price, 0, ',', '.') }}</div>
+                            </td>
                             <td>
                                 @if ($package->point_correct !== null)
                                     <span class="badge badge-soft">{{ $package->point_correct }}/{{ $package->point_blank ?? 0 }}/{{ $package->point_wrong ?? 0 }}</span>
                                 @else
                                     <span style="color:#8a7fa0">%</span>
                                 @endif
+                                <div class="hint">{{ $package->display_mode === 'step' ? 'Step' : 'Scroll' }}@if ($package->time_limit) · {{ intval($package->time_limit / 60) }}m{{ $package->time_limit % 60 ? ' ' . $package->time_limit % 60 . 'd' : '' }}@endif</div>
                             </td>
                             <td>
                                 <span class="badge {{ $package->is_active ? 'badge-success' : '' }}">
@@ -60,7 +61,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="admin-empty">
+                            <td colspan="6" class="admin-empty">
                                 <p>Belum ada paket.</p>
                                 <a href="{{ route('admin.packages.create') }}" class="btn-primary btn-sm">+ Tambah Paket Pertama</a>
                             </td>

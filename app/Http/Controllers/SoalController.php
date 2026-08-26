@@ -46,7 +46,7 @@ class SoalController extends Controller
 
         $totalQuestions = $package->questions()->count();
         $timeLimit = $mode === 'test'
-            ? $totalQuestions * self::SECONDS_PER_QUESTION
+            ? ($package->time_limit ?? $totalQuestions * self::SECONDS_PER_QUESTION)
             : null;
 
         $usePointSystem = $package->point_correct !== null;
@@ -72,6 +72,9 @@ class SoalController extends Controller
             'mode' => $mode,
             'timeLimit' => $timeLimit,
             'usePointSystem' => $usePointSystem,
+            'displayMode' => $package->display_mode,
+            'allowBack' => $package->allow_back,
+            'totalQuestions' => $totalQuestions,
             'questions' => $package->questions()->select($selectFields)->get(),
         ]);
     }
@@ -135,7 +138,7 @@ class SoalController extends Controller
             'answers' => $data['answers'],
             'time_spent' => $data['time_spent'] ?? null,
             'time_limit' => $data['mode'] === 'test'
-                ? $questions->count() * self::SECONDS_PER_QUESTION
+                ? ($package->time_limit ?? $questions->count() * self::SECONDS_PER_QUESTION)
                 : null,
             'total_points' => $totalPoints,
             'max_points' => $maxPoints,
