@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Modul 3 + Modul 6 SELESAI + Dual Display Mode Quiz**. Sesi 26 Agu 2026 (sesi 2): quiz mode scroll + step (one per slide), navigasi configurable (allow_back), timer per-paket, recap sebelum submit, compact admin table. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
+Fokus aktif: **Modul 3 + Modul 6 SELESAI + Admin Dashboard + Google OAuth + Product Links**. Sesi 26 Agu 2026 (sesi 3): Google OAuth aktif, admin dashboard stats-heavy (8 box), user management (promote/demote), product links & copy updated. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
 
 # TODO
 
@@ -19,7 +19,7 @@ Semua 18 bug terfix & committed (`359eb40`, `921b851`, `cadb15c`). Highlight: da
 
 ## 2. Auth System (Manual, Opsi C) - ✅ SELESAI 9/9 (`9b02a59`)
 
-Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OAuth via Socialite + role user/admin (`AdminMiddleware` alias `admin`, grup route `/admin`). Admin default: admin@rangkita.com. Views `auth/*` + `admin/dashboard.blade.php`. Google credentials di `.env` masih kosong (tinggal isi dari Cloud Console). Detail step: `docs/CHANGELOG-archive.md`.
+Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OAuth via Socialite + role user/admin (`AdminMiddleware` alias `admin`, grup route `/admin`). Admin default: admin@rangkita.com. Views `auth/*` + `admin/dashboard.blade.php`. **Google OAuth aktif** — credentials terisi di `.env`, error handling (try-catch `InvalidStateException`, null email guard, fallback name). Detail step: `docs/CHANGELOG-archive.md`.
 
 ---
 
@@ -427,7 +427,7 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 45 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3160 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 8 controller), data produk/template/artikel masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 47 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3220 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 10 controller), data produk/template/artikel masih hardcoded di controller.
 
 ## Behavior AI (opencode)
 
@@ -463,6 +463,8 @@ C:\laragon\www\rangkita\
 │   │   ├── AuthController.php  Auth: login/register/logout/Google OAuth/dashboard
 │   │   ├── SoalController.php  Quiz SOAL: index/category/quiz/submit/result/history
 │   │   ├── PaymentController.php Midtrans: create/callback/success
+│   │   ├── AdminDashboardController.php  Dashboard admin (stats + recent activity)
+│   │   ├── AdminUserController.php  User management (list + toggle admin)
 │   │   ├── AdminQuestionPackageController.php  CRUD paket soal
 │   │   ├── AdminQuestionController.php  Nested CRUD soal per paket
 │   │   └── AdminSoalCategoryController.php  CRUD kategori soal
@@ -484,7 +486,8 @@ C:\laragon\www\rangkita\
 │       ├── auth/               Login, register, dashboard user
 │       ├── admin/              Admin panel
 │       │   ├── layouts/admin.blade.php  Admin bar + flash messages
-│       │   ├── dashboard.blade.php      Menu card (Soal aktif, lainnya "Segera")
+│       │   ├── dashboard.blade.php      Stats-heavy (8 box + recent activity)
+│       │   ├── users/          User management (index)
 │       │   ├── packages/       CRUD paket soal (index/create/edit/_form)
 │       │   ├── questions/      CRUD soal (index/create/edit/_form)
 │       │   ├── categories/     CRUD kategori soal (index/create/edit/_form)
@@ -501,7 +504,7 @@ C:\laragon\www\rangkita\
 │           ├── soal-payment-success.blade.php  Status-aware 3 state
 │           └── ... (produk, undangan, artikel, kontak)
 ├── routes/
-│   ├── web.php                 45 rute (11 publik + 6 guest + 8 auth + 19 admin + 1 webhook)
+│   ├── web.php                 47 rute (11 publik + 6 guest + 8 auth + 21 admin + 1 webhook)
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
@@ -520,12 +523,12 @@ C:\laragon\www\rangkita\
 
 | Komponen | Jumlah | Keterangan |
 |----------|--------|------------|
-| Rute web | 45 | 11 publik + 6 guest + 8 auth + 19 admin + 1 webhook |
-| Controllers | 8 | 1 base + PageController + AuthController + SoalController + PaymentController + AdminQuestionPackageController + AdminQuestionController + AdminSoalCategoryController |
+| Rute web | 47 | 11 publik + 6 guest + 8 auth + 21 admin + 1 webhook |
+| Controllers | 10 | 1 base + PageController + AuthController + SoalController + PaymentController + AdminDashboardController + AdminUserController + AdminQuestionPackageController + AdminQuestionController + AdminSoalCategoryController |
 | Middleware | 1 | AdminMiddleware (role admin) |
 | Models | 7 | User + QuestionPackage + Question + QuizSession + Transaction + UserAccess + SoalCategory |
-| View files | 36 | 1 root + 1 layout + 1 komponen + 19 pages + 3 auth + 15 admin |
-| CSS custom | ~3160 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL, STEP MODE) |
+| View files | 38 | 1 root + 1 layout + 1 komponen + 19 pages + 3 auth + 17 admin |
+| CSS custom | ~3220 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL, STEP MODE, ADMIN DASHBOARD) |
 | Migrations | 13 | 3 default + role + 5 quiz soal + soal_categories+enum→FK + 2 dynamic scoring + 1 quiz mode |
 | Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
 
@@ -540,7 +543,7 @@ C:\laragon\www\rangkita\
 
 ## Pola Arsitektur
 
-- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + SoalController (quiz SOAL) + PaymentController (Midtrans) + 3 Admin controllers (CRUD paket/soal/kategori)
+- **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + SoalController (quiz SOAL) + PaymentController (Midtrans) + AdminDashboardController (stats) + AdminUserController (user management) + 3 Admin controllers (CRUD paket/soal/kategori)
 - **Database Aktif**: users table + role + 6 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access, soal_categories) — semua migrate & seed; 13 migrations total
 - **Custom CSS Dominan**: ~3160 baris rangkita.css, asset langsung via `asset()`
 - **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
@@ -557,6 +560,18 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 26 Agu 2026 (Sesi 3) - Google OAuth + Admin Dashboard + User Management + Product Links
+
+- **Google OAuth aktif** (`a39656c`): credentials terisi di `.env` (GOOGLE_CLIENT_ID/SECRET), error handling di `handleGoogleCallback()` — try-catch `InvalidStateException` → redirect login + flash error, guard null email (Google restricted profile), fallback name `getName() ?? getNickname() ?? 'User Google'`. Routes `/auth/google` + `/auth/google/callback` dalam guest middleware
+- **Admin Dashboard upgrade** (`5217e39`): `AdminDashboardController` baru — 8 stat boxes (users, packages, questions, categories, revenue, pending, quizzes, access) + eager-loaded recent activity (5 quiz + 5 transaksi). View rewrite: 4-column stat grid + recent quizzes list + transactions list + quick links. CSS ~60 baris: `.admin-stats` 4-col grid, `.admin-stat-card` 8 warna (blue/purple/green/orange/gold/yellow/pink/teal), responsive 4→2→1
+- **Admin User Management** (`5217e39`): `AdminUserController` baru — `index()` list users (paginate15, withCount quizSessions/transactions/userAccess), `toggleAdmin()` toggle role admin↔user. Safeguards: gak bisa demote diri sendiri (abort 403), gak bisa cabut admin terakhir (prevent lockout). View `admin/users/index.blade.php`: tabel users + role badges (admin hijau/user abu) + provider badges (Google biru/Email ungu) + toggle button dengan konfirmasi. Nav link "Users" ditambahkan ke admin bar
+- **Product links & copy update** (`d7056a1`): Soal: "Segera Hadir" → "Mulai Gratis", button → `/soal` (bukan `/kontak`), features updated (TWK/TIU/TKP, timer, pembahasan). Undangan: features (6 template, countdown, galeri). Artikel: renamed "SEO Blog" → "Tips", konten spesifik. Detail page: internal links gak lagi buka tab baru (`@if str_starts_with http`)
+- **CSS tambahan** (~80 baris): admin stats grid + role/provider badges + responsive
+- **Route count**: 45 → 47 (+2: `admin.users.index`, `admin.users.toggle-admin`)
+- **Controller count**: 8 → 10 (+AdminDashboardController, AdminUserController)
+- **View count**: 36 → 38 (+admin/users/index, admin/dashboard rewrite)
+- **Verifikasi**: php -l bersih semua file, view:cache compile OK, route:list 47 rute
 
 ## Ses 26 Agu 2026 (Sesi 2) - Dual Display Mode Quiz (Scroll + Step)
 
@@ -666,11 +681,15 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `9ce152b` (branch `main`) — semua commit ke-push, worktree bersih
+- HEAD: `d7056a1` (branch `main`) — semua commit ke-push, worktree bersih
 - **Modul 3 Quiz SOAL + Midtrans**: ✅ SELESAI — Step A/B verifikasi manual lolos tanpa bug
 - **Modul 6 Admin Panel Kelola Soal**: ✅ SELESAI — CRUD paket+soal+kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB, bug fixes (transactions() missing, Route::resource->parameters(), button alignment)
 - **Dynamic Scoring System**: ✅ SELESAI — 2 migrations (12 total), per-package + per-question point overrides, dual display (poin mentah + persentase), backward compatible, score clamp fix
 - **Dual Display Mode Quiz**: ✅ SELESAI — scroll + step mode, configurable timer per paket, recap sebelum submit, compact admin table (9→6 kolom), bug fix `$package->category` di payment-success
+- **Google OAuth**: ✅ AKTIF — credentials terisi di `.env`, error handling (try-catch, null email guard, fallback name)
+- **Admin Dashboard**: ✅ SELESAI — 8 stat boxes (users, packages, questions, categories, revenue, pending, quizzes, access) + recent quizzes + transactions + quick links
+- **Admin User Management**: ✅ SELESAI — list users, toggle admin/user, safeguards (gak bisa demote diri sendiri + last admin)
+- **Product Links & Copy**: ✅ SELESAI — Soal link `/soal` (bukan `/kontak`), harga "Mulai Gratis", updated features untuk semua produk, detail page internal link fix
 - **Kategori Soal Dinamis**: ✅ SELESAI — tabel `soal_categories` + migrasi enum→FK, admin bisa tambah kategori baru tanpa edit kode
 - **Riwayat Quiz**: ✅ SELESAI — `/soal/riwayat` (paginate 10, eager load package+soalCategory), dashboard upgrade (3 stats + recent 3 + link riwayat), auth-aware navbar (Masuk/Daftar vs Dashboard/Keluar), icon TWK fix (`🇮🇩` → `📜`), equal-height cards, fix bug `$package->category`
 - **Rename CPNS → SOAL selesai** (`ff5e41f`)
@@ -678,7 +697,7 @@ C:\laragon\www\rangkita\
 - **Bug Fixing SELESAI 18/18** (`359eb40`, `921b851`, `cadb15c`)
 - Agent model: plan/build = `opencode/big-pickle` (TEXT-ONLY), reasoning = `opencode/nemotron-3-ultra-free`, review = `mimo-v2.5-free`, build-complex = `muse-spark-1.2-contributor-free`
 - DB `rangkita` aktif: 6 tabel + `soal_categories` (10+1 kategori seeded) — 13 migrations ran
-- Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal isi dari Google Cloud Console
+- Google Login: credentials terisi di `.env` (GOOGLE_CLIENT_ID/SECRET), redirect URI `https://dikadevit.my.id/auth/google/callback` untuk production
 - Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2; webhook gak bisa nyampe localhost
 - MySQL Laragon harus start manual: `mysqld.exe --defaults-file=C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini`
 - Deploy workflow: user bilang "deploy" → opencode commit+push → user copy-paste command server. **Catatan deploy sesi ini**: user SSH gak punya akses tulis ke `bootstrap/cache/` (di-own `www-data`/web server user) → `php artisan optimize:clear` permission denied → fix: `sudo php artisan optimize:clear`. Ini berlaku untuk semua `artisan` command yang nulis ke `bootstrap/cache/`
