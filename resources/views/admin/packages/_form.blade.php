@@ -55,6 +55,28 @@
         @error('is_active')<div class="error-text">{{ $message }}</div>@enderror
     </div>
 
+    <fieldset class="scoring-fieldset">
+        <legend>Sistem Poin</legend>
+        <div class="field-row">
+            <div class="field">
+                <label for="point_correct">Poin Jawaban Benar</label>
+                <input type="number" name="point_correct" id="point_correct" min="0" value="{{ old('point_correct', $package->point_correct) }}" placeholder="Kosongkan = persentase">
+                @error('point_correct')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+            <div class="field">
+                <label for="point_blank">Poin Tidak Dijawab</label>
+                <input type="number" name="point_blank" id="point_blank" value="{{ old('point_blank', $package->point_blank ?? 0) }}">
+                @error('point_blank')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+            <div class="field">
+                <label for="point_wrong">Poin Jawaban Salah</label>
+                <input type="number" name="point_wrong" id="point_wrong" value="{{ old('point_wrong', $package->point_wrong ?? 0) }}">
+                @error('point_wrong')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+        </div>
+        <div class="hint">Kosongkan "Poin Jawaban Benar" untuk menggunakan sistem persentase (0-100). Isi untuk sistem poin — contoh: Benar=5, Kosong=0, Salah=-2 (minus buat penalti).</div>
+    </fieldset>
+
     <div class="form-actions">
         <button type="submit" class="btn-primary">{{ $package->exists ? 'Simpan Perubahan' : 'Buat Paket' }}</button>
         <a href="{{ route('admin.packages.index') }}" class="btn-secondary">Batal</a>

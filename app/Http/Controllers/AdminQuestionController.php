@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\QuestionPackage;
-use Closure;
 use Illuminate\Http\Request;
 
 class AdminQuestionController extends Controller
@@ -73,7 +72,7 @@ class AdminQuestionController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'question_text' => ['required', 'string'],
             'option_a' => ['required', 'string', 'max:255'],
             'option_b' => ['required', 'string', 'max:255'],
@@ -83,7 +82,7 @@ class AdminQuestionController extends Controller
             'correct_answer' => [
                 'required',
                 'in:a,b,c,d,e',
-                function (string $attribute, mixed $value, Closure $fail) use ($request) {
+                function (string $attribute, mixed $value, \Closure $fail) use ($request) {
                     if ($value === 'e' && trim((string) $request->input('option_e')) === '') {
                         $fail('Opsi E masih kosong, gak bisa dijadiin kunci jawaban.');
                     }
@@ -91,7 +90,16 @@ class AdminQuestionController extends Controller
             ],
             'explanation' => ['nullable', 'string'],
             'difficulty' => ['required', 'in:mudah,sedang,sulit'],
+            'point_correct' => ['nullable', 'integer', 'min:0'],
+            'point_blank' => ['nullable', 'integer'],
+            'point_wrong' => ['nullable', 'integer'],
         ]);
+
+        $data['point_correct'] = $request->filled('point_correct') ? (int) $request->input('point_correct') : null;
+        $data['point_blank'] = $request->filled('point_blank') ? (int) $request->input('point_blank') : null;
+        $data['point_wrong'] = $request->filled('point_wrong') ? (int) $request->input('point_wrong') : null;
+
+        return $data;
     }
 
     private function syncTotalQuestions(QuestionPackage $package): void

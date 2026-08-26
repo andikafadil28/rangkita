@@ -78,6 +78,30 @@
         @error('difficulty')<div class="error-text">{{ $message }}</div>@enderror
     </div>
 
+    @if ($package->point_correct !== null)
+        <fieldset class="scoring-fieldset">
+            <legend>Override Poin (Opsional)</legend>
+            <div class="field-row">
+                <div class="field">
+                    <label for="point_correct">Poin Benar</label>
+                    <input type="number" name="point_correct" id="point_correct" min="0" value="{{ old('point_correct', $question->point_correct) }}" placeholder="Ikut paket: {{ $package->point_correct }}">
+                    @error('point_correct')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+                <div class="field">
+                    <label for="point_blank">Poin Kosong</label>
+                    <input type="number" name="point_blank" id="point_blank" value="{{ old('point_blank', $question->point_blank) }}" placeholder="Ikut paket: {{ $package->point_blank ?? 0 }}">
+                    @error('point_blank')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+                <div class="field">
+                    <label for="point_wrong">Poin Salah</label>
+                    <input type="number" name="point_wrong" id="point_wrong" value="{{ old('point_wrong', $question->point_wrong) }}" placeholder="Ikut paket: {{ $package->point_wrong ?? 0 }}">
+                    @error('point_wrong')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+            </div>
+            <div class="hint">Kosongkan semua untuk mengikuti aturan poin dari paket. Isi untuk override per soal — misal soal ini lebih berat, benar = 10 poin.</div>
+        </fieldset>
+    @endif
+
     <div class="form-actions">
         <button type="submit" class="btn-primary">{{ $question->exists ? 'Simpan Perubahan' : 'Tambah Soal' }}</button>
         <a href="{{ route('admin.questions.index', $package) }}" class="btn-secondary">Batal</a>

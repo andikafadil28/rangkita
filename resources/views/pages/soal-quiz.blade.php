@@ -32,7 +32,15 @@
                 @endphp
 
                 <article class="card quiz-question">
-                    <div class="question-number">{{ $index + 1 }}</div>
+                    <div class="question-number">
+                        {{ $index + 1 }}
+                        @if ($usePointSystem)
+                            @php
+                                $pc = $question->point_correct ?? $package->point_correct ?? 0;
+                            @endphp
+                            <span class="points-badge">+{{ $pc }} poin</span>
+                        @endif
+                    </div>
 
                     <p class="question-text">{{ $question->question_text }}</p>
 

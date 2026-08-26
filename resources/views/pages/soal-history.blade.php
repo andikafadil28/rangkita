@@ -40,8 +40,13 @@
                         </div>
 
                         <div class="history-item-right">
-                            <div class="history-score {{ $scoreClass }}">{{ $score }}</div>
-                            <span class="history-score-label">/ 100</span>
+                            @if ($session->total_points !== null)
+                                <div class="history-score {{ $scoreClass }}">{{ $session->total_points }}/{{ $session->max_points }}</div>
+                                <span class="history-score-label">({{ $score }}%)</span>
+                            @else
+                                <div class="history-score {{ $scoreClass }}">{{ $score }}</div>
+                                <span class="history-score-label">/ 100</span>
+                            @endif
                             <a href="{{ route('soal.result', $session) }}" class="btn-secondary btn-sm">Lihat Hasil &rarr;</a>
                         </div>
                     </div>

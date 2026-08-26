@@ -49,19 +49,30 @@ class SoalController extends Controller
             ? $totalQuestions * self::SECONDS_PER_QUESTION
             : null;
 
+        $usePointSystem = $package->point_correct !== null;
+
+        $selectFields = [
+            'id',
+            'question_text',
+            'option_a',
+            'option_b',
+            'option_c',
+            'option_d',
+            'option_e',
+        ];
+
+        if ($usePointSystem) {
+            $selectFields[] = 'point_correct';
+            $selectFields[] = 'point_blank';
+            $selectFields[] = 'point_wrong';
+        }
+
         return view('pages.soal-quiz', [
             'package' => $package,
             'mode' => $mode,
             'timeLimit' => $timeLimit,
-            'questions' => $package->questions()->select([
-                'id',
-                'question_text',
-                'option_a',
-                'option_b',
-                'option_c',
-                'option_d',
-                'option_e',
-            ])->get(),
+            'usePointSystem' => $usePointSystem,
+            'questions' => $package->questions()->select($selectFields)->get(),
         ]);
     }
 
@@ -74,18 +85,47 @@ class SoalController extends Controller
             'time_spent' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $answerKey = Question::where('package_id', $package->id)
-            ->pluck('correct_answer', 'id');
+        $questions = $package->questions()->get();
+        $answerKey = $questions->pluck('correct_answer', 'id');
 
-        $correctCount = 0;
-        foreach ($data['answers'] as $questionId => $answer) {
-            if (($answerKey[$questionId] ?? null) === $answer) {
-                $correctCount++;
+        $usePointSystem = $package->point_correct !== null;
+
+        if ($usePointSystem) {
+            $totalPoints = 0;
+            $maxPoints = 0;
+
+            foreach ($questions as $question) {
+                $pc = $question->point_correct ?? $package->point_correct ?? 0;
+                $pb = $question->point_blank ?? $package->point_blank ?? 0;
+                $pw = $question->point_wrong ?? $package->point_wrong ?? 0;
+
+                $maxPoints += $pc;
+
+                $userAnswer = $data['answers'][$question->id] ?? null;
+
+                if ($userAnswer === null) {
+                    $totalPoints += $pb;
+                } elseif ($userAnswer === ($answerKey[$question->id] ?? null)) {
+                    $totalPoints += $pc;
+                } else {
+                    $totalPoints += $pw;
+                }
             }
-        }
 
-        $total = $answerKey->count();
-        $score = $total > 0 ? (int) round($correctCount / $total * 100) : 0;
+            $score = $maxPoints > 0 ? max(0, (int) round($totalPoints / $maxPoints * 100)) : 0;
+        } else {
+            $correctCount = 0;
+            foreach ($data['answers'] as $questionId => $answer) {
+                if (($answerKey[$questionId] ?? null) === $answer) {
+                    $correctCount++;
+                }
+            }
+
+            $total = $answerKey->count();
+            $score = $total > 0 ? (int) round($correctCount / $total * 100) : 0;
+            $totalPoints = null;
+            $maxPoints = null;
+        }
 
         $session = QuizSession::create([
             'user_id' => auth()->id(),
@@ -95,8 +135,10 @@ class SoalController extends Controller
             'answers' => $data['answers'],
             'time_spent' => $data['time_spent'] ?? null,
             'time_limit' => $data['mode'] === 'test'
-                ? $total * self::SECONDS_PER_QUESTION
+                ? $questions->count() * self::SECONDS_PER_QUESTION
                 : null,
+            'total_points' => $totalPoints,
+            'max_points' => $maxPoints,
         ]);
 
         return redirect()->route('soal.result', $session);
@@ -108,22 +150,37 @@ class SoalController extends Controller
 
         $session->load('package');
         $answers = $session->answers ?? [];
+        $package = $session->package;
+        $usePointSystem = $package->point_correct !== null;
 
-        $recap = $session->package->questions()->get()->map(function (Question $question) use ($answers) {
+        $recap = $package->questions()->get()->map(function (Question $question) use ($answers, $package, $usePointSystem) {
             $userAnswer = $answers[$question->id] ?? null;
+            $isCorrect = $userAnswer !== null && $userAnswer === $question->correct_answer;
+            $isSkipped = $userAnswer === null;
+
+            $earnedPoints = null;
+            if ($usePointSystem) {
+                $pc = $question->point_correct ?? $package->point_correct ?? 0;
+                $pb = $question->point_blank ?? $package->point_blank ?? 0;
+                $pw = $question->point_wrong ?? $package->point_wrong ?? 0;
+
+                $earnedPoints = $isSkipped ? $pb : ($isCorrect ? $pc : $pw);
+            }
 
             return [
                 'question' => $question,
                 'user_answer' => $userAnswer,
-                'is_correct' => $userAnswer !== null && $userAnswer === $question->correct_answer,
-                'is_skipped' => $userAnswer === null,
+                'is_correct' => $isCorrect,
+                'is_skipped' => $isSkipped,
+                'earned_points' => $earnedPoints,
             ];
         });
 
         return view('pages.soal-result', [
             'session' => $session,
-            'package' => $session->package,
+            'package' => $package,
             'recap' => $recap,
+            'usePointSystem' => $usePointSystem,
             'correctCount' => $recap->where('is_correct', true)->count(),
             'wrongCount' => $recap->where('is_correct', false)->where('is_skipped', false)->count(),
             'skippedCount' => $recap->where('is_skipped')->count(),

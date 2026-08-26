@@ -20,6 +20,9 @@
                         <th>Soal</th>
                         <th>Kunci</th>
                         <th>Tingkat</th>
+                        @if ($package->point_correct !== null)
+                            <th>Poin (B/K/S)</th>
+                        @endif
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -30,6 +33,23 @@
                             <td>{{ Str::limit($question->question_text, 90) }}</td>
                             <td><span class="badge badge-success">{{ strtoupper($question->correct_answer) }}</span></td>
                             <td>{{ ucfirst($question->difficulty) }}</td>
+                            @if ($package->point_correct !== null)
+                                <td>
+                                    @php
+                                        $pc = $question->point_correct;
+                                        $pb = $question->point_blank;
+                                        $pw = $question->point_wrong;
+                                        $hasOverride = $pc !== null || $pb !== null || $pw !== null;
+                                    @endphp
+                                    @if ($hasOverride)
+                                        <span class="badge badge-soft">
+                                            {{ $pc ?? '—' }}/{{ $pb ?? '—' }}/{{ $pw ?? '—' }}
+                                        </span>
+                                    @else
+                                        <span style="color:#8a7fa0">ikut paket</span>
+                                    @endif
+                                </td>
+                            @endif
                             <td>
                                 <div class="admin-actions">
                                     <a href="{{ route('admin.questions.edit', [$package, $question]) }}" class="btn-secondary btn-sm">Edit</a>
@@ -43,7 +63,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="admin-empty">
+                            <td colspan="{{ $package->point_correct !== null ? 6 : 5 }}" class="admin-empty">
                                 <p>Belum ada soal di paket ini.</p>
                                 <a href="{{ route('admin.questions.create', $package) }}" class="btn-primary btn-sm">+ Tambah Soal Pertama</a>
                             </td>

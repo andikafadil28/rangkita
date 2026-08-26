@@ -31,6 +31,9 @@
                             <span class="badge">{{ $package->total_questions }} soal</span>
                             <span class="badge badge-soft">Tingkat: {{ ucfirst($package->difficulty) }}</span>
                             <span class="badge {{ $package->isFree() ? 'badge-success' : 'badge-price' }}">{{ $price }}</span>
+                            @if ($package->point_correct !== null)
+                                <span class="badge badge-soft">Poin: {{ $package->point_correct }}/{{ $package->point_blank ?? 0 }}/{{ $package->point_wrong ?? 0 }}</span>
+                            @endif
                             @if ($owned && ! $package->isFree())
                                 <span class="badge badge-success">✓ Sudah dibeli</span>
                             @endif

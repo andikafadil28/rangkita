@@ -7,10 +7,20 @@
         <h1 class="page-title">Hasil Quiz</h1>
 
         <div class="result-hero card">
-            <div class="result-score-wrap">
-                <span class="result-score">{{ $session->score }}</span>
-                <span class="result-score-unit">/ 100</span>
-            </div>
+            @if ($usePointSystem)
+                <div class="result-score-wrap">
+                    <div class="result-points-row">
+                        <span class="result-points-raw">{{ $session->total_points }} / {{ $session->max_points }}</span>
+                        <span class="result-points-pct">({{ $session->score }}%)</span>
+                    </div>
+                    <span class="result-score-unit">poin</span>
+                </div>
+            @else
+                <div class="result-score-wrap">
+                    <span class="result-score">{{ $session->score }}</span>
+                    <span class="result-score-unit">/ 100</span>
+                </div>
+            @endif
 
             <div class="result-stats">
                 <div class="stat-box stat-correct">
@@ -57,6 +67,12 @@
                             <span class="badge badge-success">✓ Benar</span>
                         @else
                             <span class="badge status-wrong">✗ Salah</span>
+                        @endif
+
+                        @if ($usePointSystem)
+                            <span class="recap-item-points {{ $item['earned_points'] > 0 ? 'points-gained' : 'points-zero' }}">
+                                +{{ $item['earned_points'] }} poin
+                            </span>
                         @endif
                     </header>
 

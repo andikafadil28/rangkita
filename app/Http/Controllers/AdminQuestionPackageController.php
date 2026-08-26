@@ -95,9 +95,21 @@ class AdminQuestionPackageController extends Controller
             'difficulty' => ['required', 'in:mudah,sedang,sulit'],
             'price' => ['required', 'integer', 'min:0', 'max:4294967295'],
             'is_active' => ['nullable', 'boolean'],
+            'point_correct' => ['nullable', 'integer', 'min:0'],
+            'point_blank' => ['nullable', 'integer'],
+            'point_wrong' => ['nullable', 'integer'],
         ]);
 
         $data['is_active'] = $request->boolean('is_active');
+
+        if (! $request->filled('point_correct')) {
+            $data['point_correct'] = null;
+            $data['point_blank'] = null;
+            $data['point_wrong'] = null;
+        } else {
+            $data['point_blank'] = $request->filled('point_blank') ? (int) $request->input('point_blank') : 0;
+            $data['point_wrong'] = $request->filled('point_wrong') ? (int) $request->input('point_wrong') : 0;
+        }
 
         return $data;
     }

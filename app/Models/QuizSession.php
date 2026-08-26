@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'package_id', 'mode', 'score', 'answers', 'time_spent', 'time_limit'])]
+#[Fillable(['user_id', 'package_id', 'mode', 'score', 'answers', 'time_spent', 'time_limit', 'total_points', 'max_points'])]
 class QuizSession extends Model
 {
     protected function casts(): array
     {
         return [
-            // JSON string otomatis di-decode jadi array PHP saat diakses
             'answers' => 'array',
+            'total_points' => 'integer',
+            'max_points' => 'integer',
         ];
     }
 

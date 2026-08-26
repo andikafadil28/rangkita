@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Modul 3 + Modul 6 SELESAI + Riwayat Quiz + Layout Fix**. Sesi 25 Agu 2026: rapihin layout soal (icon, equal-height cards, badge) + navbar auth-aware (Masuk/Daftar vs Dashboard/Keluar) + riwayat quiz (`/soal/riwayat` + dashboard stats) + fix bug `$package->category`. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
+Fokus aktif: **Modul 3 + Modul 6 SELESAI + Dynamic Scoring System**. Sesi 26 Agu 2026: sistem poin dinamis per-paket + per-soal (point_correct, point_blank, point_wrong — nullable, negatif OK), dual display (poin mentah + persentase), backward compatible. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
 
 # TODO
 
@@ -27,8 +27,8 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 
 ### Selesai ✅
 - **DB**: 5 tabel migrated+seeded — question_packages, questions, quiz_sessions, transactions, user_access. FK eksplisit `'package_id'` di semua relasi ke QuestionPackage; `option_e` nullable + enum a-e; seeder 100 soal TIU (Numerik Rp15.000)
-- **Models**: QuestionPackage (slug route binding via `getRouteKeyName()`, helper `isFree()`), Question, QuizSession (casts answers array), Transaction, UserAccess (`$table` eksplisit) — style PHP attribute `#[Fillable]`; User.php +3 relasi balik
-- **SoalController**: index groupBy category → validasi twk/tiu/tkp (404 kalau ngasal), quiz gate akses + mode latihan/test, timer test = soal × `SECONDS_PER_QUESTION = 54`, skor dihitung SERVER-SIDE, soal ke client TANPA correct_answer/explanation, result authorization check
+- **Models**: QuestionPackage (slug route binding via `getRouteKeyName()`, helper `isFree()`, +3 fillable: point_correct/blank/wrong), Question (+3 fillable: point_correct/blank/wrong, belongsTo package FK eksplisit), QuizSession (casts answers array, +2 fillable: total_points/max_points, +2 casts), Transaction, UserAccess (`$table` eksplisit) — style PHP attribute `#[Fillable]`; User.php +3 relasi balik
+- **SoalController**: index groupBy category → validasi twk/tiu/tkp (404 kalau ngasal), quiz gate akses + mode latihan/test, timer test = soal × `SECONDS_PER_QUESTION = 54`, skor dihitung SERVER-SIDE (dual: poin mentah OR persentase lama), soal ke client TANPA correct_answer/explanation, result authorization check, `earned_points` + `usePointSystem` dipass ke view
 - **PaymentController**: create reuse pending transaction + syncWithMidtrans persist status+payment_type sekali tempat (`e9d34c2`); callback webhook verify signature sha512 timing-safe (`hash_equals`) + UserAccess::firstOrCreate idempotent; order_id format `RANGKITA-{userId}-{ymdHis}-{Str::upper(Str::random(6))}`
 - **Routes** (26 total): publik `soal.index`/`soal.category`, auth `soal.quiz/submit/result` + `payment.create/success`, webhook `POST /payment/callback` CSRF-exempt di bootstrap/app.php
 - **Config**: config/midtrans.php + .env sandbox keys terisi; SDK midtrans-php v2.6.2
@@ -62,9 +62,12 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 - [x] `AdminQuestionPackageController` (CRUD paket)
   - Validasi: `soal_category_id` exists:soal_categories, slug auto Str::slug + unique ignore self, price integer min:0, is_active boolean
   - Delete guard: block kalau `transactions()`/`userAccess()`/`quizSessions()` exists (integritas finansial + riwayat quiz); else hard delete (soal cascade via FK)
+  - +3 validasi poin: `point_correct` nullable integer min:0, `point_blank`/`point_wrong` nullable integer (negatif OK buat penalty)
+  - Logic `$request->filled('point_correct')`: kalau kosong → semua null; kalau isi → blank/wrong default 0
 - [x] `AdminQuestionController` (nested CRUD soal)
   - Validasi kunci: `correct_answer` HARUS opsi yang terisi (closure rule — jawab 'e' saat opsi_e kosong = reject, error nempel di field)
   - Sync `total_questions` ke parent tiap store/update/destroy soal (anti data-drift)
+  - +3 field independent: `point_correct`/`point_blank`/`point_wrong` nullable — setiap field pakai `$request->filled()` sendiri-sendiri, NULL = inherit dari paket
 - [x] `AdminSoalCategoryController` (CRUD kategori soal)
   - Delete guard: block kalau ada paket pakai kategori ini
 
@@ -99,6 +102,56 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 - [x] view:cache compile OK
 - [x] DB: migration sukses, data migrate, kolom enum ke-drop
 - [x] Smoke test: /soal publik 200, /admin 302 (auth jalan), /admin/soal/* 302
+
+---
+
+## 6b. Dynamic Per-Question Scoring System - ✅ SELESAI (26 Agu 2026)
+
+> Sistem poin dinamis per-paket + per-soal. Package-level defaults + per-question overrides (nullable = inherit dari parent). Backward compatible: kalau package gak set point → pakai persentase lama (score = correct/total × 100).
+
+### Design Decisions
+- Package default `point_correct` NULL = old percentage system; ada value = point system active
+- Per-question field **independent**: set `point_blank` tanpa `point_correct` = valid, masing-masing `$request->filled()` sendiri
+- `point_blank`/`point_wrong` boleh negatif (penalty), `point_correct` wajib ≥ 0
+- Score (persentase) di-clamp ke 0 minimum (`max(0, ...)`) biar gak SQL unsignedInteger error
+- `total_points` & `max_points` simpan nilai asli (bisa minus) untuk breakdown akurat
+- Display dual: poin mentah (`32/50`) + persentase (`64%`)
+
+### Database (2 migrations baru → total 12)
+- [x] `add_point_columns_to_scoring_tables`: +3 columns `point_correct/blank/wrong` (nullable int) ke `question_packages` dan `questions`
+- [x] `add_points_columns_to_quiz_sessions`: +2 columns `total_points/max_points` (nullable int) ke `quiz_sessions`
+
+### Model Updates
+- [x] `QuestionPackage.php` — +3 fillable: point_correct/blank/wrong
+- [x] `Question.php` — +3 fillable: point_correct/blank/wrong
+- [x] `QuizSession.php` — +2 fillable + 2 casts: total_points/max_points
+
+### Controller Updates
+- [x] `AdminQuestionPackageController` — +3 validation + `$request->filled('point_correct')` logic
+- [x] `AdminQuestionController` — +3 independent field handling (nullable = inherit from paket)
+- [x] `SoalController` — dual scoring logic di `submit()` (resolved point columns OR percentage), `result()` pass `earned_points` + `usePointSystem`, `quiz()` conditionally select point columns
+
+### View Updates (7 files)
+- [x] `admin/packages/_form.blade.php` — scoring fieldset (3 inputs + help text)
+- [x] `admin/packages/index.blade.php` — "Poin" column (B/K/S)
+- [x] `admin/questions/_form.blade.php` — conditional override fieldset (hanya muncul kalau paket pake point system)
+- [x] `admin/questions/index.blade.php` — "Poin (B/K/S)" column, independent display per field
+- [x] `pages/soal-quiz.blade.php` — points badge per question (`+X poin`)
+- [x] `pages/soal-result.blade.php` — dual score display (poin mentah + persentase) + per-question breakdown
+- [x] `pages/soal-history.blade.php` — dual score display
+- [x] `pages/soal-category.blade.php` — package scoring badge
+
+### CSS (~50 baris baru)
+- `.scoring-fieldset`, `.points-badge`, `.result-points-*`, `.recap-item-points` classes
+
+### Bug Fixes
+- [x] Parse error duplicate `</td>` + `@endif` di `admin/questions/index.blade.php`
+- [x] Score negative → SQL unsignedInteger error — fix: `max(0, round(...))` clamp
+
+### Verifikasi
+- [x] php -l bersih semua file baru + diubah
+- [x] view:cache compile OK
+- [x] DB: 2 migrations sukses (10 → 12 total)
 
 ---
 
@@ -414,9 +467,9 @@ C:\laragon\www\rangkita\
 | Controllers | 8 | 1 base + PageController + AuthController + SoalController + PaymentController + AdminQuestionPackageController + AdminQuestionController + AdminSoalCategoryController |
 | Middleware | 1 | AdminMiddleware (role admin) |
 | Models | 7 | User + QuestionPackage + Question + QuizSession + Transaction + UserAccess + SoalCategory |
-| View files | 36 | 1 root + 1 layout + 1 komponen + 15 pages + 3 auth + 15 admin |
-| CSS custom | ~3100 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL) |
-| Migrations | 10 | 3 default + role + 5 quiz soal + soal_categories+enum→FK |
+| View files | 36 | 1 root + 1 layout + 1 komponen + 19 pages + 3 auth + 15 admin |
+| CSS custom | ~3050 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL) |
+| Migrations | 12 | 3 default + role + 5 quiz soal + soal_categories+enum→FK + 2 dynamic scoring |
 | Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
 
 ## Data Hardcoded di PageController
@@ -431,7 +484,7 @@ C:\laragon\www\rangkita\
 ## Pola Arsitektur
 
 - **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + SoalController (quiz SOAL) + PaymentController (Midtrans) + 3 Admin controllers (CRUD paket/soal/kategori)
-- **Database Aktif**: users table + role + 5 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access) + soal_categories — semua migrate & seed
+- **Database Aktif**: users table + role + 6 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access, soal_categories) — semua migrate & seed
 - **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
 - **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
 - **Quiz Gate**: paket gratis langsung akses; berbayar cek row `user_access`; tanpa akses → redirect `payment.create`
@@ -447,6 +500,17 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 26 Agu 2026 - Dynamic Per-Question Scoring System
+
+- **Sistem poin dinamis per-paket + per-soal**: setiap `question_packages` & `questions` punya 3 kolom nullable: `point_correct` (wajib ≥ 0), `point_blank`, `point_wrong` (boleh negatif). Logic inherit: kalau question field NULL → ambil dari package; kalau package field NULL → pakai persentase lama (backward compatible)
+- **2 migrations baru** (total 12): `add_point_columns_to_scoring_tables` (+3 columns × 2 tables) + `add_points_columns_to_quiz_sessions` (+2 columns)
+- **Controller updates**: `AdminQuestionPackageController` (+3 validasi + `$request->filled()` logic), `AdminQuestionController` (+3 independent field handling — NULL = inherit), `SoalController` (dual scoring: resolved point columns OR percentage; `quiz()` conditionally select; `result()` pass `earned_points` + `usePointSystem`)
+- **View updates** (8 files): admin forms (scoring fieldset + conditional override), admin tables (Poin B/K/S column), frontend quiz (points badge), result (dual display), history (dual display), soal-category (badge poin)
+- **CSS**: ~50 baris — `.scoring-fieldset`, `.points-badge`, `.result-points-*`, `.recap-item-points`
+- **Bug fix**: parse error duplicate `</td>` + `@endif` di `admin/questions/index.blade.php`
+- **Bug fix**: `point_wrong` negatif → score negatif → SQL unsignedInteger error → fix: `max(0, round(...))` clamp
+- **Verifikasi**: php -l bersih semua, view:cache compile OK, DB 12 migrations sukses
 
 ## Ses 24 Agu 2026 (Sesi 3) - Optimasi Memory Files (-67% Token) + Push Backlog
 
@@ -538,6 +602,7 @@ C:\laragon\www\rangkita\
 - HEAD: `f66e8ec` (branch `main`) — semua commit ke-push, worktree bersih
 - **Modul 3 Quiz SOAL + Midtrans**: ✅ SELESAI — Step A/B verifikasi manual lolos tanpa bug
 - **Modul 6 Admin Panel Kelola Soal**: ✅ SELESAI — CRUD paket+soal+kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB, bug fixes (transactions() missing, Route::resource->parameters(), button alignment)
+- **Dynamic Scoring System**: ✅ SELESAI — 2 migrations (12 total), per-package + per-question point overrides, dual display (poin mentah + persentase), backward compatible, score clamp fix
 - **Kategori Soal Dinamis**: ✅ SELESAI — tabel `soal_categories` + migrasi enum→FK, admin bisa tambah kategori baru tanpa edit kode
 - **Riwayat Quiz**: ✅ SELESAI — `/soal/riwayat` (paginate 10, eager load package+soalCategory), dashboard upgrade (3 stats + recent 3 + link riwayat), auth-aware navbar (Masuk/Daftar vs Dashboard/Keluar), icon TWK fix (`🇮🇩` → `📜`), equal-height cards, fix bug `$package->category`
 - **Rename CPNS → SOAL selesai** (`ff5e41f`)

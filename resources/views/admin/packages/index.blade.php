@@ -18,6 +18,7 @@
                         <th>Jumlah Soal</th>
                         <th>Tingkat</th>
                         <th>Harga</th>
+                        <th>Poin</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -33,6 +34,13 @@
                             <td>{{ $package->questions_count }} soal</td>
                             <td>{{ ucfirst($package->difficulty) }}</td>
                             <td>{{ $package->isFree() ? 'Gratis' : 'Rp' . number_format($package->price, 0, ',', '.') }}</td>
+                            <td>
+                                @if ($package->point_correct !== null)
+                                    <span class="badge badge-soft">{{ $package->point_correct }}/{{ $package->point_blank ?? 0 }}/{{ $package->point_wrong ?? 0 }}</span>
+                                @else
+                                    <span style="color:#8a7fa0">%</span>
+                                @endif
+                            </td>
                             <td>
                                 <span class="badge {{ $package->is_active ? 'badge-success' : '' }}">
                                     {{ $package->is_active ? 'Aktif' : 'Nonaktif' }}
@@ -52,7 +60,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="admin-empty">
+                            <td colspan="8" class="admin-empty">
                                 <p>Belum ada paket.</p>
                                 <a href="{{ route('admin.packages.create') }}" class="btn-primary btn-sm">+ Tambah Paket Pertama</a>
                             </td>

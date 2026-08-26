@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['soal_category_id', 'name', 'slug', 'total_questions', 'difficulty', 'price', 'is_active'])]
+#[Fillable(['soal_category_id', 'name', 'slug', 'total_questions', 'difficulty', 'price', 'is_active', 'point_correct', 'point_blank', 'point_wrong'])]
 class QuestionPackage extends Model
 {
     protected function casts(): array

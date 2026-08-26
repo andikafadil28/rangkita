@@ -2991,6 +2991,70 @@ body.invitation-locked {
     align-items: center;
 }
 
+.scoring-fieldset {
+    border: 1px solid #ddd3ee;
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: #faf8fe;
+}
+
+.scoring-fieldset legend {
+    font-size: 13px;
+    font-weight: 700;
+    color: #160b46;
+    padding: 0 8px;
+}
+
+.scoring-fieldset .hint {
+    font-size: 12px;
+    color: #8a7fa0;
+    margin-top: 8px;
+}
+
+.points-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c4df0;
+    background: #f0ebff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.points-badge.points-badge-sm {
+    font-size: 10px;
+    padding: 2px 6px;
+}
+
+.result-points-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.result-points-raw {
+    font-size: 16px;
+    font-weight: 700;
+    color: #160b46;
+}
+
+.result-points-pct {
+    font-size: 14px;
+    color: #6d617c;
+}
+
+.recap-item-points {
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: auto;
+}
+
+.recap-item-points.points-gained { color: #27ae60; }
+.recap-item-points.points-zero { color: #c0392b; }
+
 .answer-options {
     display: flex;
     gap: 12px;
