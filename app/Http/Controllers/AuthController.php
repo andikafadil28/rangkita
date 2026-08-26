@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 
 class AuthController extends Controller
 {
@@ -85,16 +86,28 @@ class AuthController extends Controller
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (InvalidStateException) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Autentikasi Google gagal. Silakan coba lagi.']);
+        }
+
+        $email = $googleUser->getEmail();
+
+        if (! $email) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Akun Google Anda tidak memiliki email yang dapat diakses.']);
+        }
 
         $user = User::where('google_id', $googleUser->getId())
-            ->orWhere('email', $googleUser->getEmail())
+            ->orWhere('email', $email)
             ->first();
 
         if (! $user) {
             $user = User::create([
-                'name' => $googleUser->getName(),
-                'email' => $googleUser->getEmail(),
+                'name' => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User Google',
+                'email' => $email,
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
                 'password' => Hash::make(str()->random(32)),

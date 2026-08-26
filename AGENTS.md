@@ -7,7 +7,7 @@ RANGKITA
 
 # CURRENT
 
-Fokus aktif: **Modul 3 + Modul 6 SELESAI + Dynamic Scoring System**. Sesi 26 Agu 2026: sistem poin dinamis per-paket + per-soal (point_correct, point_blank, point_wrong — nullable, negatif OK), dual display (poin mentah + persentase), backward compatible. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
+Fokus aktif: **Modul 3 + Modul 6 SELESAI + Dual Display Mode Quiz**. Sesi 26 Agu 2026 (sesi 2): quiz mode scroll + step (one per slide), navigasi configurable (allow_back), timer per-paket, recap sebelum submit, compact admin table. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel.
 
 # TODO
 
@@ -152,6 +152,63 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 - [x] php -l bersih semua file baru + diubah
 - [x] view:cache compile OK
 - [x] DB: 2 migrations sukses (10 → 12 total)
+
+---
+
+## 6c. Dual Display Mode Quiz (Scroll + Step) - ✅ SELESAI (26 Agu 2026)
+
+> Dua mode tampilan quiz yang bisa di-setting per paket: scroll (semua soal sekaligus) atau step (satu per satu). Plus timer configurable per paket dan recap sebelum submit.
+
+### Design Decisions
+- `display_mode` enum('scroll','step') default 'scroll' — backward compatible
+- `allow_back` boolean default true — hanya relevan di step mode
+- `time_limit` nullable integer — total detik untuk test mode; NULL = `total_questions × 54` (lama)
+- Step mode: user bisa skip soal (gak wajib jawab dulu baru Next)
+- Recap view: tampilkan ringkasan jawaban sebelum final submit
+- Animasi: simple fade + slide CSS (200ms), gak over
+- Test mode: gak ada keyboard shortcut
+- Compact admin table: 9 kolom → 6 kolom (gabung Kategori+Nama, Tingkat+Harga, Poin+Mode)
+
+### Database (1 migration baru → total 13)
+- [x] `add_quiz_mode_columns_to_question_packages`: +3 columns — `display_mode` (enum, default 'scroll'), `allow_back` (boolean, default true), `time_limit` (unsignedInteger, nullable)
+
+### Model Updates
+- [x] `QuestionPackage.php` — +3 fillable: display_mode, allow_back, time_limit; +2 casts: allow_back→boolean, time_limit→integer
+
+### Controller Updates
+- [x] `AdminQuestionPackageController` — +3 validation: display_mode required in:scroll,step; allow_back nullable boolean; time_limit nullable integer min:60 max:86400
+- [x] `SoalController::quiz()` — timer dari package (`$package->time_limit ?? $totalQuestions * self::SECONDS_PER_QUESTION`); pass displayMode, allowBack, totalQuestions ke view
+- [x] `SoalController::submit()` — timer dari package (sama)
+
+### View Updates
+- [x] `admin/packages/_form.blade.php` — fieldset "Pengaturan Quiz" (display_mode dropdown, time_limit input, allow_back checkbox with JS toggle — only shows when step mode selected)
+- [x] `admin/packages/index.blade.php` — compact 6-column layout (merged Kategori+Nama, Tingkat+Harga, Poin+Mode), mode badge + timer info
+- [x] `pages/soal-quiz.blade.php` — **REWRITE**: dual mode support
+  - Scroll mode: behavior lama (semua soal, submit di bawah)
+  - Step mode: satu soal per layar, progress "Soal X dari Y", Next/Previous navigation, "Selesai" di soal terakhir
+  - Recap view: grid nomor soal (hijau=terjawab, merah=belum), klik nomor → balik ke soal (kalau allow_back), tombol "Kembali ke Soal" + "Submit Jawaban"
+  - Animasi: CSS fade-in + slide-left/right (200ms)
+
+### CSS (~110 baris baru)
+- `.quiz-step`, `.quiz-step.active`, `.quiz-step.hidden` — step mode question visibility
+- `.quiz-step.slide-left`, `.quiz-step.slide-right` — slide animations
+- `@keyframes stepFadeIn`, `stepSlideLeft`, `stepSlideRight` — animation keyframes
+- `.quiz-nav` — navigation buttons (prev/next/finish)
+- `.quiz-progress` — "Soal X dari Y" badge
+- `.quiz-recap`, `.quiz-recap-grid` — recap view layout
+- `.recap-item-number`, `.recap-answered`, `.recap-unanswered` — recap grid items
+- `.recap-num-btn`, `.recap-num-static` — clickable/static numbers
+- Responsive: `.quiz-nav` full-width buttons on mobile
+
+### Bug Fixes
+- [x] `soal-payment-success.blade.php:50` — `$package->category` → `$package->soalCategory` (same bug as soal-result, missed in previous fix)
+
+### Verifikasi
+- [x] php -l bersih semua file baru + diubah
+- [x] view:cache compile OK
+- [x] DB: 1 migration sukses (12 → 13 total)
+- [x] route:list 45 rute normal
+- [x] optimize:clear bersih
 
 ---
 
@@ -370,7 +427,7 @@ Login/register/logout manual (`Auth::attempt`, session regeneration) + Google OA
 
 # NOTES
 
-Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 45 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3100 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 8 controller), data produk/template/artikel masih hardcoded di controller.
+Proyek Rangkita adalah website landing page & ekosistem digital dengan Laravel 13. Terdapat 45 rute web, 6 template undangan, 4 produk, dan 4 artikel SEO. CSS custom sekitar 3160 baris. Database quiz SOAL aktif penuh (6 tabel + 7 model + 8 controller), data produk/template/artikel masih hardcoded di controller.
 
 ## Behavior AI (opencode)
 
@@ -437,7 +494,7 @@ C:\laragon\www\rangkita\
 │       └── pages/              15 halaman publik
 │           ├── soal.blade.php           Index kategori dari DB (icon+deskripsi)
 │           ├── soal-category.blade.php  List paket per kategori
-│           ├── soal-quiz.blade.php      Quiz timer + auto-submit
+│           ├── soal-quiz.blade.php      Quiz timer + auto-submit (scroll + step mode)
 │           ├── soal-result.blade.php    Skor + breakdown + pembahasan
 │           ├── soal-history.blade.php   Riwayat quiz (paginate 10)
 │           ├── soal-payment.blade.php   Snap popup
@@ -448,11 +505,11 @@ C:\laragon\www\rangkita\
 │   └── console.php
 ├── database/
 │   ├── factories/UserFactory.php
-│   ├── migrations/             10 migration — SEMUA schema lengkap & Ran
+│   ├── migrations/             13 migration — SEMUA schema lengkap & Ran
 │   └── seeders/                4 seeder
 ├── config/                     services.php + midtrans.php + config google
 ├── public/
-│   └── css/rangkita.css        CSS CUSTOM UTAMA (~3000 baris)
+│   └── css/rangkita.css        CSS CUSTOM UTAMA (~3160 baris)
 ├── storage/                    Cache, sessions, logs, uploads
 ├── bootstrap/                  app.php + CSRF exempt payment/callback
 ├── vendor/                  Dependencies PHP
@@ -468,8 +525,8 @@ C:\laragon\www\rangkita\
 | Middleware | 1 | AdminMiddleware (role admin) |
 | Models | 7 | User + QuestionPackage + Question + QuizSession + Transaction + UserAccess + SoalCategory |
 | View files | 36 | 1 root + 1 layout + 1 komponen + 19 pages + 3 auth + 15 admin |
-| CSS custom | ~3050 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL) |
-| Migrations | 12 | 3 default + role + 5 quiz soal + soal_categories+enum→FK + 2 dynamic scoring |
+| CSS custom | ~3160 baris | rangkita.css (termasuk blok SOAL, QUIZ, ADMIN PANEL, STEP MODE) |
+| Migrations | 13 | 3 default + role + 5 quiz soal + soal_categories+enum→FK + 2 dynamic scoring + 1 quiz mode |
 | Seeders | 4 | DatabaseSeeder + AdminSeeder + QuestionPackageSeeder + QuestionSeeder |
 
 ## Data Hardcoded di PageController
@@ -484,8 +541,8 @@ C:\laragon\www\rangkita\
 ## Pola Arsitektur
 
 - **Multi Controller Pattern**: PageController (10 rute publik) + AuthController (auth + Google OAuth) + SoalController (quiz SOAL) + PaymentController (Midtrans) + 3 Admin controllers (CRUD paket/soal/kategori)
-- **Database Aktif**: users table + role + 6 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access, soal_categories) — semua migrate & seed
-- **Custom CSS Dominan**: 2083 baris rangkita.css, asset langsung via `asset()`
+- **Database Aktif**: users table + role + 6 tabel quiz soal (question_packages, questions, quiz_sessions, transactions, user_access, soal_categories) — semua migrate & seed; 13 migrations total
+- **Custom CSS Dominan**: ~3160 baris rangkita.css, asset langsung via `asset()`
 - **Auth Aktif**: login/register/logout/Google OAuth, role-based access (user/admin)
 - **Quiz Gate**: paket gratis langsung akses; berbayar cek row `user_access`; tanpa akses → redirect `payment.create`
 - **Payment Security**: skor dihitung server-side, soal dikirim ke client TANPA correct_answer/explanation, webhook Midtrans diverifikasi signature sha512 (`hash_equals` timing-safe), CSRF exempt hanya untuk callback
@@ -500,6 +557,16 @@ C:\laragon\www\rangkita\
 - Font Instrument Sans (Bunny CDN)
 
 # CHANGELOG
+
+## Ses 26 Agu 2026 (Sesi 2) - Dual Display Mode Quiz (Scroll + Step)
+
+- **Dual display mode quiz**: dua mode tampilan yang bisa di-setting per paket — `scroll` (semua soal sekaligus, behavior lama) dan `step` (satu per satu, navigasi Next/Previous). Mode step: progress indicator "Soal X dari Y", animasi fade+slide CSS (200ms), recap view sebelum submit (grid nomor soal hijau/merah)
+- **Navigasi configurable**: `allow_back` boolean per paket — kalau false, user gak bisa balik ke soal sebelumnya (strict forward-only). Toggle checkbox di admin form hanya muncul saat step mode dipilih
+- **Timer configurable per paket**: field `time_limit` (total detik untuk test mode). NULL = fallback `total_questions × 54` (lama). Admin bisa set langsung di form paket (min 60dtk, max 24jam)
+- **Database** (1 migration baru → total 13): `add_quiz_mode_columns_to_question_packages` — +3 columns: `display_mode` (enum, default 'scroll'), `allow_back` (boolean, default true), `time_limit` (unsignedInteger, nullable). Backward compatible: semua default = behavior lama
+- **Admin form update**: fieldset "Pengaturan Quiz" (display_mode dropdown, time_limit input, allow_back checkbox with JS toggle). Compact admin table: 9 → 6 kolom (gabung Kategori+Nama, Tingkat+Harga, Poin+Mode)
+- **Bug fix**: `$package->category` → `$package->soalCategory` di `soal-payment-success.blade.php:50` (same bug as soal-result, missed in previous fix)
+- **Commit**: `9ce152b` feat(soal): add dual display mode (scroll + step) + configurable timer. 9 files changed, +397/-21 baris
 
 ## Ses 26 Agu 2026 - Dynamic Per-Question Scoring System
 
@@ -599,17 +666,18 @@ C:\laragon\www\rangkita\
 
 ## Status Sekarang
 
-- HEAD: `f66e8ec` (branch `main`) — semua commit ke-push, worktree bersih
+- HEAD: `9ce152b` (branch `main`) — semua commit ke-push, worktree bersih
 - **Modul 3 Quiz SOAL + Midtrans**: ✅ SELESAI — Step A/B verifikasi manual lolos tanpa bug
 - **Modul 6 Admin Panel Kelola Soal**: ✅ SELESAI — CRUD paket+soal+kategori, 3 controller baru, 19 rute admin, kategori dinamis via DB, bug fixes (transactions() missing, Route::resource->parameters(), button alignment)
 - **Dynamic Scoring System**: ✅ SELESAI — 2 migrations (12 total), per-package + per-question point overrides, dual display (poin mentah + persentase), backward compatible, score clamp fix
+- **Dual Display Mode Quiz**: ✅ SELESAI — scroll + step mode, configurable timer per paket, recap sebelum submit, compact admin table (9→6 kolom), bug fix `$package->category` di payment-success
 - **Kategori Soal Dinamis**: ✅ SELESAI — tabel `soal_categories` + migrasi enum→FK, admin bisa tambah kategori baru tanpa edit kode
 - **Riwayat Quiz**: ✅ SELESAI — `/soal/riwayat` (paginate 10, eager load package+soalCategory), dashboard upgrade (3 stats + recent 3 + link riwayat), auth-aware navbar (Masuk/Daftar vs Dashboard/Keluar), icon TWK fix (`🇮🇩` → `📜`), equal-height cards, fix bug `$package->category`
 - **Rename CPNS → SOAL selesai** (`ff5e41f`)
 - **Auth System SELESAI 9/9 step** (`9b02a59`)
 - **Bug Fixing SELESAI 18/18** (`359eb40`, `921b851`, `cadb15c`)
 - Agent model: plan/build = `opencode/big-pickle` (TEXT-ONLY), reasoning = `opencode/nemotron-3-ultra-free`, review = `mimo-v2.5-free`, build-complex = `muse-spark-1.2-contributor-free`
-- DB `rangkita` aktif: 6 tabel + `soal_categories` (10+1 kategori seeded) — semua migrate & seed
+- DB `rangkita` aktif: 6 tabel + `soal_categories` (10+1 kategori seeded) — 13 migrations ran
 - Google Login: `GOOGLE_CLIENT_ID/SECRET` di `.env` masih kosong — tinggal isi dari Google Cloud Console
 - Midtrans: config/midtrans.php + .env keys terisi (sandbox), SDK v2.6.2; webhook gak bisa nyampe localhost
 - MySQL Laragon harus start manual: `mysqld.exe --defaults-file=C:\laragon\bin\mysql\mysql-8.0.30-winx64\my.ini`
