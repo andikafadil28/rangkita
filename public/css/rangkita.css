@@ -3290,3 +3290,86 @@ body.invitation-locked {
         padding: 28px 16px !important;
     }
 }
+
+/* ============ ADMIN DASHBOARD STATS ============ */
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.admin-stat-card {
+    text-align: center;
+    padding: 20px 14px;
+}
+
+.admin-stat-card strong {
+    display: block;
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+.admin-stat-card span {
+    color: #8a7fa0;
+    font-size: 13px;
+}
+
+.stat-blue { background: #e8f0fe; color: #1a56db; }
+.stat-purple { background: #efe9ff; color: #7138f6; }
+.stat-green { background: #e2f8e9; color: #1c9d4b; }
+.stat-orange { background: #fff0dc; color: #c46a00; }
+.stat-gold { background: #fef3c7; color: #92400e; }
+.stat-yellow { background: #fef9c3; color: #a16207; }
+.stat-pink { background: #fce7f3; color: #be185d; }
+.stat-teal { background: #ccfbf1; color: #0d9488; }
+
+/* ============ ROLE & PROVIDER BADGES ============ */
+
+.role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.role-admin {
+    background: #e2f8e9;
+    color: #1c9d4b;
+}
+
+.role-user {
+    background: #ececec;
+    color: #555;
+}
+
+.provider-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.provider-google {
+    background: #e8f0fe;
+    color: #1a56db;
+}
+
+.provider-email {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+@media (max-width: 720px) {
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .admin-stat-card strong {
+        font-size: 20px;
+    }
+}

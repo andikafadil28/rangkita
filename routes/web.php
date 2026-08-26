@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminQuestionController;
 use App\Http\Controllers\AdminQuestionPackageController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminSoalCategoryController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SoalController;
@@ -49,9 +51,10 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])
     ->name('payment.callback');
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
-    Route::get('/', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
 
     Route::prefix('soal/paket')->name('packages.')->group(function () {
         Route::get('/', [AdminQuestionPackageController::class, 'index'])->name('index');
