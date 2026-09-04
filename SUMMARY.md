@@ -1,43 +1,28 @@
 # SUMMARY — Ringkasan Cepat
 
-> **Single source of truth = `AGENTS.md`** (TODO detail, notes teknis, behavior rules, changelog).
-> Riwayat sesi lama: `docs/CHANGELOG-archive.md`.
-> File ini sengaja tipis buat hemat token tiap sesi — jangan nambah-nambah detail di sini, taruh di AGENTS.md.
+> Konteks aktif: `AGENTS.md`.
+> Hasil dan plan Modul 4: `docs/plans/modul-4-undangan.md`.
+> Riwayat lama: `docs/CHANGELOG-archive.md`.
+> Jangan duplikasi detail ke file ini; jaga sebagai pointer tipis.
 
 # CURRENT
 
-Fokus aktif: **Modul 3 + Modul 6 SELESAI + Admin Dashboard + Google OAuth + Product Links**. Sesi 26 Agu 2026 (sesi 3): Google OAuth aktif, admin dashboard stats-heavy (8 box), user management (promote/demote), product links & copy updated. Lanjutan: **Modul 4 Database Undangan** → Modul 5 Artikel. Detail lengkap: AGENTS.md.
+Fokus berikutnya: **Modul 5 Database Artikel**. Modul 4 Database Undangan sudah selesai dan terverifikasi; belum commit/deploy.
 
 # Status Modul
 
 | Modul | Status |
-|-------|--------|
-| 1. Bug Fixing (18 issues) | ✅ SELESAI (`359eb40`, `921b851`, `cadb15c`) |
-| 2. Auth System | ✅ SELESAI 9/9 (`9b02a59`) |
-| 3. Quiz SOAL + Midtrans | ✅ SELESAI |
-| 6. Admin Panel Kelola Soal | ✅ SELESAI (25 Agu 2026) |
-| 6b. Dynamic Scoring System | ✅ SELESAI (26 Agu 2026) |
-| 6c. Dual Display Mode Quiz | ✅ SELESAI (26 Agu 2026) |
-| 6d. Admin Dashboard + User Mgmt | ✅ SELESAI (26 Agu 2026) |
-| 6e. Google OAuth | ✅ AKTIF (26 Agu 2026) |
-| 6f. Product Links Update | ✅ SELESAI (26 Agu 2026) |
-| 4. Database Undangan | ⏳ Menunggu (~3 jam) |
-| 5. Database Artikel | ⏳ Menunggu (~3.5 jam) |
+|---|---|
+| 1, 2, 3, 6, 6b-f | ✅ SELESAI |
+| 4. Database Undangan | ✅ SELESAI (4 Sep 2026) |
+| 5. Database Artikel | 📝 SIAP DIRENCANAKAN (~3,5 jam) |
 
-# Teknologi Singkat
+# Baseline
 
-- Laravel 13.8 / PHP ^8.3 / MySQL DB `rangkita` (Laragon, sering mati — start manual via mysqld.exe)
-- Auth manual + Socialite (Google OAuth), role user/admin
-- midtrans-php v2.6.2 (sandbox keys terisi di .env)
-- CSS custom `rangkita.css` ~3220 baris, TANPA Vite/Tailwind; font Instrument Sans via Bunny CDN
-- 47 rute web, 10 controller, 7 model, 13 migration ran, Pest PHP untuk testing
+- Sebelum Modul 4: Laravel 13.8, 47 route, 10 controller, 7 model, 13 migration, 38 view, CSS custom tanpa Vite/Tailwind.
+- HEAD sebelum update docs: `9e8075d`; `main` sinkron `origin/main`; source aplikasi belum berubah.
 
-# Changelog Terbaru
+# Update Terakhir
 
-- **26 Agu 2026 (Sesi 3)**: Google OAuth aktif (`a39656c`) + Admin Dashboard 8 stat boxes + User Management (list + toggle admin, safeguards) (`5217e39`) + Product Links & Copy update — Soal link `/soal`, harga "Mulai Gratis", internal link fix (`d7056a1`). Routes 45→47, Controllers 8→10, Views 36→38, CSS ~3160→~3220.
-- **26 Agu 2026 (Sesi 2)**: Dual Display Mode Quiz — scroll + step mode, configurable timer per paket, navigasi configurable (allow_back), recap sebelum submit, compact admin table (9→6 kolom). Migration baru (13 total): display_mode, allow_back, time_limit. Bug fix: `$package->category` di payment-success. Commit `9ce152b`. 9 files, +397/-21 baris.
-- **26 Agu 2026**: Dynamic Per-Question Scoring System — 2 migrations (12 total), per-package + per-question point overrides (nullable = inherit), dual display (poin mentah + persentase), backward compatible. Bug fix: negative score clamp (`max(0, ...)`). 8 views updated, ~50 baris CSS baru.
-- **25 Agu 2026 (Sesi 2)**: Layout fix (icon TWK, equal-height cards, badge) + Riwayat Quiz (`/soal/riwayat` + dashboard stats 3 box + recent 3) + Auth-aware navbar (Masuk/Daftar vs Dashboard/Keluar) + fix bug `$package->category` → `$package->soalCategory`. Commit `f66e8ec`. Routes 44→45, Views 35→36, CSS ~2874→~3100.
-- **25 Agu 2026 (Sesi 1)**: Modul 3 verifikasi akhir SELESAI (Step A+B lolos) → Modul 6 Admin Panel Kelola Soal SELESAI (3 controller, 19 rute admin, 14 views, kategori dinamis via `soal_categories` table + enum→FK migration). Bug fixes: `transactions()` missing → 500 hapus paket, `Route::resource->parameters()` gak jalan di Laravel 13, button alignment. Deploy server verified (`e69d84f`).
-- **24 Agu 2026 (Sesi 2+3)**: fix `payment_type` NULL (`e9d34c2`); memory files compress -67% (`befab6d`); rename CPNS → SOAL (`ff5e41f`); 4 bug fix payment (`b0dcc29`); agent vision `build-complex.md`.
-- Riwayat lengkap sesi 4–22 Agu: `docs/CHANGELOG-archive.md`
+- **4 Sep 2026**: Modul 4 selesai: DB-backed wedding, admin CRUD/galeri/wish, shared invitation dengan enam motion profile, asset Pexels WebP lokal, serta 24 test / 134 assertions lulus. Belum commit/deploy.
+- **2 Sep 2026**: Plan Modul 4 dikunci dan dipisah ke `docs/plans/`; changelog sampai 26 Agu diarsip agar memory auto-load tetap hemat token.

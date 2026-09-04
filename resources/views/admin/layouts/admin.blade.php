@@ -10,6 +10,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">Dashboard</a>
                 <a href="{{ route('admin.packages.index') }}" class="{{ request()->routeIs('admin.packages.*') ? 'is-active' : '' }}">Kelola Paket</a>
                 <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'is-active' : '' }}">Kategori</a>
+                <a href="{{ route('admin.weddings.index') }}" class="{{ request()->routeIs('admin.weddings.*') ? 'is-active' : '' }}">Undangan</a>
                 <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'is-active' : '' }}">Users</a>
                 <a href="{{ url('/') }}">Lihat Situs</a>
             </nav>

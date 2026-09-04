@@ -1631,6 +1631,13 @@ a {
       border: 1px solid #f0d9ea;
 }
 
+.gallery-grid img {
+      width: 100%;
+      height: 86px;
+      object-fit: cover;
+      border-radius: 16px;
+}
+
 .location-section {
       background: white;
 }
@@ -1808,6 +1815,10 @@ a {
       margin-top: 28px;
 }
 
+.event-preview-grid.is-single {
+      grid-template-columns: minmax(0, 1fr);
+}
+
 .event-preview-card {
       background: #fff7fb;
       border: 1px solid #f0d9ea;
@@ -1874,6 +1885,27 @@ a {
       font-weight: 900;
 }
 
+.preview-gallery-grid figure {
+      margin: 0;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #fff;
+      border: 1px solid #f0d9ea;
+}
+
+.preview-gallery-grid img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+}
+
+.preview-gallery-grid figcaption {
+      padding: 10px 12px;
+      color: #6d617c;
+      font-size: 13px;
+}
+
 .wish-preview-card {
       text-align: left;
       background: #fff7fb;
@@ -1914,6 +1946,38 @@ a {
       cursor: pointer;
 }
 
+.wish-preview-form button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+}
+
+.wish-field-error {
+      display: block;
+      margin-top: 6px;
+      color: #d9365f;
+      font-size: 13px;
+}
+
+.preview-only-note {
+      margin-top: 22px;
+      font-size: 14px !important;
+      font-style: italic;
+}
+
+.draft-preview-banner {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 1200;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: #fff0dc;
+      color: #8a4b00;
+      box-shadow: 0 8px 24px rgba(31, 22, 53, 0.15);
+      font-size: 13px;
+      font-weight: 800;
+}
+
 .closing-preview-section {
       margin-bottom: 80px;
 }
@@ -1947,6 +2011,35 @@ a {
 
 .wedding-preview-body.theme-royal {
       background: linear-gradient(135deg, #101935, #d4af37);
+}
+
+.theme-elegant .invitation-cover {
+      background: linear-gradient(rgba(54, 38, 18, 0.46), rgba(255, 248, 231, 0.38)), url("/images/wedding/elegant/hero.webp") center / cover;
+}
+
+.theme-minimalis .invitation-cover {
+      background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(238, 238, 238, 0.62)), url("/images/wedding/minimalis/hero.webp") center / cover;
+}
+
+.theme-floral .invitation-cover {
+      background: linear-gradient(rgba(104, 35, 65, 0.3), rgba(255, 232, 240, 0.52)), url("/images/wedding/floral/hero.webp") center / cover;
+}
+
+.theme-modern .invitation-cover {
+      background: linear-gradient(135deg, rgba(21, 25, 64, 0.52), rgba(122, 77, 255, 0.32)), url("/images/wedding/modern/hero.webp") center / cover;
+}
+
+.theme-classic .invitation-cover {
+      background: linear-gradient(rgba(67, 40, 22, 0.42), rgba(243, 215, 182, 0.42)), url("/images/wedding/classic/hero.webp") center / cover;
+}
+
+.theme-royal .invitation-cover {
+      background: linear-gradient(rgba(5, 10, 28, 0.62), rgba(65, 43, 8, 0.5)), url("/images/wedding/royal/hero.webp") center / cover;
+}
+
+.theme-modern .invitation-cover-inner,
+.theme-royal .invitation-cover-inner {
+      background: rgba(255, 255, 255, 0.9);
 }
 
 @media (max-width: 800px) {
@@ -2052,11 +2145,11 @@ a {
    CINEMATIC INVITATION OPENING
 ========================= */
 
-body.invitation-locked {
+body.js-ready.invitation-locked {
       overflow: hidden;
 }
 
-.invitation-cover {
+.js-ready .invitation-cover {
       position: fixed;
       inset: 0;
       z-index: 1000;
@@ -2092,6 +2185,12 @@ body.invitation-locked {
 }
 
 .invitation-content {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+}
+
+.js-ready .invitation-content {
       opacity: 0;
       visibility: hidden;
       transform: translateY(30px);
@@ -2102,7 +2201,7 @@ body.invitation-locked {
             visibility 0.8s ease;
 }
 
-.invitation-content.is-visible {
+.js-ready .invitation-content.is-visible {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
@@ -2115,6 +2214,281 @@ body.invitation-locked {
 
 .preview-back-button {
       z-index: 1100;
+}
+
+/* =========================
+   WEDDING MOTION PROFILES
+========================= */
+
+.motion-decorations {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+}
+
+.motion-decorations span {
+      position: absolute;
+      left: var(--decor-x);
+      top: var(--decor-y);
+      width: 10px;
+      height: 10px;
+      opacity: 0.34;
+      background: #ff4f87;
+      animation: decorFloat var(--decor-duration) ease-in-out var(--decor-delay) infinite alternate;
+}
+
+.invitation-cover,
+.invitation-content,
+.preview-back-button,
+.draft-preview-banner {
+      isolation: isolate;
+}
+
+.motion-ready [data-reveal] {
+      opacity: 0;
+      transform: translateY(42px);
+      transition: opacity 0.85s ease, transform 0.85s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.motion-ready [data-reveal].is-revealed {
+      opacity: 1;
+      transform: none;
+}
+
+.motion-ready [data-reveal] [data-stagger] > *,
+.motion-ready [data-reveal][data-stagger] > * {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      transition-delay: calc(var(--stagger-index, 0) * 70ms + 160ms);
+}
+
+.motion-ready [data-reveal].is-revealed [data-stagger] > *,
+.motion-ready [data-reveal][data-stagger].is-revealed > * {
+      opacity: 1;
+      transform: none;
+}
+
+.motion-ready.theme-elegant [data-reveal] {
+      transform: translateY(34px) scale(0.98);
+      transition-duration: 1.05s;
+}
+
+.motion-ready.theme-elegant [data-reveal].is-revealed {
+      transform: none;
+}
+
+.theme-elegant .motion-decorations span {
+      border-radius: 50%;
+      background: #c59b42;
+      box-shadow: 0 0 18px rgba(197, 155, 66, 0.75);
+}
+
+.motion-ready.theme-elegant .invitation-cover-inner {
+      animation: coverElegant 1.15s ease-out;
+}
+
+.motion-ready.theme-minimalis [data-reveal] {
+      transform: translateY(18px);
+      transition-duration: 0.65s;
+}
+
+.motion-ready.theme-minimalis [data-reveal]::after {
+      content: "";
+      position: absolute;
+      right: 18%;
+      bottom: 12px;
+      left: 18%;
+      height: 1px;
+      background: #1f2937;
+      opacity: 0.22;
+      transform: scaleX(0);
+      transition: transform 0.7s ease 0.15s;
+}
+
+.motion-ready.theme-minimalis [data-reveal].is-revealed::after {
+      transform: scaleX(1);
+}
+
+.theme-minimalis .motion-decorations span {
+      width: 28px;
+      height: 1px;
+      background: #374151;
+}
+
+.motion-ready.theme-minimalis .invitation-cover-inner {
+      animation: coverMinimalis 0.75s ease-out;
+}
+
+.motion-ready.theme-floral [data-reveal] {
+      transform: translateY(28px) scale(0.94) rotate(0.7deg);
+      transition-duration: 0.95s;
+}
+
+.motion-ready.theme-floral [data-reveal].is-revealed {
+      transform: none;
+}
+
+.theme-floral .motion-decorations span {
+      width: 12px;
+      height: 18px;
+      border-radius: 80% 20% 70% 30%;
+      background: #e881aa;
+      animation-name: decorPetal;
+}
+
+.motion-ready.theme-floral .invitation-cover-inner {
+      animation: coverFloral 1s ease-out;
+}
+
+.motion-ready.theme-modern [data-reveal]:nth-child(odd) {
+      transform: translateX(-54px);
+}
+
+.motion-ready.theme-modern [data-reveal]:nth-child(even) {
+      transform: translateX(54px);
+}
+
+.motion-ready.theme-modern [data-reveal].is-revealed {
+      transform: none;
+}
+
+.theme-modern .motion-decorations span {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7a4dff, #38bdf8);
+      filter: blur(2px);
+      opacity: 0.2;
+      animation-name: decorOrb;
+}
+
+.motion-ready.theme-modern .invitation-cover-inner {
+      animation: coverModern 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motion-ready.theme-classic [data-reveal] {
+      transform: perspective(900px) rotateX(7deg) translateY(26px);
+      transform-origin: top center;
+      transition-duration: 1s;
+}
+
+.motion-ready.theme-classic [data-reveal].is-revealed {
+      transform: none;
+}
+
+.theme-classic .motion-decorations span {
+      width: 11px;
+      height: 11px;
+      background: transparent;
+      border: 1px solid #8b5e3c;
+      transform: rotate(45deg);
+}
+
+.motion-ready.theme-classic .invitation-cover-inner {
+      animation: coverClassic 1.05s ease-out;
+}
+
+.motion-ready.theme-royal [data-reveal] {
+      transform: translateY(38px) scale(0.9);
+      transition-duration: 1.05s;
+}
+
+.motion-ready.theme-royal [data-reveal].is-revealed {
+      transform: none;
+}
+
+.theme-royal .motion-decorations span {
+      width: 8px;
+      height: 8px;
+      background: #f4d675;
+      box-shadow: 0 0 14px rgba(244, 214, 117, 0.9);
+      transform: rotate(45deg);
+      animation-name: decorSparkle;
+}
+
+.motion-ready.theme-royal .invitation-cover-inner {
+      animation: coverRoyal 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes coverElegant {
+      from { opacity: 0; transform: translateY(24px) scale(0.92); }
+      to { opacity: 1; transform: none; }
+}
+
+@keyframes coverMinimalis {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: none; }
+}
+
+@keyframes coverFloral {
+      from { opacity: 0; transform: scale(0.9) rotate(-2deg); }
+      to { opacity: 1; transform: none; }
+}
+
+@keyframes coverModern {
+      from { opacity: 0; transform: translateX(-46px); }
+      to { opacity: 1; transform: none; }
+}
+
+@keyframes coverClassic {
+      from { opacity: 0; transform: perspective(800px) rotateX(10deg) scaleY(0.9); }
+      to { opacity: 1; transform: none; }
+}
+
+@keyframes coverRoyal {
+      from { opacity: 0; transform: scale(0.78); }
+      to { opacity: 1; transform: none; }
+}
+
+@keyframes decorFloat {
+      from { transform: translate3d(-8px, -12px, 0) scale(0.8); opacity: 0.15; }
+      to { transform: translate3d(10px, 14px, 0) scale(1.15); opacity: 0.5; }
+}
+
+@keyframes decorPetal {
+      from { transform: translate3d(-8px, -18px, 0) rotate(-16deg); opacity: 0.12; }
+      to { transform: translate3d(14px, 22px, 0) rotate(22deg); opacity: 0.45; }
+}
+
+@keyframes decorOrb {
+      from { transform: translate3d(-12px, -8px, 0) scale(0.8); opacity: 0.12; }
+      to { transform: translate3d(12px, 10px, 0) scale(1.18); opacity: 0.28; }
+}
+
+@keyframes decorSparkle {
+      from { transform: rotate(45deg) scale(0.45); opacity: 0.12; }
+      to { transform: rotate(135deg) scale(1.2); opacity: 0.7; }
+}
+
+@media (max-width: 600px) {
+      .motion-ready.theme-modern [data-reveal]:nth-child(n),
+      .motion-ready.theme-royal [data-reveal] {
+            transform: translateY(28px) scale(0.97);
+      }
+
+      .motion-ready.theme-modern [data-reveal].is-revealed,
+      .motion-ready.theme-royal [data-reveal].is-revealed {
+            transform: none;
+      }
+}
+
+@media (prefers-reduced-motion: reduce) {
+      .motion-decorations {
+            display: none;
+      }
+
+      .invitation-cover,
+      .invitation-cover-inner,
+      .invitation-content,
+      [data-reveal],
+      [data-stagger] > * {
+            animation: none !important;
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+      }
 }
 
 /* =========================
@@ -3059,6 +3433,11 @@ body.invitation-locked {
 
 .field input[type="text"],
 .field input[type="number"],
+.field input[type="date"],
+.field input[type="time"],
+.field input[type="datetime-local"],
+.field input[type="url"],
+.field input[type="file"],
 .field select,
 .field textarea {
     width: 100%;
@@ -3192,6 +3571,86 @@ body.invitation-locked {
     flex-wrap: wrap;
 }
 
+.admin-wedding-form {
+    max-width: none;
+}
+
+.admin-optional-label {
+    color: #8a7fa0;
+    font-weight: 500;
+}
+
+.admin-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.admin-gallery-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #e4dcf3;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.admin-gallery-card img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f1ecfb;
+}
+
+.admin-upload-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.admin-subsection {
+    margin-top: 32px;
+}
+
+.admin-wish-list {
+    display: grid;
+    gap: 12px;
+}
+
+.admin-wish-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.admin-wish-card.is-hidden {
+    opacity: 0.65;
+}
+
+.admin-wish-card p {
+    margin: 8px 0 0;
+    color: #4f4568;
+    overflow-wrap: anywhere;
+}
+
+.admin-wish-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #8a7fa0;
+    font-size: 12px;
+}
+
+.admin-wish-meta strong {
+    color: #160b46;
+    font-size: 14px;
+}
+
 .answer-option {
     display: inline-flex;
     align-items: center;
@@ -3288,6 +3747,10 @@ body.invitation-locked {
 
     .admin-empty {
         padding: 28px 16px !important;
+    }
+
+    .admin-wish-card {
+        flex-direction: column;
     }
 }
 

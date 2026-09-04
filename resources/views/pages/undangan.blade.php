@@ -124,35 +124,35 @@
         <div class="template-grid">
             @foreach ($templates as $template)
                 <div class="template-card">
-                    <div class="template-preview {{ $template['theme_class'] ?? 'theme-default' }}">
-                        <span>{{ $template['icon'] }}</span>
-                        <h3>{{ $template['name'] }}</h3>
-                        <p>{{ $template['style'] }}</p>
+                    <div class="template-preview {{ $template->theme_class ?? 'theme-default' }}">
+                        <span>{{ $template->icon }}</span>
+                        <h3>{{ $template->name }}</h3>
+                        <p>{{ $template->style }}</p>
                     </div>
 
                     <div class="template-content">
-                        <h3>Template {{ $template['name'] }}</h3>
+                        <h3>Template {{ $template->name }}</h3>
 
                         <p>
-                            {{ $template['description'] }}
+                            {{ $template->description }}
                         </p>
 
                         <ul>
-                            @foreach ($template['features'] as $feature)
+                            @foreach ($template->features as $feature)
                                 <li>{{ $feature }}</li>
                             @endforeach
                         </ul>
 
                         <div class="template-actions">
-                            <a href="{{ url('/undangan/template/' . $template['slug']) }}" class="btn-secondary">
+                            <a href="{{ route('weddings.template', $template) }}" class="btn-secondary">
                                 Lihat Detail
                             </a>
 
-                            <a href="{{ url('/undangan/preview/' . $template['slug']) }}" class="btn-secondary">
+                            <a href="{{ route('weddings.preview', $template) }}" class="btn-secondary">
                                 Preview
                             </a>
 
-                            <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode($template['message']) }}"
+                            <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode($template->message) }}"
                                 class="btn-primary" target="_blank" rel="noopener noreferrer">
                                 Pilih Template
                             </a>

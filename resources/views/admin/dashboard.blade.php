@@ -138,10 +138,10 @@
                     <p>Lihat daftar user, promote/demote admin.</p>
                 </a>
 
-                <div class="card admin-menu-card is-disabled">
+                <a href="{{ route('admin.weddings.index') }}" class="card admin-menu-card">
                     <h3>Kelola Undangan</h3>
-                    <p>Segera hadir.</p>
-                </div>
+                    <p>CRUD undangan, galeri foto, dan moderasi ucapan.</p>
+                </a>
 
                 <div class="card admin-menu-card is-disabled">
                     <h3>Kelola Artikel</h3>

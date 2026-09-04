@@ -1,6 +1,98 @@
-# CHANGELOG ARSIUP - Rangkita
+# CHANGELOG ARSIP - Rangkita
 
-Riwayat sesi 4-22 Agustus 2026 (diarsip dari AGENTS.md tanggal 24 Agu 2026 buat hemat token sesi). Entry terbaru tetap di AGENTS.md.
+Riwayat sesi sampai 26 Agustus 2026 yang dipindahkan dari `AGENTS.md` agar
+konteks otomatis tetap ringan. Konteks aktif tetap di `AGENTS.md`; plan detail
+aktif disimpan on-demand di `docs/plans/`.
+
+---
+
+## Ses 26 Agu 2026 (Sesi 3) - Google OAuth + Admin Dashboard + User Management + Product Links
+
+- **Google OAuth aktif** (`a39656c`): credentials terisi di `.env` (GOOGLE_CLIENT_ID/SECRET), error handling di `handleGoogleCallback()` — try-catch `InvalidStateException` → redirect login + flash error, guard null email (Google restricted profile), fallback name `getName() ?? getNickname() ?? 'User Google'`. Routes `/auth/google` + `/auth/google/callback` dalam guest middleware
+- **Admin Dashboard upgrade** (`5217e39`): `AdminDashboardController` baru — 8 stat boxes (users, packages, questions, categories, revenue, pending, quizzes, access) + eager-loaded recent activity (5 quiz + 5 transaksi). View rewrite: 4-column stat grid + recent quizzes list + transactions list + quick links. CSS ~60 baris: `.admin-stats` 4-col grid, `.admin-stat-card` 8 warna (blue/purple/green/orange/gold/yellow/pink/teal), responsive 4→2→1
+- **Admin User Management** (`5217e39`): `AdminUserController` baru — `index()` list users (paginate15, withCount quizSessions/transactions/userAccess), `toggleAdmin()` toggle role admin↔user. Safeguards: gak bisa demote diri sendiri (abort 403), gak bisa cabut admin terakhir (prevent lockout). View `admin/users/index.blade.php`: tabel users + role badges (admin hijau/user abu) + provider badges (Google biru/Email ungu) + toggle button dengan konfirmasi. Nav link "Users" ditambahkan ke admin bar
+- **Product links & copy update** (`d7056a1`): Soal: "Segera Hadir" → "Mulai Gratis", button → `/soal` (bukan `/kontak`), features updated (TWK/TIU/TKP, timer, pembahasan). Undangan: features (6 template, countdown, galeri). Artikel: renamed "SEO Blog" → "Tips", konten spesifik. Detail page: internal links gak lagi buka tab baru (`@if str_starts_with http`)
+- **CSS tambahan** (~80 baris): admin stats grid + role/provider badges + responsive
+- **Route count**: 45 → 47 (+2: `admin.users.index`, `admin.users.toggle-admin`)
+- **Controller count**: 8 → 10 (+AdminDashboardController, AdminUserController)
+- **View count**: 36 → 38 (+admin/users/index, admin/dashboard rewrite)
+- **Verifikasi**: php -l bersih semua file, view:cache compile OK, route:list 47 rute
+
+## Ses 26 Agu 2026 (Sesi 2) - Dual Display Mode Quiz (Scroll + Step)
+
+- **Dual display mode quiz**: dua mode tampilan yang bisa di-setting per paket — `scroll` (semua soal sekaligus, behavior lama) dan `step` (satu per satu, navigasi Next/Previous). Mode step: progress indicator "Soal X dari Y", animasi fade+slide CSS (200ms), recap view sebelum submit (grid nomor soal hijau/merah)
+- **Navigasi configurable**: `allow_back` boolean per paket — kalau false, user gak bisa balik ke soal sebelumnya (strict forward-only). Toggle checkbox di admin form hanya muncul saat step mode dipilih
+- **Timer configurable per paket**: field `time_limit` (total detik untuk test mode). NULL = fallback `total_questions × 54` (lama). Admin bisa set langsung di form paket (min 60dtk, max 24jam)
+- **Database** (1 migration baru → total 13): `add_quiz_mode_columns_to_question_packages` — +3 columns: `display_mode` (enum, default 'scroll'), `allow_back` (boolean, default true), `time_limit` (unsignedInteger, nullable). Backward compatible: semua default = behavior lama
+- **Admin form update**: fieldset "Pengaturan Quiz" (display_mode dropdown, time_limit input, allow_back checkbox with JS toggle). Compact admin table: 9 → 6 kolom (gabung Kategori+Nama, Tingkat+Harga, Poin+Mode)
+- **Bug fix**: `$package->category` → `$package->soalCategory` di `soal-payment-success.blade.php:50` (same bug as soal-result, missed in previous fix)
+- **Commit**: `9ce152b` feat(soal): add dual display mode (scroll + step) + configurable timer. 9 files changed, +397/-21 baris
+
+## Ses 26 Agu 2026 - Dynamic Per-Question Scoring System
+
+- **Sistem poin dinamis per-paket + per-soal**: setiap `question_packages` & `questions` punya 3 kolom nullable: `point_correct` (wajib ≥ 0), `point_blank`, `point_wrong` (boleh negatif). Logic inherit: kalau question field NULL → ambil dari package; kalau package field NULL → pakai persentase lama (backward compatible)
+- **2 migrations baru** (total 12): `add_point_columns_to_scoring_tables` (+3 columns × 2 tables) + `add_points_columns_to_quiz_sessions` (+2 columns)
+- **Controller updates**: `AdminQuestionPackageController` (+3 validasi + `$request->filled()` logic), `AdminQuestionController` (+3 independent field handling — NULL = inherit), `SoalController` (dual scoring: resolved point columns OR percentage; `quiz()` conditionally select; `result()` pass `earned_points` + `usePointSystem`)
+- **View updates** (8 files): admin forms (scoring fieldset + conditional override), admin tables (Poin B/K/S column), frontend quiz (points badge), result (dual display), history (dual display), soal-category (badge poin)
+- **CSS**: ~50 baris — `.scoring-fieldset`, `.points-badge`, `.result-points-*`, `.recap-item-points`
+- **Bug fix**: parse error duplicate `</td>` + `@endif` di `admin/questions/index.blade.php`
+- **Bug fix**: `point_wrong` negatif → score negatif → SQL unsignedInteger error → fix: `max(0, round(...))` clamp
+- **Verifikasi**: php -l bersih semua, view:cache compile OK, DB 12 migrations sukses
+
+## Ses 25 Agu 2026 (Sesi 2) - Layout Fix + Riwayat Quiz + Auth Navbar
+
+- **Layout** (`f66e8ec`): icon TWK diganti `📜`, icon fallback, badge empty state, equal-height cards, dan spacing back-link.
+- **Navbar auth-aware**: guest melihat Masuk/Daftar; user melihat Dashboard/Keluar dengan POST + CSRF.
+- **Riwayat quiz**: `/soal/riwayat`, eager loading, pagination 10, dashboard user berisi 3 statistik dan 3 sesi terbaru.
+- **Bug fix**: `$package->category` → `$package->soalCategory` di halaman result agar route kategori tidak kehilangan parameter.
+- **Verifikasi**: php-lint, Blade cache, dan smoke test halaman publik/auth lulus. Routes 44 → 45; views 35 → 36; CSS bertambah ~223 baris.
+
+## Ses 25 Agu 2026 - Modul 3 Verifikasi + Modul 6 Admin Panel + Kategori Dinamis
+
+- **Modul 3 verifikasi akhir SELESAI**: quiz Numerik 50 soal dalam mode latihan/test dan flow reuse pembayaran akun baru lolos; isolasi akses antar-user benar.
+- **Modul 6 selesai**: CRUD paket, nested soal, dan kategori; 3 controller, 19 route admin, 14 view baru + 1 update, CSS admin ~460 baris.
+- **Kategori dinamis**: tabel `soal_categories`, migrasi enum → FK, data TWK/TIU/TKP dimigrasikan; admin dapat menambah kategori tanpa edit kode.
+- **Bug fix**: relationship `QuestionPackage::transactions()` ditambahkan agar delete guard tidak 500.
+- **Bug fix**: `Route::resource->parameters()` Laravel 13 tidak menghasilkan parameter yang diinginkan; route diganti explicit.
+- **Deploy**: commit `e69d84f` terverifikasi di server. `sudo php artisan optimize:clear` diperlukan karena ownership `bootstrap/cache/`.
+
+## Ses 24 Agu 2026 (Sesi 3) - Optimasi Memory Files (-67% Token) + Push Backlog
+
+- Konteks awal `AGENTS.md` + `SUMMARY.md` sebelumnya 1.607 baris dan banyak duplikasi.
+- Changelog sesi 4-22 Agustus dipindahkan ke file ini; TODO selesai diringkas.
+- `SUMMARY.md` direwrite dari 746 menjadi 34 baris.
+- Hasil saat itu: konteks auto-load 1.607 → 522 baris, hemat ~67%, tanpa menghapus behavior rules.
+- Command `/finish` dan `scripts/finish.ps1` ternyata tidak ada di repo meski pernah tercatat.
+- Commit/push: `b8ef2d4` dan `befab6d`, sekaligus membawa backlog `e9d34c2` dan `10b922a`.
+
+## Ses 24 Agu 2026 (Sesi 2) - Fix payment_type NULL + Plan Modul 6 Admin Panel Soal
+
+- **Root cause `payment_type` NULL** (`e9d34c2`): data dari sync Midtrans dibuang dan row paid tidak diperbarui pada jalur `create()`.
+- **Fix**: `syncWithMidtrans()` mengembalikan model Transaction serta menjadi single source of truth untuk persist status + payment type.
+- Backfill terverifikasi: transaksi lama berubah dari `payment_type=NULL` menjadi `echannel`.
+- Modul 6 diprioritaskan sebelum Modul 4 dengan delete guard, sync total soal, dan validasi jawaban benar.
+- Agent vision `build-complex` dibuat memakai `opencode/muse-spark-1.2-contributor-free` karena model utama big-pickle text-only.
+
+## Ses 24 Agu 2026 - Modul 3 Views + Full Rename CPNS → SOAL + Test Flow & 4 Bug Fix
+
+- **Rename CPNS → SOAL** (`ff5e41f`): controller, route, names, views, navbar, copy produk, dan SEO diubah. Konten artikel CPNS sengaja tetap.
+- **Views** (`f633449`): index, category, quiz, result, payment, payment-success + CSS SOAL/QUIZ.
+- Sandbox: latihan/test gratis, QRIS settlement, webhook payload bertanda tangan, dan grant akses terverifikasi.
+- Insight SDK Midtrans: `Notification` hanya mengambil transaction ID dari payload lalu fetch data resmi server-to-server.
+- Fix (`b0dcc29`): server key callback, snap token expired, finish callbacks, dan halaman sukses status-aware.
+- Harga TIU Numerik dikembalikan Rp15.000 setelah sandbox test.
+- Verifikasi: php-lint, 26 route, Blade cache, dan smoke test kategori lulus.
+
+## Snapshot Konteks Proyek 26 Agu 2026
+
+- Laravel 13.8 / PHP ^8.3 / MySQL; CSS custom tanpa Vite/Tailwind.
+- Saat snapshot: 47 route, 10 controller, 7 model, 13 migration, 38 view, dan sekitar 3.220 baris CSS.
+- Data produk (4), artikel (4), template wedding (6), dan wedding demo masih hardcoded di `PageController`.
+- Quiz memakai server-side scoring, access gate, Midtrans signature verification, dan CSRF exemption khusus callback.
+- Auth manual + Google Socialite aktif; role admin dijaga `AdminMiddleware`.
+- Template Elegant, Minimalis, Floral, Modern, Classic, Royal berbagi satu Blade. Gallery masih placeholder dan wish masih frontend-only.
+- Model plan/build opencode saat itu `opencode/big-pickle` (text-only); vision memakai `opencode/muse-spark-1.2-contributor-free`.
+- MySQL Laragon perlu start manual; server deploy perlu `sudo php artisan optimize:clear` karena ownership cache.
 
 ---
 
